@@ -15,6 +15,12 @@
     "strict": true,
     "target": "es5"
   },
-  "include": ["src", "next-env.d.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", "public/uploads"]
 }

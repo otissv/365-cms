@@ -34,3 +34,7 @@ yarn-error.log*
 
 # ui
 dist/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

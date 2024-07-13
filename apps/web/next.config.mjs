@@ -11,28 +11,27 @@ const withPWA = nextPWA({
   reloadOnOnline: true,
   disable: false,
   fallbacks: {
-    image: "/images/fallback.png"
+    image: "/images/fallback.png",
   },
   workboxOptions: {
-    disableDevLogs: true
-  }
+    disableDevLogs: true,
+  },
 })
 
 const nextConfig = {
   experimental: {
     webVitalsAttribution: ["FCP", "CLS", "LCP"],
     optimizeCss: true,
-    serverComponentsExternalPackages: ["knex"]
+    serverComponentsExternalPackages: ["knex"],
   },
   reactStrictMode: true,
   transpilePackages: ["@repo/ui"],
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   webpack(config, { dev, isServer }) {
     // Code splitting
     if (!dev && !isServer) {
       config.optimization.splitChunks.cacheGroups = {
         default: false,
-        vendors: false
+        vendors: false,
       }
 
       config.optimization.splitChunks.chunks = "async"
@@ -46,7 +45,7 @@ const nextConfig = {
       config.optimization.usedExports = true
     }
     return config
-  }
+  },
 }
 
 const config =

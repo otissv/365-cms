@@ -1,16 +1,16 @@
-import localFont from "next/font/local"
 import { Inter } from "next/font/google"
+import localFont from "next/font/local"
 
 const heading = localFont({
   src: "agrandir-grand-bold.ttf",
   variable: "--font-heading",
-  fallback: ["system-ui", "arial"]
+  fallback: ["system-ui", "arial"],
 })
 
 const text = Inter({
   subsets: ["latin"],
   variable: "--font-text",
-  fallback: ["system-ui", "arial"]
+  fallback: ["system-ui", "arial"],
 })
 
 const fonts = {
@@ -20,7 +20,7 @@ const fonts = {
   h4: heading,
   h5: heading,
   h6: text,
-  text: text
+  text: text,
 }
 
 export default fonts

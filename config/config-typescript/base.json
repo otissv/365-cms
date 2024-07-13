@@ -13,12 +13,26 @@
     "isolatedModules": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowSyntheticDefaultImports": true,
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "public/uploads"],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "compilerOptions": {
+      "module": "node16",
+      "moduleResolution": "NodeNext"
+    }
+  }
 }
