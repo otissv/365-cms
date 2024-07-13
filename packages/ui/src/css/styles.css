@@ -1,0 +1,367 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    /* --muted: 240 4.8% 95.9%; */
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --accent: 11 90% 61%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 142 76% 36%;
+
+    --ring: 240 5% 64.9%;
+
+    --radius: 0.5rem;
+
+    --bg-background-1: 0 0% 0%;
+    --bg-background-2: 240 10% 4%;
+    --bg-background-3: 240 8% 8%;
+
+    --h1-desktop: 150px;
+    --h1-leading: 1.2;
+
+    --h2-desktop: 90px;
+    --h2-desktop-leading: 1.2;
+
+    --h3-desktop: 40px;
+    --h3-desktop-leading: 1.2;
+
+    --h4-desktop: 32px;
+    --h4-desktop-leading: 1.3;
+
+    --h5-desktop: 24px;
+    --h5-desktop-leading: 1;
+
+    --h6-desktop: 20px;
+    --h6-desktop-leading: 1.4;
+
+    --h1-mobile: 36px;
+    --h1-mobile-leading: 1.2;
+
+    --h2-mobile: 36px;
+    --h2-mobile-leading: 1.2;
+
+    --h3-mobile: 32px;
+    --h3-mobile-leading: 1.2;
+
+    --h4-mobile: 24px;
+    --h4-mobile-leading: 1.3;
+
+    --h5-mobile: 20px;
+    --h5-mobile-leading: 1;
+
+    --h6-mobile: 18px;
+    --h6-mobile-leading: 1.4;
+
+    --large-text: 20px;
+    --large-text-leading: 1.6;
+    --medium-text: 18px;
+    --medium-text-leading: 1.6;
+    --regular-text: 16px;
+    --regular-text-leading: 1.6;
+    --small-text: 14px;
+    --small-text-leading: 1.6;
+    --text-text: 12px;
+    --text-text-leading: 1.6;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --accent: 11 90% 61%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+
+    --success: 142 76% 36% --success-foreground: 1142 76% 36% --ring: 240 3.7%
+      15.9%;
+
+    --bg-background-1: 0 0% 0%;
+    --bg-background-2: 240 10% 4%;
+    --bg-background-3: 240 8% 8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    /* scroll-snap-type: y mandatory; */
+  }
+
+  body,
+  main {
+    > * {
+      /* scroll-snap-align: start; */
+    }
+  }
+}
+
+@layer utilities {
+  .gutter {
+    gap: 1.5rem;
+  }
+
+  .scroll-locked {
+    overflow: hidden !important;
+    overscroll-behavior: contain;
+    position: relative !important;
+    padding-left: 0px;
+    padding-top: 0px;
+    padding-right: 0px;
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 15px !important;
+  }
+
+  .center {
+    text-align: center;
+    justify-content: center;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-visible-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .no-visible-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rtl {
+    direction: rtl;
+  }
+  .md\:rtl {
+    @media (min-width: 768px) {
+      direction: rtl;
+    }
+  }
+  .ltr {
+    @media (min-width: 768px) {
+      direction: ltr;
+    }
+  }
+  .md\:ltr {
+    @media (min-width: 768px) {
+      direction: ltr;
+    }
+  }
+
+  .initial {
+    position: initial;
+  }
+  .sm\:initial {
+    @media (min-width: 640px) {
+      position: initial;
+    }
+  }
+  .md\:initial {
+    @media (min-width: 768px) {
+      position: initial;
+    }
+  }
+  .lg\:initial {
+    @media (min-width: 1024px) {
+      position: initial;
+    }
+  }
+  .xl\:initial {
+    @media (min-width: 1280px) {
+      position: initial;
+    }
+  }
+
+  .mobile-h3 {
+    font-size: var(--h1-mobile);
+    line-height: var(--h1-mobile-leading);
+  }
+
+  .desktop-h3 {
+    font-size: var(--h1-desktop);
+    line-height: var(--h1-desktop-leading);
+  }
+
+  .mobile-h2 {
+    font-size: var(--h2-mobile);
+    line-height: var(--h2-mobile-leading);
+  }
+
+  .desktop-h2 {
+    font-size: var(--h2-desktop);
+    line-height: var(--h2-desktop-leading);
+  }
+
+  .mobile-h3 {
+    font-size: var(--h3-mobile);
+    line-height: var(--h3-mobile-leading);
+  }
+
+  .desktop-h3 {
+    font-size: var(--h3-desktop);
+    line-height: var(--h3-desktop-leading);
+  }
+
+  .mobile-h4 {
+    font-size: var(--h4-mobile);
+    line-height: var(--h4-mobile-leading);
+  }
+
+  .desktop-h4 {
+    font-size: var(--h4-desktop);
+    line-height: var(--h4-desktop-leading);
+  }
+
+  .mobile-h5 {
+    font-size: var(--h5-mobile);
+    line-height: var(--h5-mobile-leading);
+  }
+
+  .desktop-h5 {
+    font-size: var(--h5-desktop);
+    line-height: var(--h5-desktop-leading);
+  }
+
+  .mobile-h6 {
+    font-size: var(--h6-mobile);
+    line-height: var(--h6-mobile-leading);
+  }
+
+  .desktop-h6 {
+    font-size: var(--h6-desktop);
+    line-height: var(--h6-desktop-leading);
+  }
+
+  .large-text {
+    font-size: var(--large-text);
+    line-height: var(--large-text);
+  }
+
+  .medium-text {
+    font-size: var(--medium-text);
+    line-height: var(--medium-text);
+  }
+
+  .regular-text {
+    font-size: var(--regular-text);
+    line-height: var(--regular-text);
+  }
+
+  .small-text {
+    font-size: var(--small-text);
+    line-height: var(--small-text);
+  }
+
+  .tiny-text {
+    font-size: var(--tiny-text);
+    line-height: var(--tiny-text);
+  }
+
+  .responsive-text {
+    line-height: var(--regular-text);
+    font-size: var(--regular-text);
+
+    @media (min-width: 768px) {
+      font-size: var(--medium-text);
+      line-height: var(--medium-text);
+    }
+
+    @media (min-width: 1024px) {
+      font-size: var(--large-text);
+      line-height: var(--large-text);
+    }
+  }
+
+  .action-text {
+    line-height: var(--large-text);
+    font-size: var(--large-text);
+    font-weight: 700;
+
+    @media (min-width: 768px) {
+      font-size: var(--large-text);
+      line-height: var(--large-text);
+    }
+
+    @media (min-width: 1024px) {
+      font-size: var(--large-text);
+      line-height: var(--large-text);
+    }
+  }
+
+  .max-w-md {
+    max-width: 768px;
+  }
+
+  .max-w-lg {
+    max-width: 1024px;
+  }
+
+  .max-w-xl {
+    max-width: 1280px;
+  }
+
+  .max-w-2xl {
+    max-width: 1440px;
+  }
+
+  .max-w-2xl {
+    max-width: 2560px;
+  }
+
+  .app-section-padding {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
