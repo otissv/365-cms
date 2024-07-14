@@ -2,6 +2,31 @@
 
 import nextPWA from "@ducanh2912/next-pwa"
 import withPlaiceholder from "@plaiceholder/next"
+import { globSync } from "glob"
+import path from "node:path"
+import url from "node:url"
+import fs from "node:fs"
+import packageJson from "./package.json" with { type: "json" }
+
+// Import packages
+const __filename = url.fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const packages = globSync(path.join(__dirname, "../../packages/*/package.json"))
+
+const transpilePackages = packages.map((pathString) => {
+  const name = JSON.parse(
+    fs.readFileSync(pathString, { encoding: "utf8" })
+  )?.name
+
+  const repo = packageJson.dependencies[name]
+
+  if (!repo) {
+    packageJson.dependencies[name] = "workspace:*"
+    fs.writeFileSync("./package.json", JSON.stringify(packageJson, null, 2))
+  }
+
+  return name
+})
 
 const withPWA = nextPWA({
   scope: "/app/",
@@ -25,7 +50,7 @@ const nextConfig = {
     serverComponentsExternalPackages: ["knex"],
   },
   reactStrictMode: true,
-  transpilePackages: ["@repo/ui", "@repo/lib"],
+  transpilePackages,
   webpack(config, { dev, isServer }) {
     // Code splitting
     if (!dev && !isServer) {

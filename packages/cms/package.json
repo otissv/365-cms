@@ -1,0 +1,20 @@
+{
+  "name": "@repo/cms",
+  "version": "0.0.0",
+  "sideEffects": ["**/*.css"],
+  "files": ["dist"],
+  "exports": {
+    "./*": ["./src/*.ts", "./src/*.tsx"]
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}
