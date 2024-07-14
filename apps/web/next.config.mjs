@@ -25,7 +25,7 @@ const nextConfig = {
     serverComponentsExternalPackages: ["knex"],
   },
   reactStrictMode: true,
-  transpilePackages: ["@repo/ui"],
+  transpilePackages: ["@repo/ui", "@repo/lib"],
   webpack(config, { dev, isServer }) {
     // Code splitting
     if (!dev && !isServer) {

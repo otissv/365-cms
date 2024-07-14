@@ -6,8 +6,6 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "type-check": "tsc --noEmit",
     "e2e": "pnpm create playwright",
     "e2e:ui": "pnpm exec playwright test --ui"
   },
@@ -23,6 +21,7 @@
     "@playwright/test": "^1.45.1",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@repo/lib": "workspace:*",
     "@types/node": "^20.11.24",
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",

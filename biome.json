@@ -1,10 +1,19 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
   "files": {
-    "ignore": [".vscode/**", ".next/**", ".turbo", "apps/**/public/**"]
+    "ignore": [
+      ".vscode/**",
+      ".next/**",
+      ".turbo",
+      "apps/**/public/**",
+      "**/test-results/**",
+      "**/playwright-report/**",
+      "**/blob-report/**",
+      "**/playwright/.cache/**"
+    ]
   },
   "organizeImports": {
-    "enabled": true
+    "enabled": false
   },
   "formatter": {
     "enabled": true,
@@ -25,6 +34,12 @@
       "recommended": true,
       "suspicious": {
         "noExplicitAny": "off"
+      },
+      "style": {
+        "noUnusedTemplateLiteral": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
       }
     }
   }
