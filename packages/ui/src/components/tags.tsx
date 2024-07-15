@@ -4,8 +4,8 @@ import React from "react"
 import { Check, ChevronDown, Plus, X } from "lucide-react"
 import type * as SelectPrimitive from "@radix-ui/react-select"
 
-import { cn } from "@ui/lib/utils"
-import { Badge, type BadgeProps } from "@ui/ui/badge"
+import { cn } from "@/lib/utils"
+import { Badge, type BadgeProps } from "@/ui/badge"
 import {
   Select,
   SelectContent,
@@ -13,9 +13,9 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@ui/ui/select"
+} from "@/ui/select"
 
-import { Button, type ButtonProps } from "@ui/ui/button"
+import { Button, type ButtonProps } from "@/ui/button"
 import { isEmpty } from "@repo/lib/isEmpty"
 import { Skeleton } from "../ui/skeleton"
 
@@ -58,6 +58,7 @@ export function TagsInput({
 TagsInput.displayName = "TagsInput"
 
 export interface TagItemProps extends BadgeProps {
+  id: string
   value: string
   onRemoveItem: (id: string) => void
 }

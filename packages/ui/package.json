@@ -5,9 +5,13 @@
   "files": ["dist"],
   "exports": {
     "./styles.css": "./dist/index.css",
-    "./components/*": ["./src/components/**/*.ts", "./src/components/**/*.tsx"],
-    "./*": ["./src/ui/*.ts", "./src/ui/*.tsx"],
-    "./src/lib/utils": "./src/lib/utils.ts"
+    "./*": [
+      "./src/ui/*.ts",
+      "./src/ui/*.tsx",
+      "./src/components/*.ts",
+      "./src/components/*.tsx"
+    ],
+    "./cn": "./src/lib/utils.ts"
   },
   "license": "MIT",
   "scripts": {

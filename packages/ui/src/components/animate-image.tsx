@@ -1,7 +1,7 @@
 import Image, { type ImageProps } from "next/image"
 import type { ComponentProps } from "./component.types"
 import { Box } from "./box"
-import { cn } from "@ui/lib/utils"
+import { cn } from "@/lib/utils"
 
 interface AnimateImagePropsProps extends Omit<ImageProps, "fill"> {
   className?: string

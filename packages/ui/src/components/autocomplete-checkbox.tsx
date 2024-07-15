@@ -1,10 +1,10 @@
 "use client"
 
 import type * as React from "react"
-import { Checkbox } from "@ui/ui/checkbox"
-import { Input } from "@ui/ui/input"
-import { cn } from "@ui/lib/utils"
-import { Label } from "@ui/ui/label"
+import { Checkbox } from "@/ui/checkbox"
+import { Input } from "@/ui/input"
+import { cn } from "@/lib/utils"
+import { Label } from "@/ui/label"
 
 export interface AutocompleteCheckboxOption {
   id: string

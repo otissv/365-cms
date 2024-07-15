@@ -3,8 +3,8 @@
 import React from "react"
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group"
 
-import { cn } from "@ui/lib/utils"
-import { buttonVariants } from "@ui/ui/button"
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/ui/button"
 
 export type ToggleGroupProps = {
   label: string

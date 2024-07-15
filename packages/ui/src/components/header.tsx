@@ -1,8 +1,8 @@
 import Link from "next/link"
 // import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 
-import { ThemeToggle } from "@ui/components/theme-toggle"
-// import { Button } from "@ui/ui/button"
+import { ThemeToggle } from "@/components/theme-toggle"
+// import { Button } from "@/ui/button"
 // import { auth } from '@clerk/nextjs/server'
 
 export default function Header(): JSX.Element {

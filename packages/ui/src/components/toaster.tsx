@@ -7,8 +7,8 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-} from "@ui/ui/toast"
-import { useToast } from "@ui/ui/use-toast"
+} from "@/ui/toast"
+import { useToast } from "@/ui/use-toast"
 
 export function Toaster(): JSX.Element {
   const { toasts } = useToast()

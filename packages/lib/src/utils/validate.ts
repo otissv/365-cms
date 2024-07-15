@@ -1,8 +1,8 @@
 import type { z } from "zod"
 
 import { CustomError } from "./customError"
-import { isEmpty } from "./isEmpty"
-import { isDev } from "./isDev"
+import { isEmpty } from "../isEmpty"
+import { isDev } from "../isDev"
 
 export function validate<Validator extends z.ZodTypeAny>(
   validator: Validator,

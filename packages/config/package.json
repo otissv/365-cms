@@ -1,0 +1,21 @@
+{
+  "name": "@repo/config",
+  "version": "0.0.0",
+  "sideEffects": ["**/*.css"],
+  "files": ["dist"],
+  "exports": {
+    "./env": "./src/env/index.ts",
+    "./database": "./src/database/connection.ts"
+  },
+  "license": "MIT",
+
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@repo/lib": "workspace:*",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "knex": "^3.1.0",
+    "zod": "^3.23.8"
+  }
+}

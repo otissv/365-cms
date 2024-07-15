@@ -1,7 +1,7 @@
 import * as React from "react"
 
-import { cn } from "@ui/lib/utils"
-import { AppLink } from "@ui/components/app-link"
+import { cn } from "@/lib/utils"
+import { AppLink } from "@/components/app-link"
 import { ChevronRight, Home } from "lucide-react"
 
 export interface Breadcrumb {

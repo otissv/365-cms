@@ -2,7 +2,7 @@ import React from "react"
 import { Input, type InputProps } from "../ui/input"
 import { Button } from "../ui/button"
 import { Eye, EyeOff } from "lucide-react"
-import { cn } from "@ui/lib/utils"
+import { cn } from "@/lib/utils"
 import { isNumber } from "@repo/lib/isNumber"
 
 export type PrivateHTMLProps = InputProps & {

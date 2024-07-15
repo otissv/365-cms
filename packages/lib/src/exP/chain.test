@@ -1,0 +1,37 @@
+
+
+import { chain } from './chain'
+
+describe('chain', () => {
+  // it('should return execute chain', () => {
+  //   const toUpperCase = (str: string) => str.toUpperCase()
+  //   const toSnake = (str: string) => str.replace(' ', '_')
+  //   expect(chain(toUpperCase).chain(toSnake).exec<string>('hello world')).toBe(
+  //     'HELLO_WORLD'
+  //   )
+  // })
+
+  it('should return execute chain', () => {
+    expect(
+      chain((x: number) => x + 1)
+        .chain((x: number) => x + '1')
+        .chain((x: string) => x + '11')
+        .exec<string>('21')
+    ).toBe('211111')
+  })
+
+  it('should call log once', () => {
+    const printer = jest.fn()
+    expect(
+      chain((x: number) => x + 'a')
+        .effect(printer)
+        .chain((x: number) => x + 'b')
+        .effect(printer)
+        .exec(1)
+    ).toBe('1ab')
+
+    expect(printer).toBeCalledTimes(2)
+    expect(printer).toBeCalledWith('1a')
+    expect(printer).toBeCalledWith('1ab')
+  })
+})

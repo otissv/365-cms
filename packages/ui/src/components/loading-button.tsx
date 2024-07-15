@@ -1,4 +1,4 @@
-import { Button, type ButtonProps } from "@ui/ui/button"
+import { Button, type ButtonProps } from "@/ui/button"
 
 export interface LoadingButtonProps extends ButtonProps {
   isLoading: boolean

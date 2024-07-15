@@ -9,7 +9,7 @@ import {
   type MotionValue,
 } from "framer-motion"
 import type { ComponentProps } from "./component.types"
-import { cn } from "@ui/lib/utils"
+import { cn } from "@/lib/utils"
 
 export interface BoxProps extends ComponentProps<HTMLElement> {
   as?: React.ElementType<any, keyof React.JSX.IntrinsicElements>

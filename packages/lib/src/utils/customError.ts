@@ -1,4 +1,4 @@
-import { isDev } from "./isDev"
+import { isDev } from "../isDev"
 
 export class CustomError extends Error {
   message = ""

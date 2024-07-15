@@ -3,7 +3,7 @@
 import * as React from "react"
 import * as SwitchPrimitives from "@radix-ui/react-switch"
 
-import { cn } from "@ui/lib/utils"
+import { cn } from "@/lib/utils"
 
 export type ToggleSwitchOnOffTypes =
   | "on,off"

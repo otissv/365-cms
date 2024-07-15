@@ -4,7 +4,12 @@
   "sideEffects": ["**/*.css"],
   "files": ["dist"],
   "exports": {
-    "./*": ["./src/*.ts", "./src/*.tsx"]
+    "./*": [
+      "./src/*.ts",
+      "./src/*.tsx",
+      "./src/utils/*.ts",
+      "./src/utils/*.tsx"
+    ]
   },
   "license": "MIT",
   "peerDependencies": {
@@ -12,9 +17,11 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@types/react": "^18.2.0"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "react": "^18.2.0"
   }
 }

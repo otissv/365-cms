@@ -1,4 +1,4 @@
-import { isValidString } from "./isValidString"
+import { isValidString } from "../isValidString"
 
 /**
  * Checks if the input string includes any of the characters from the specified characters string.
