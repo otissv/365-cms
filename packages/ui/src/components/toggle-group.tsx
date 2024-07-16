@@ -1,10 +1,10 @@
 "use client"
 
-import React from "react"
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group"
+import React from "react"
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/ui/button"
+import { cn } from "../lib/utils"
+import { buttonVariants } from "../ui/button"
 
 export type ToggleGroupProps = {
   label: string

@@ -1,10 +1,10 @@
 import React from "react"
 
-import { Label } from "@repo/ui/label"
-import { ToggleSwitch } from "@repo/ui/toggle-switch"
-import { Input } from "@repo/ui/input"
-import { TagItem, TagInput, TagsInput, TagList } from "@repo/ui/tags"
 import type { AutocompleteCheckboxOption } from "@repo/ui/autocomplete-checkbox"
+import { Input } from "@repo/ui/input"
+import { Label } from "@repo/ui/label"
+import { TagInput, TagItem, TagList, TagsInput } from "@repo/ui/tags"
+import { ToggleSwitch } from "@repo/ui/toggle-switch"
 
 export type SelectItem = {
   id: string

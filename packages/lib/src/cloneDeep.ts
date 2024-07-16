@@ -1,16 +1,16 @@
 // not a good clone.
 
-import { isString } from "./isString"
-import { isNumber } from "./isNumber"
-import { isFunction } from "./isFunction"
-import { someTrue } from "./someTrue"
-import { isNullOrUndefined } from "./isNullOrUndefined"
-import { isError } from "./isError"
 import { isArray } from "./isArray"
-import { isMap } from "./isMap"
-import { isSet } from "./isSet"
 import { isBoolean } from "./isBoolean"
 import { isDate } from "./isDate"
+import { isError } from "./isError"
+import { isFunction } from "./isFunction"
+import { isMap } from "./isMap"
+import { isNullOrUndefined } from "./isNullOrUndefined"
+import { isNumber } from "./isNumber"
+import { isSet } from "./isSet"
+import { isString } from "./isString"
+import { someTrue } from "./someTrue"
 
 /**
  * Deep clones a value

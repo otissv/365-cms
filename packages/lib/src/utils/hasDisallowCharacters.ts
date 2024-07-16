@@ -1,5 +1,5 @@
-import { stringIncludesAnyCharacters } from "./stringIncludesAnyCharacters"
 import { isString } from "./isString"
+import { stringIncludesAnyCharacters } from "./stringIncludesAnyCharacters"
 
 export function hasDisallowCharacters(
   value: unknown,

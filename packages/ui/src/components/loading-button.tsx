@@ -1,9 +1,9 @@
-import { Button, type ButtonProps } from "@/ui/button"
+import { Button, type ButtonProps } from "../ui/button"
 
-export interface LoadingButtonProps extends ButtonProps {
+export type LoadingButtonProps = {
   isLoading: boolean
   loadingText?: string
-}
+} & ButtonProps
 
 export function LoadingButton({
   isLoading,

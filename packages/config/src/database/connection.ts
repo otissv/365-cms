@@ -1,24 +1,24 @@
 import knex from "knex"
-import config from "@/env"
+import env from "../env"
 
 export function getConnection(): knex.Knex<any, unknown[]> {
   return knex({
     client: "pg",
     connection: {
-      connectionString: config.databaseConnectionString,
-      host: config.databaseHost,
-      port: config.databasePort,
-      user: config.databaseUser,
-      database: config.database,
-      password: config.databasePassword,
+      connectionString: env.databaseConnectionString,
+      host: env.databaseHost,
+      port: env.databasePort,
+      user: env.databaseUser,
+      database: env.database,
+      password: env.databasePassword,
 
-      // ssl: config.databaseSSL ? { rejectUnauthorized: false } : false
+      // ssl: env.databaseSSL ? { rejectUnauthorized: false } : false
     },
     pool: {
       min: 0,
-      max: config.databaseMaxConnections,
+      max: env.databaseMaxConnections,
 
-      idleTimeoutMillis: config.databaseIdleTimeout,
+      idleTimeoutMillis: env.databaseIdleTimeout,
     },
   }).on("query", (query) => {
     // A workaround to fix JSON array inserts/updates until this issue is resolved

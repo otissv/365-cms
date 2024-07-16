@@ -1,19 +1,20 @@
 import { z } from "zod"
 
-import { validate } from "@repo/lib/validate"
 import type { CustomError } from "@repo/lib/customError"
+import { validate } from "@repo/lib/validate"
+
 import type {
   CmsCollection,
-  CmsCollectionInsert,
-  CmsCollectionUpdate,
+  CmsCollectionColumn,
   CmsCollectionColumnInsert,
   CmsCollectionColumnUpdate,
-  FormCmsCollectionInsertValidator,
-  CmsCollectionColumn,
   CmsCollectionDocument,
   CmsCollectionDocumentInsert,
   CmsCollectionDocumentUpdate,
-} from "@/cms.types"
+  CmsCollectionInsert,
+  CmsCollectionUpdate,
+  FormCmsCollectionInsertValidator,
+} from "./cms.types"
 
 const columnOrderValidator = z.array(z.string()).default([])
 
@@ -29,13 +30,13 @@ export const cmsCollectionValidator = z.object({
     .min(1, { message: "Name is required" })
     .max(100, { message: "Name must be less than 100 characters." }),
   type: z.enum(["multiple", "single"]),
-  roles: z.array(z.string()).default([]),
+  roles: z.array(z.string()).default([]).optional(),
   columnOrder: columnOrderValidator.optional(),
   createdAt: z.coerce.date(),
   createdBy: z.number().int().positive(),
   updatedAt: z.coerce.date(),
   updatedBy: z.number().int().positive(),
-  isPublished: z.number().int().positive().optional(),
+  isPublished: z.boolean().optional(),
 })
 
 /** Cms Collection Document **/

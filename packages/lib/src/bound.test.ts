@@ -1,6 +1,6 @@
-/* eslint-disable functional/no-expression-statement */
-import { EQ, LT, GT } from "./types"
 import { bound } from "./bound"
+/* eslint-disable functional/no-expression-statement */
+import { EQ, GT, LT } from "./types"
 
 const days = [
   "Monday",

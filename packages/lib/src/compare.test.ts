@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statement */
 import { compare } from "./compare"
-import { EQ, NOT_EQ, LT, GT, LT_EQ, GT_EQ } from "./types"
+import { EQ, GT, GT_EQ, LT, LT_EQ, NOT_EQ } from "./types"
 
 describe("compare", () => {
   it("should evaluate NOT_EQ correctly", () => {

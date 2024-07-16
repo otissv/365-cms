@@ -80,7 +80,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         suppressHydrationWarning
         className={cn(
-          "bg-blue-400",
           "text-balance",
           buttonVariants(
             variants,

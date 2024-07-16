@@ -1,16 +1,16 @@
 import "server-only"
 
-import { isEmpty } from "@repo/lib/isEmpty"
 import { getConnection } from "@repo/config/database"
+import { isEmpty } from "@repo/lib/isEmpty"
 import { errorResponse } from "@repo/lib/utils/customError"
 
 import type {
+  AppResponse,
+  CmsCollection,
   CmsCollectionInsert,
   CmsCollectionUpdate,
-  CmsCollection,
-  AppResponse,
   CmsCollectionView,
-} from "@/cms.types"
+} from "../cms.types"
 
 export type CmsCollectionsDao = {
   get(props?: {

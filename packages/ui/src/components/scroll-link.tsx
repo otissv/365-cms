@@ -1,8 +1,7 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-import React from "react"
 import { Link, type LinkProps } from "react-scroll"
+import { cn } from "../lib/utils"
 
 export interface ScrollLinkProps extends Omit<LinkProps, "href" | "ref"> {}
 

@@ -9,7 +9,7 @@ export type FormField = {
   value: any
   error: string
   validate: (
-    data: string,
+    data: Record<string, any>,
     state: Map<string, FormField>
   ) => Promise<Record<string, any> | CustomError>
 }

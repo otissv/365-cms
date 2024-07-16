@@ -2,19 +2,20 @@
 
 import "server-only"
 
-import columnDao from "@/dao/column.dao"
+import { isNumber } from "@repo/lib/isNumber"
+import { errorResponse } from "@repo/lib/utils/customError"
+
 import {
   cmsCollectionColumnInsertValidate,
   cmsCollectionColumnUpdateValidate,
-} from "@/cms-validators"
+} from "../cms-validators"
 import type {
+  AppResponse,
   CmsCollectionColumn,
   CmsCollectionColumnInsert,
   CmsCollectionColumnUpdate,
-  AppResponse,
-} from "@/cms.types"
-import { isNumber } from "@repo/lib/isNumber"
-import { errorResponse } from "@repo/lib/utils/customError"
+} from "../cms.types"
+import columnDao from "../dao/column.dao"
 
 export type CmsDocumentServices = {
   getByCollectionIdAndFieldId(

@@ -1,21 +1,22 @@
 "use server"
 
 import "server-only"
-import documentDao from "@/dao/documents.dao"
+
 import {
   cmsCollectionDocumentInsertValidate,
   cmsCollectionDocumentUpdateValidate,
-} from "@/cms-validators"
+} from "../cms-validators"
 import type {
   AppResponse,
   CmsCollectionDocument,
   CmsCollectionDocumentInsert,
   CmsCollectionDocumentUpdate,
   CmsDocumentsView,
-} from "@/cms.types"
+} from "../cms.types"
+import documentDao from "../dao/documents.dao"
 
-import { errorResponse } from "@repo/lib/utils/customError"
 import { isError } from "@repo/lib/isError"
+import { errorResponse } from "@repo/lib/utils/customError"
 
 export type CmsDocumentServicesGetReturnType =
   | {
@@ -46,7 +47,11 @@ export type CmsDocumentServices = {
       columns?: string[]
     },
     meta?: { userId: number }
-  ): Promise<AppResponse<Partial<CmsCollectionDocument>>>
+  ): Promise<
+    AppResponse<
+      Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
+    >
+  >
   insert(
     {
       data,
@@ -79,7 +84,13 @@ function cmsDocumentsServices(schema: string): CmsDocumentServices {
       return documentDao(schema).get(props)
     },
 
-    async remove(props): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
+    async remove(
+      props
+    ): Promise<
+      AppResponse<
+        Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
+      >
+    > {
       return documentDao(schema).remove(props)
     },
 

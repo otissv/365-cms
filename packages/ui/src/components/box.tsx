@@ -1,15 +1,15 @@
 "use client"
 
-import * as React from "react"
 import {
+  type MotionValue,
   motion,
   useInView,
-  useTransform,
   useScroll,
-  type MotionValue,
+  useTransform,
 } from "framer-motion"
+import * as React from "react"
+import { cn } from "../lib/utils"
 import type { ComponentProps } from "./component.types"
-import { cn } from "@/lib/utils"
 
 export interface BoxProps extends ComponentProps<HTMLElement> {
   as?: React.ElementType<any, keyof React.JSX.IntrinsicElements>

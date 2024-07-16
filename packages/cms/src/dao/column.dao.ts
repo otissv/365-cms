@@ -1,14 +1,15 @@
 import "server-only"
 
 import { getConnection } from "@repo/config/database"
+import { isEmpty } from "@repo/lib/isEmpty"
+import { errorResponse } from "@repo/lib/utils/customError"
+
 import type {
+  AppResponse,
+  CmsCollectionColumn,
   CmsCollectionColumnInsert,
   CmsCollectionColumnUpdate,
-  CmsCollectionColumn,
-  AppResponse,
-} from "@/cms.types"
-import { errorResponse } from "@repo/lib/utils/customError"
-import { isEmpty } from "@repo/lib/isEmpty"
+} from "../cms.types"
 
 export type CmsCollectionColumnsDao = {
   getByCollectionIdAndFieldId(props?: {

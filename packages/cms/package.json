@@ -7,18 +7,20 @@
     "./*": ["./src/*.ts", "./src/*.tsx"]
   },
   "license": "MIT",
-
   "devDependencies": {
-    "@types/react": "^18.2.61",
-    "@repo/typescript-config": "workspace:*",
-    "@repo/lib": "workspace:*",
     "@repo/config": "workspace:*",
+    "@repo/lib": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@types/react": "^18.2.61",
     "typescript": "^5.3.3"
   },
   "dependencies": {
     "knex": "^3.1.0",
+    "lucide-react": "^0.408.0",
+    "next": "^14.2.3",
     "react": "^18.2.0",
+    "sonner": "^1.5.0",
     "zod": "^3.23.8"
   }
 }

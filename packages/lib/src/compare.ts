@@ -5,12 +5,12 @@ import { isLessThan } from "./isLessThan"
 import { isLessThanOrEqualTo } from "./isLessThanOrEqualTo"
 import { isNotEqTo } from "./isNotEqTo"
 import {
-  NOT_EQ,
-  LT,
-  GT,
-  LT_EQ,
-  GT_EQ,
   type ComparisonOperatorTypes,
+  GT,
+  GT_EQ,
+  LT,
+  LT_EQ,
+  NOT_EQ,
 } from "./types"
 
 /**

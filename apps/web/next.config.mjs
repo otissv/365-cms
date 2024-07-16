@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 
+import fs from "node:fs"
+import path from "node:path"
+import url from "node:url"
 import nextPWA from "@ducanh2912/next-pwa"
 import withPlaiceholder from "@plaiceholder/next"
 import { globSync } from "glob"
-import path from "node:path"
-import url from "node:url"
-import fs from "node:fs"
 import packageJson from "./package.json" with { type: "json" }
 
 // Import packages
@@ -35,9 +35,6 @@ const withPWA = nextPWA({
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
   disable: false,
-  fallbacks: {
-    image: "/images/fallback.png",
-  },
   workboxOptions: {
     disableDevLogs: true,
   },
@@ -69,6 +66,9 @@ const nextConfig = {
       config.optimization.concatenateModules = true
       config.optimization.usedExports = true
     }
+
+    config.externals = config.externals.concat(["oracledb", "pg-query-stream"])
+
     return config
   },
 }

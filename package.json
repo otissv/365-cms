@@ -1,12 +1,13 @@
 {
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
+    "dotenvx": "dotenvx",
+    "build": "dotenvx run -- turbo build",
+    "dev": "dotenvx run -- turbo dev",
     "type-check": "turbo type-check",
     "clean": "turbo clean",
-    "lint": "biome check .",
-    "lint:fix": "biome check . --write"
+    "lint": "dotenvx run -- biome check .",
+    "lint:fix": "dotenvx run -- biome check . --write"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
@@ -20,5 +21,8 @@
   "engines": {
     "node": ">=18"
   },
-  "name": "with-tailwind"
+  "name": "with-tailwind",
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.6.2"
+  }
 }

@@ -1,15 +1,13 @@
-import { maybeString } from "@repo/lib/maybeString"
 import { isDev } from "@repo/lib/isDev"
 import { mayBeToNumber } from "@repo/lib/mayBeToNumber"
+import { maybeString } from "@repo/lib/maybeString"
 
-const config = {
+const env = {
   isDev,
   isProd: process.env.NODE_ENV === "production",
   isTest: process.env.NODE_ENV === "test",
-  baseUrl: isDev
-    ? (maybeString(process.env.LOCAL_BASE_URL) as any as URL)
-    : (maybeString(process.env.BASE_URL) as any as URL),
-  resend365ApiKey: maybeString(process.env.RESEND_365_API_KEY),
+  baseUrl: maybeString(process.env.BASE_URL) as any as URL,
+  resendApiKey: maybeString(process.env.RESEND_API_KEY),
   testEmailAddress: maybeString(process.env.TEST_EMAIL_ADDRESS),
   database: maybeString(process.env.POSTGRES_DATABASE),
   databaseHost: maybeString(process.env.POSTGRES_HOST),
@@ -23,4 +21,4 @@ const config = {
   databaseMaxLifetime: mayBeToNumber()(process.env.POSTGRES_MAX_LIFETIME),
 } as const
 
-export default config
+export default env

@@ -1,4 +1,4 @@
-import { EQ, GT, LT, type BoundTypes } from "./types"
+import { type BoundTypes, EQ, GT, LT } from "./types"
 
 /**
  * Compares a the position of an item in a list to another item in the list.

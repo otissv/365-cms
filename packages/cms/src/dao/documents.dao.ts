@@ -1,18 +1,19 @@
 import "server-only"
 
-import { isEmpty } from "@repo/lib/isEmpty"
 import { getConnection } from "@repo/config/database"
+import { isEmpty } from "@repo/lib/isEmpty"
+import { mayBeToNumber } from "@repo/lib/mayBeToNumber"
+import { errorResponse } from "@repo/lib/utils/customError"
+
 import type {
   AppResponse,
-  CmsCollectionDocument,
-  CmsDocumentsView,
-  CmsCollectionDocumentUpdate,
-  CmsCollectionDocumentInsert,
-  CmsCollectionColumn,
   CmsCollection,
-} from "@/cms.types"
-import { errorResponse } from "@repo/lib/utils/customError"
-import { mayBeToNumber } from "@repo/lib/mayBeToNumber"
+  CmsCollectionColumn,
+  CmsCollectionDocument,
+  CmsCollectionDocumentInsert,
+  CmsCollectionDocumentUpdate,
+  CmsDocumentsView,
+} from "../cms.types"
 
 type CmsDocumentsDaoGetReturnType =
   | {
@@ -253,7 +254,14 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
       }
     },
 
-    async remove({ id, columns = ["id"] }) {
+    async remove({
+      id,
+      columns = ["id"],
+    }): Promise<
+      AppResponse<
+        Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
+      >
+    > {
       try {
         let result: (
           | Partial<CmsCollectionDocument>

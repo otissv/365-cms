@@ -1,11 +1,13 @@
 "use client"
 
-import React from "react"
-import { Check, ChevronDown, Plus, X } from "lucide-react"
 import type * as SelectPrimitive from "@radix-ui/react-select"
+import { Check, ChevronDown, Plus, X } from "lucide-react"
+import React from "react"
 
-import { cn } from "@/lib/utils"
-import { Badge, type BadgeProps } from "@/ui/badge"
+import { isEmpty } from "@repo/lib/isEmpty"
+
+import { cn } from "../lib/utils"
+import { Badge, type BadgeProps } from "../ui/badge"
 import {
   Select,
   SelectContent,
@@ -13,10 +15,9 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/ui/select"
+} from "../ui/select"
 
-import { Button, type ButtonProps } from "@/ui/button"
-import { isEmpty } from "@repo/lib/isEmpty"
+import { Button, type ButtonProps } from "../ui/button"
 import { Skeleton } from "../ui/skeleton"
 
 export type TagInputItem = {

@@ -1,18 +1,18 @@
 import type { z } from "zod"
 
 import type {
-  cmsCollectionValidator,
+  cmsCollectionColumnInsertValidator,
+  cmsCollectionColumnUpdateValidator,
   cmsCollectionColumnValidator,
+  cmsCollectionDocumentInsertValidator,
+  cmsCollectionDocumentUpdateValidator,
   cmsCollectionDocumentValidator,
   cmsCollectionInsertValidator,
   cmsCollectionUpdateValidator,
-  formCmsCollectionInsertValidator,
-  cmsCollectionColumnInsertValidator,
-  cmsCollectionColumnUpdateValidator,
-  cmsCollectionDocumentInsertValidator,
-  cmsCollectionDocumentUpdateValidator,
+  cmsCollectionValidator,
   cmsColumnDialogValidator,
-} from "@/cms-validators"
+  formCmsCollectionInsertValidator,
+} from "./cms-validators"
 
 export type AppResponse<Data> = {
   data: Data[] | []

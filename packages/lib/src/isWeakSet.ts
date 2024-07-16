@@ -1,5 +1,5 @@
-import { getType } from "./getType"
 import { tryCatch } from "./exP/tryCatch"
+import { getType } from "./getType"
 
 /**
  * Checks value is a WeakSet

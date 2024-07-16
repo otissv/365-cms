@@ -1,11 +1,10 @@
 "use client"
 
-import type * as React from "react"
 import { CheckCircle2, XCircle } from "lucide-react"
+import type * as React from "react"
 
-import { useToast } from "@/ui/use-toast"
-import { cn } from "@/lib/utils"
-import { useTranslateClient } from "@/components/translate/translate-client"
+import { useToast } from "..//ui/use-toast"
+import { cn } from "../lib/utils"
 
 export interface NotifyProps {
   className?: string
@@ -67,8 +66,6 @@ export interface ErrorNotifyProps extends Omit<NotifyProps, "variant"> {}
 export const useErrorNotify = () => {
   const notify = useNotify()
 
-  const t = useTranslateClient("ui.misc")
-
   return ({ description, action, title, ...props }: ErrorNotifyProps) =>
     notify({
       variant: "destructive",
@@ -78,11 +75,7 @@ export const useErrorNotify = () => {
         </>
       ),
       description,
-      action: {
-        alt: t("tryAgain"),
-        children: t("tryAgain"),
-        ...action,
-      },
+      action,
       ...props,
     })
 }
