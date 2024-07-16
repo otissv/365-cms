@@ -6,6 +6,7 @@ import Collections, {
   onRenameCollectionAction,
 } from "@repo/cms/ui/collections"
 import { PageHeader } from "@repo/ui/page/page-header"
+import { Toaster } from "@repo/ui/sonner"
 
 export default function CollectionsPage({
   searchParams,
@@ -41,6 +42,8 @@ export default function CollectionsPage({
   return (
     <>
       <PageHeader heading='Collections' breadcrumbs={[{ label: "CMS" }]} />
+
+      <Toaster />
 
       <Collections
         searchParams={searchParams}

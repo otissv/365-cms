@@ -1,11 +1,10 @@
 "use client"
 
-import { toast } from "sonner"
-
 import { cn } from "@repo/ui/cn"
 import { Input } from "@repo/ui/input"
 import { Pagination } from "@repo/ui/page/pagination"
 import { type ArrayStoreState, useArrayStore } from "@repo/ui/useCreateStore"
+import { notify } from "@repo/ui/sonner"
 
 import type {
   CmsCollection,
@@ -29,6 +28,7 @@ import {
   CollectionProvider,
   type CollectionProviderProps,
 } from "./provider.collection"
+import type * as React from "react"
 
 export interface CollectionsListProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -37,6 +37,7 @@ export interface CollectionsListProps
   layout: ToggleLayoutTypes
   totalPages: number
   data: CmsCollection[] | []
+  toast?: typeof notify
   onRenameCollection: CollectionProviderProps["onRename"]
   onDeleteCollection: CollectionProviderProps["onDelete"]
   onNewCollection: CollectionProviderProps["onNew"]
@@ -48,10 +49,11 @@ export function CollectionsList({
   totalPages,
   page,
   limit,
+  className,
+  toast = notify,
   onRenameCollection,
   onDeleteCollection,
   onNewCollection,
-  className,
 }: CollectionsListProps): React.JSX.Element {
   const isGridLayout: boolean = layout === "grid"
 
@@ -64,7 +66,7 @@ export function CollectionsList({
     const response = await onDeleteCollection(id)
 
     if (response?.error) {
-      toast("Collection was not deleted. Try again.")
+      toast("Collection was not deleted. Try again.", { type: "error" })
       return
     }
 

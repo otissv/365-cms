@@ -57,6 +57,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      sonner:
+        specifier: ^1.5.0
+        version: 1.5.0(react-dom@18.2.0)(react@18.2.0)
     devDependencies:
       '@ducanh2912/next-pwa':
         specifier: ^10.2.7
