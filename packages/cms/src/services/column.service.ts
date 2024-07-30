@@ -8,13 +8,13 @@ import { errorResponse } from "@repo/lib/utils/customError"
 import {
   cmsCollectionColumnInsertValidate,
   cmsCollectionColumnUpdateValidate,
-} from "../cms-validators"
+} from "../validators.cms"
 import type {
   AppResponse,
   CmsCollectionColumn,
   CmsCollectionColumnInsert,
   CmsCollectionColumnUpdate,
-} from "../cms.types"
+} from "../types.cms"
 import columnDao from "../dao/column.dao"
 
 export type CmsDocumentServices = {

@@ -14,7 +14,7 @@ import type {
   CmsCollectionInsert,
   CmsCollectionUpdate,
   FormCmsCollectionInsertValidator,
-} from "./cms.types"
+} from "./types.cms"
 
 const columnOrderValidator = z.array(z.string()).default([])
 
@@ -64,20 +64,20 @@ export const cmsCollectionDocumentUpdateValidator =
     })
     .partial()
 
-export async function cmsCollectionDocumentValidate(
+export function cmsCollectionDocumentValidate(
   data: CmsCollectionDocument
-): Promise<CmsCollectionDocument | CustomError> {
+): CmsCollectionDocument | CustomError {
   return validate(cmsCollectionDocumentValidator)(data)
 }
-export async function cmsCollectionDocumentInsertValidate(
+export function cmsCollectionDocumentInsertValidate(
   data: CmsCollectionDocumentInsert
-): Promise<CmsCollectionDocumentInsert | CustomError> {
+): CmsCollectionDocumentInsert | CustomError {
   return validate(cmsCollectionDocumentInsertValidator)(data)
 }
 
-export async function cmsCollectionDocumentUpdateValidate(
+export function cmsCollectionDocumentUpdateValidate(
   data: CmsCollectionDocumentUpdate
-): Promise<CmsCollectionDocumentUpdate | CustomError> {
+): CmsCollectionDocumentUpdate | CustomError {
   return validate(cmsCollectionDocumentUpdateValidator)(data)
 }
 
@@ -296,19 +296,19 @@ export const cmsCollectionColumnUpdateValidator = z.union([
     .partial(),
 ])
 
-export async function cmsCollectionColumnValidate(
+export function cmsCollectionColumnValidate(
   data: CmsCollectionColumn
-): Promise<CmsCollectionColumn | CustomError> {
+): CmsCollectionColumn | CustomError {
   return validate(cmsCollectionColumnValidator)(data)
 }
-export async function cmsCollectionColumnInsertValidate(
+export function cmsCollectionColumnInsertValidate(
   data: CmsCollectionColumnInsert
-): Promise<CmsCollectionColumnInsert | CustomError> {
+): CmsCollectionColumnInsert | CustomError {
   return validate(cmsCollectionColumnInsertValidator)(data)
 }
-export async function cmsCollectionColumnUpdateValidate(
+export function cmsCollectionColumnUpdateValidate(
   data: CmsCollectionColumnUpdate
-): Promise<CmsCollectionColumnUpdate | CustomError> {
+): CmsCollectionColumnUpdate | CustomError {
   return validate(cmsCollectionColumnUpdateValidator)(data)
 }
 
@@ -334,25 +334,25 @@ export const formCmsCollectionInsertValidator =
     userId: true,
   })
 
-export async function cmsCollectionValidate(
+export function cmsCollectionValidate(
   data: CmsCollection
-): Promise<CmsCollection | CustomError> {
+): CmsCollection | CustomError {
   return validate(cmsCollectionValidator)(data)
 }
-export async function cmsCollectionInsertValidate(
+export function cmsCollectionInsertValidate(
   data: CmsCollectionInsert
-): Promise<CmsCollectionInsert | CustomError> {
+): CmsCollectionInsert | CustomError {
   return validate(cmsCollectionInsertValidator)(data)
 }
-export async function cmsCollectionUpdateValidate(
+export function cmsCollectionUpdateValidate(
   data: CmsCollectionUpdate
-): Promise<CmsCollectionUpdate | CustomError> {
+): CmsCollectionUpdate | CustomError {
   return validate(cmsCollectionUpdateValidator)(data)
 }
 
-export async function formCmsCollectionInsertFormValidate(
+export function formCmsCollectionInsertFormValidate(
   data: FormCmsCollectionInsertValidator
-): Promise<FormCmsCollectionInsertValidator | CustomError> {
+): FormCmsCollectionInsertValidator | CustomError {
   return validate(formCmsCollectionInsertValidator)(data)
 }
 

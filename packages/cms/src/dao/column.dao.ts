@@ -9,7 +9,7 @@ import type {
   CmsCollectionColumn,
   CmsCollectionColumnInsert,
   CmsCollectionColumnUpdate,
-} from "../cms.types"
+} from "../types.cms"
 
 export type CmsCollectionColumnsDao = {
   getByCollectionIdAndFieldId(props?: {

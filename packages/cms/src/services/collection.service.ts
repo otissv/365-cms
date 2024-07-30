@@ -8,14 +8,14 @@ import { errorResponse } from "@repo/lib/utils/customError"
 import {
   cmsCollectionInsertValidate,
   cmsCollectionUpdateValidate,
-} from "../cms-validators"
+} from "../validators.cms"
 import type {
   AppResponse,
   CmsCollection,
   CmsCollectionInsert,
   CmsCollectionUpdate,
   CmsCollectionView,
-} from "../cms.types"
+} from "../types.cms"
 import collectionDao from "../dao/collection.dao"
 
 export type CmsCollectionServices = {

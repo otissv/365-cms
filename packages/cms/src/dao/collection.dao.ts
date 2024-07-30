@@ -10,7 +10,7 @@ import type {
   CmsCollectionInsert,
   CmsCollectionUpdate,
   CmsCollectionView,
-} from "../cms.types"
+} from "../types.cms"
 
 export type CmsCollectionsDao = {
   get(props?: {
@@ -199,91 +199,22 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
       userId,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
       try {
-        const result = await db.transaction(async (trx) => {
-          try {
-            const collections = await trx
-              .withSchema(schema)
-              .insert(
-                {
-                  ...data,
-                  updatedAt: new Date(),
-                  updatedBy: userId,
-                  createdAt: new Date(),
-                  createdBy: userId,
-                },
-                columns
-              )
-              .into("cms_collections")
-
-            await trx
-              .withSchema(schema)
-              .insert([
-                {
-                  columnName: "Title",
-                  collectionId: collections[0].id,
-                  fieldId: "title",
-                  type: "title",
-                  updatedAt: new Date(),
-                  updatedBy: userId,
-                  createdAt: new Date(),
-                  createdBy: userId,
-                  visibility: false,
-                },
-                {
-                  columnName: "Created By",
-                  collectionId: collections[0].id,
-                  fieldId: "createdBy",
-                  type: "info",
-                  visibility: false,
-                  updatedAt: new Date(),
-                  updatedBy: userId,
-                  createdAt: new Date(),
-                  createdBy: userId,
-                },
-                {
-                  columnName: "Created At",
-                  collectionId: collections[0].id,
-                  fieldId: "createdAt",
-                  type: "infoDate",
-                  visibility: false,
-                  updatedAt: new Date(),
-                  updatedBy: userId,
-                  createdAt: new Date(),
-                  createdBy: userId,
-                },
-                {
-                  columnName: "Updated At",
-                  collectionId: collections[0].id,
-                  fieldId: "updatedAt",
-                  type: "info",
-                  visibility: false,
-                  updatedAt: new Date(),
-                  updatedBy: userId,
-                  createdAt: new Date(),
-                  createdBy: userId,
-                },
-                {
-                  columnName: "Updated By",
-                  collectionId: collections[0].id,
-                  fieldId: "updatedBy",
-                  type: "infoDate",
-                  visibility: false,
-                  updatedAt: new Date(),
-                  updatedBy: userId,
-                  createdAt: new Date(),
-                  createdBy: userId,
-                },
-              ])
-              .into("cms_collection_columns")
-            return collections
-          } catch (error) {
-            // biome-ignore lint/complexity/noUselessCatch: <explanation>
-            throw error
-          }
-        })
+        const collections = await db
+          .withSchema(schema)
+          .insert(
+            {
+              ...data,
+              updatedAt: new Date(),
+              updatedBy: userId,
+              createdAt: new Date(),
+              createdBy: userId,
+            },
+            columns
+          )
+          .into("cms_collections")
 
         return {
-          data: result,
+          data: collections,
           error: "",
         }
       } catch (error) {

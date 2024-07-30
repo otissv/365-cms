@@ -1,5 +1,7 @@
 import type { z } from "zod"
 
+import type { ToggleLayoutTypes } from "./ui/toggle-layout"
+
 import type {
   cmsCollectionColumnInsertValidator,
   cmsCollectionColumnUpdateValidator,
@@ -12,7 +14,14 @@ import type {
   cmsCollectionValidator,
   cmsColumnDialogValidator,
   formCmsCollectionInsertValidator,
-} from "./cms-validators"
+} from "./validators.cms"
+
+export type SearchParams = {
+  page?: number
+  limit?: number
+  layout: ToggleLayoutTypes
+  orderBy: [string, "asc" | "desc", "first" | "last"]
+}
 
 export type AppResponse<Data> = {
   data: Data[] | []
@@ -60,25 +69,28 @@ export type CmsCollectionDocumentUpdate = z.infer<
   typeof cmsCollectionDocumentUpdateValidator
 >
 
-export type CmsDocumentsView = CmsCollectionDocument & {
+export type CmsDocumentsView = Omit<CmsCollectionDocument, "data"> & {
   collectionName: CmsCollection["name"]
-  columnOrder: CmsCollection["columnOrder"]
+  columnOrder: string[]
   type: CmsCollection["type"]
   roles: CmsCollection["roles"]
   columns: CmsCollectionColumn[]
+  data: Record<string, any>[]
 }
 
 /* CMS UI */
 
+export type CmsErrorState = Map<string, string>
+
 export type CmsFieldBase<Value> = {
-  collectionId?: string
-  columnName?: string
   className?: string
+  collectionId?: number
+  columnName?: string
   errorMessage?: string
   fieldId: string
   id: string
   isInline?: boolean
-  value: Value
+  options?: Record<string, string>
   validate?: (
     value: Value,
     validation?: Record<string, any>,
@@ -87,9 +99,9 @@ export type CmsFieldBase<Value> = {
     value: Value
     error: string
   }
-
-  onUpdate: <Value>(newValue: Value, errorMessage?: string) => void
   validation?: Record<string, string>
+  value: Value
+  onUpdate: <Value>(newValue: Value, errorMessage?: string) => void
 }
 
 export type CmsField<TElement, Value> = Omit<

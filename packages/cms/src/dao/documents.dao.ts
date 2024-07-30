@@ -13,7 +13,7 @@ import type {
   CmsCollectionDocumentInsert,
   CmsCollectionDocumentUpdate,
   CmsDocumentsView,
-} from "../cms.types"
+} from "../types.cms"
 
 type CmsDocumentsDaoGetReturnType =
   | {
@@ -31,7 +31,7 @@ export type CmsDocumentsDao = {
   get(props: {
     page?: number
     limit?: number
-    where: [keyof CmsCollectionDocument, string, string]
+    where: [string, string, string]
     orderBy: [string, "asc" | "desc", "first" | "last"]
   }): Promise<CmsDocumentsDaoGetReturnType>
   remove(props: {
@@ -68,7 +68,7 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
         const limit = props?.limit || 10
         const offset = (page - 1) * limit
         const where: [any] = props.where as any
-        const orderBy = props.orderBy
+        const orderBy = props.orderBy || ["createdAt", "asc"]
 
         const collection = await db
           .withSchema(schema)
@@ -87,10 +87,10 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
         let order = ""
 
         if (
-          orderBy[0] === "createdBy" ||
-          orderBy[0] === "createdAt" ||
-          orderBy[0] === "updatedBy" ||
-          orderBy[0] === "updatedAt"
+          orderBy?.[0] === "createdBy" ||
+          orderBy?.[0] === "createdAt" ||
+          orderBy?.[0] === "updatedBy" ||
+          orderBy?.[0] === "updatedAt"
         ) {
           order = `cms_documents."${orderBy[0]}" ${orderBy[1]}`
         } else {
@@ -98,16 +98,6 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
         }
 
         const collectionId = collection[0].id
-
-        type Query = {
-          collectionId: CmsCollectionDocument["collectionId"]
-          collectionName: CmsCollection["name"]
-          columnOrder: CmsCollection["columnOrder"]
-          type: CmsCollection["type"]
-          roles: CmsCollection["roles"]
-          columns: CmsCollectionColumn[]
-          data: Record<string, any>[]
-        }
 
         const query: CmsDocumentsView[] = await db
           .with("collection_docs", function () {
@@ -227,17 +217,13 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
             columnOrder: documents.columnOrder || [],
             roles: documents.roles || [],
             columns: documents.columns || [],
-            data: (query[0]?.data || []).map(
-              ({
-                id,
-                data,
-                ...rest
-              }: { id: string; data: Record<string, any>; rest: any[] }) => ({
+            data: (query[0]?.data || []).map(({ id, data, ...rest }) => {
+              return {
                 id,
                 ...data,
                 ...rest,
-              })
-            ),
+              }
+            }),
           },
         ]
 

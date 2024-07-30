@@ -7,8 +7,13 @@
     "./*": ["./src/*.ts", "./src/*.tsx"]
   },
   "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
   "devDependencies": {
     "@repo/config": "workspace:*",
+    "@repo/jest-config": "workspace:*",
     "@repo/lib": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/ui": "workspace:*",
@@ -16,10 +21,15 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@tanstack/react-table": "^8.19.3",
+    "date-fns": "^3.6.0",
     "knex": "^3.1.0",
     "lucide-react": "^0.408.0",
     "next": "^14.2.3",
     "react": "^18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "server-only": "^0.0.1",
     "sonner": "^1.5.0",
     "zod": "^3.23.8"
   }

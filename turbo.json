@@ -43,6 +43,40 @@
     },
     "clean": {
       "cache": false
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": [
+        "BASE_URL",
+        "POSTGRES_DATABASE",
+        "POSTGRES_HOST",
+        "POSTGRES_IDLE_TIMEOUT",
+        "POSTGRES_MAX_CONNECTIONS",
+        "POSTGRES_MAX_LIFETIME",
+        "POSTGRES_PASSWORD",
+        "POSTGRES_PORT",
+        "POSTGRES_USER",
+        "PGADMIN_DEFAULT_EMAIL",
+        "PGADMIN_DEFAULT_PASSWORD"
+      ]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true,
+      "env": [
+        "BASE_URL",
+        "POSTGRES_DATABASE",
+        "POSTGRES_HOST",
+        "POSTGRES_IDLE_TIMEOUT",
+        "POSTGRES_MAX_CONNECTIONS",
+        "POSTGRES_MAX_LIFETIME",
+        "POSTGRES_PASSWORD",
+        "POSTGRES_PORT",
+        "POSTGRES_USER",
+        "PGADMIN_DEFAULT_EMAIL",
+        "PGADMIN_DEFAULT_PASSWORD"
+      ]
     }
   }
 }

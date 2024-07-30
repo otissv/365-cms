@@ -9,9 +9,10 @@ import {
   initialArrayStoreState,
 } from "@repo/ui/useCreateStore"
 
-import type { CollectionState, CollectionsReturnType } from "../cms.types"
+import type { CollectionState, CollectionsReturnType } from "../types.cms"
 
 export type CollectionProviderValue = {
+  cmsPath?: string
   onRename(id: number, name: string): Promise<CollectionsReturnType>
   onDelete: (id: number) => Promise<CollectionsReturnType | undefined>
   onNew: (data: {
@@ -21,6 +22,7 @@ export type CollectionProviderValue = {
 } & ArrayStoreState<CollectionState>
 
 const CollectionContext = React.createContext<CollectionProviderValue>({
+  cmsPath: "",
   onRename: async () => ({
     data: [],
     error: "",
@@ -42,13 +44,8 @@ export function useCollectionContext(): CollectionProviderValue {
 
 export type CollectionProviderProps = {
   children: React.ReactNode
-  onRename: (id: number, name: string) => Promise<CollectionsReturnType>
-  onDelete: (id: number) => Promise<CollectionsReturnType | undefined>
-  onNew: (data: {
-    name: string
-    type: CollectionState["type"]
-  }) => Promise<CollectionsReturnType>
-} & ArrayStoreState<CollectionState>
+} & CollectionProviderValue &
+  ArrayStoreState<CollectionState>
 
 export function CollectionProvider({
   children,

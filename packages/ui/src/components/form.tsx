@@ -8,10 +8,10 @@ export type FormField = {
   id: string
   value: any
   error: string
-  validate: (
-    data: Record<string, any>,
+  validate?: (
+    data: any,
     state: Map<string, FormField>
-  ) => Promise<Record<string, any> | CustomError>
+  ) => Record<string, any> | CustomError
 }
 
 export type FormState = {

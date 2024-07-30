@@ -1,5 +1,6 @@
 {
   "private": true,
+  "name": "365cms",
   "scripts": {
     "dotenvx": "dotenvx",
     "build": "dotenvx run -- turbo build",
@@ -7,22 +8,27 @@
     "type-check": "turbo type-check",
     "clean": "turbo clean",
     "lint": "dotenvx run -- biome check .",
-    "lint:fix": "dotenvx run -- biome check . --write"
+    "lint:fix": "dotenvx run -- biome check . --write",
+    "test": "dotenvx run -- turbo run test",
+    "test:watch": "dotenvx run -- turbo run test:watch"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
+    "@dotenvx/dotenvx": "^1.6.2",
+    "@jest/globals": "^29.7.0",
     "@playwright/test": "^1.45.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.11.24",
+    "jest": "30.0.0-alpha.5",
+    "node-notifier": "^10.0.1",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "ts-jest": "^29.2.3",
+    "ts-node": "^10.9.2",
     "turbo": "^2.0.6"
   },
   "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
-  },
-  "name": "with-tailwind",
-  "dependencies": {
-    "@dotenvx/dotenvx": "^1.6.2"
   }
 }

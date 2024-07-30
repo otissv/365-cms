@@ -21,10 +21,10 @@ import { ToggleSwitch } from "@repo/ui/toggle-switch"
 import {
   cmsCollectionUpdateValidate,
   formCmsCollectionInsertFormValidate,
-} from "../cms-validators"
-import type { CollectionState } from "../cms.types"
-import { CmsButton } from "../components/cms-button"
-import { useCollectionContext } from "./provider.collection"
+} from "../validators.cms"
+import type { CollectionState } from "../types.cms"
+import { CmsButton } from "../ui/cms-button"
+import { useCollectionContext } from "./provider.collections"
 
 export function NewCollectionDialogProvider({
   children,
@@ -36,7 +36,7 @@ export function NewCollectionDialogProvider({
       id: "name",
       value: "",
       error: "",
-      validate: (data, _state): Promise<Record<string, any> | CustomError> => {
+      validate(data, _state) {
         return cmsCollectionUpdateValidate(data)
       },
     },
@@ -44,7 +44,7 @@ export function NewCollectionDialogProvider({
       id: "type",
       value: false,
       error: "",
-      validate: (data, _state): Promise<Record<string, any> | CustomError> => {
+      validate(data, _state) {
         return cmsCollectionUpdateValidate(data)
       },
     },
@@ -71,17 +71,13 @@ export function NewCollectionDialog(): React.JSX.Element {
     const data: {
       name: string
       type: CollectionState["type"]
-      roles: CollectionState["roles"]
     } = {
       name: nameField.value,
       type: typeField.value ? "single" : "multiple",
-      roles: [],
     }
     const error = await formCmsCollectionInsertFormValidate(data)
 
     if (error instanceof CustomError) {
-      console.log(error.entries)
-
       if (error.issues.name) {
         nameField.updateError(error.issues.name)
         console.error(error.issues)
@@ -92,7 +88,14 @@ export function NewCollectionDialog(): React.JSX.Element {
 
     setIsSaving(true)
     const result = await collection.onNew(data)
+
     setIsSaving(false)
+
+    if (result.error) {
+      nameField.updateError(result.error)
+
+      return
+    }
 
     if (!isEmpty(result.data)) {
       const id = result.data[0]?.id
@@ -116,6 +119,7 @@ export function NewCollectionDialog(): React.JSX.Element {
         </CmsButton>
       </SheetTrigger>
       <SheetContent
+        description='Create New Collection dialog'
         onClose={() => {
           setIsOpen(false)
         }}

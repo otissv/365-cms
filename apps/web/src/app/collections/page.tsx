@@ -1,10 +1,10 @@
-import type { CmsCollection } from "@repo/cms/cms.types"
-import type { ToggleLayoutTypes } from "@repo/cms/components/toggle-layout"
+import type { CmsCollection } from "@repo/cms/types.cms"
+import type { ToggleLayoutTypes } from "@repo/cms/ui/toggle-layout"
 import Collections, {
   onDeleteCollectionAction,
   onNewCollectionAction,
   onRenameCollectionAction,
-} from "@repo/cms/ui/collections"
+} from "@repo/cms/collections/collections"
 import { PageHeader } from "@repo/ui/page/page-header"
 import { Toaster } from "@repo/ui/sonner"
 

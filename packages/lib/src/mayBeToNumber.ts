@@ -1,6 +1,5 @@
 export function mayBeToNumber(none = 0) {
   return (value: unknown): number => {
-    console.log(typeof value)
     if (typeof value !== "string" && typeof value !== "number") return none
 
     const n =

@@ -5,14 +5,14 @@ import "server-only"
 import {
   cmsCollectionDocumentInsertValidate,
   cmsCollectionDocumentUpdateValidate,
-} from "../cms-validators"
+} from "../validators.cms"
 import type {
   AppResponse,
   CmsCollectionDocument,
   CmsCollectionDocumentInsert,
   CmsCollectionDocumentUpdate,
   CmsDocumentsView,
-} from "../cms.types"
+} from "../types.cms"
 import documentDao from "../dao/documents.dao"
 
 import { isError } from "@repo/lib/isError"
@@ -35,7 +35,7 @@ export type CmsDocumentServices = {
     props: {
       page?: number
       limit?: number
-      where: [keyof CmsCollectionDocument, string, string]
+      where: [string, string, string]
       orderBy: [string, "asc" | "desc", "first" | "last"]
     },
     meta?: { userId: number }

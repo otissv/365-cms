@@ -1,0 +1,56 @@
+{
+  "artificialDelayMilliseconds": 300,
+  "keepExistingTerminalsOpen": false,
+  "runOnStartup": true,
+  "terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "root",
+          "commands": ["git status"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "a/",
+          "commands": ["cd apps/web"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "p/",
+          "commands": ["cd packages/config"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "p/",
+          "commands": ["cd packages/cms"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "p/",
+          "commands": ["cd packages/lib"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "p/",
+          "commands": ["cd packages/ui"]
+        }
+      ]
+    }
+    
+  ]
+}

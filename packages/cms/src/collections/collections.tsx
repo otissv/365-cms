@@ -1,9 +1,9 @@
 import { maybeNumber } from "@repo/lib/maybeNumber"
 
-import type { AppResponse, CmsCollection } from "../cms.types"
-import { CollectionsList } from "../collections/collections-list"
-import type { ToggleLayoutTypes } from "../components/toggle-layout"
+import type { AppResponse, CmsCollection } from "../types.cms"
 import cmsCollectionServices from "../services/collection.service"
+import type { ToggleLayoutTypes } from "../ui/toggle-layout"
+import { CollectionsList } from "./list.collections"
 
 export function onRenameCollectionAction({
   schema,

@@ -1,6 +1,6 @@
 
 CREATE TABLE t_1.cms_collections (
-    PRIMARY KEY (id),
+    id SERIAL PRIMARY KEY,
     "userId" integer NOT NULL,
     name character varying(256) NOT NULL,
     type character varying(25) NOT NULL,
@@ -14,8 +14,8 @@ CREATE TABLE t_1.cms_collections (
 );
 
 CREATE TABLE t_1.cms_collection_columns (
-    PRIMARY KEY (id),
-    "collectionId" integer NOT NULL,
+    id SERIAL PRIMARY KEY,
+    "collectionId" integer REFERENCES t_1.cms_collections(id),
     "columnName" character varying(100) NOT NULL,
     "fieldId" character varying(15) NOT NULL,
     type character varying(100) NOT NULL,
@@ -35,18 +35,16 @@ CREATE TABLE t_1.cms_collection_columns (
     "updatedBy" integer NOT NULL,
     "fieldOptions" jsonb,
     validation jsonb
-    CONSTRAINT "fk_collection" FOREIGN KEY ("collectionId" ) REFERENCES t_1.cms_collections(id),
 );
 
 
 
 CREATE TABLE t_1.cms_documents (
-    PRIMARY KEY (id),
-    "collectionId" integer,
+    id SERIAL PRIMARY KEY,
+    "collectionId" integer REFERENCES t_1.cms_collections(id),
     "createdBy" integer,
     "createdAt" timestamp with time zone DEFAULT now(),
     "updatedBy" integer,
     "updatedAt" timestamp with time zone DEFAULT now(),
     data jsonb
-    CONSTRAINT "fk_collection" FOREIGN KEY ("collectionId" ) REFERENCES t_1.cms_collections(id),
 );

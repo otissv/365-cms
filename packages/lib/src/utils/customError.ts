@@ -37,14 +37,23 @@ export class CustomError extends Error {
   }
 }
 
-export function errorResponse(error: unknown): {
+export function errorResponse(
+  error: unknown,
+  logger: (...args: any[]) => void = console.error
+): {
   data: never[]
   error: string
 } {
-  if (isDev) console.error(new Error(error as string))
+  if (isDev) logger(new Error(error as string))
+
+  let message = error instanceof Error ? error.message : (error as string)
+
+  if ((error as any).code === "23505") {
+    message = "Duplicate, already exists"
+  }
 
   return {
     data: [],
-    error: error instanceof Error ? error.message : (error as string),
+    error: message,
   }
 }

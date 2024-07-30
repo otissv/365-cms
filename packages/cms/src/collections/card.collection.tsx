@@ -4,8 +4,8 @@ import { FileText, MoreVertical, Table } from "lucide-react"
 import Link from "next/link"
 import * as React from "react"
 
-import { cmsCollectionUpdateValidate } from "@repo/cms/cms-validators"
-import type { CollectionState } from "@repo/cms/cms.types"
+import { cmsCollectionUpdateValidate } from "../validators.cms"
+import type { CollectionState } from "../types.cms"
 import type { CustomError } from "@repo/lib/customError"
 import { Button } from "@repo/ui/button"
 import {
@@ -35,7 +35,7 @@ import {
 } from "@repo/ui/sheet"
 import { TypographyParagraph } from "@repo/ui/typography/paragraph.typography"
 
-import { useCollectionContext } from "./provider.collection"
+import { useCollectionContext } from "./provider.collections"
 
 export function CollectionCardRenameFormProvider({
   name,
@@ -84,10 +84,13 @@ export function CollectionCard({
     itemCount = `${documentCount} item`
   }
 
+  const { cmsPath } = useCollectionContext()
+
   return (
     <Link
+      data-testid={`card-collection-${name}`}
       key={id}
-      href={`/cms/collections/${name}`}
+      href={`${cmsPath}/collections/${name}`}
       className={cn(
         "h-28 w-full lg:max-w-[1440px] transition-all",
         isGridLayout && "lg:max-w-96"
@@ -121,7 +124,10 @@ export function CollectionCardTitle({
   name,
 }: CollectionCardTitleProps): React.JSX.Element {
   return (
-    <CardTitle className='flex items-center'>
+    <CardTitle
+      data-testid={`collection-card-title-${name}`}
+      className='flex items-center'
+    >
       <span className='truncate mr-4'>{name}</span>
       <CollectionActionMenu id={id} name={name} />
     </CardTitle>
@@ -221,6 +227,7 @@ export function CollectionActionMenu({
             </Button>
           </SheetTrigger>
           <SheetContent
+            description='Rename collection dialog'
             onClose={() => {
               setRenameDialogIsOpen(false)
               setDropdownMenuIsOpen(!dropdownMenuIsOpen)
@@ -274,6 +281,7 @@ export function CollectionActionMenu({
             </Button>
           </SheetTrigger>
           <SheetContent
+            description='Delete confirmation dialog'
             className='w-[440px] max-w-[80%] min-w-[300px]'
             onClose={() => {
               setDeleteDialogIsOpen(false)

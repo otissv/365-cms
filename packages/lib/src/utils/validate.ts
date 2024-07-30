@@ -9,8 +9,8 @@ export function validate<Validator extends z.ZodTypeAny>(
   message = "Invalid data",
   code = 422,
   type?: "input" | "system"
-): <Data>(data: Data) => Data | CustomError {
-  return <Data>(data: Data) => {
+): <Data extends Record<string, any>>(data: Data) => Data | CustomError {
+  return <Data extends Record<string, any>>(data: Data) => {
     try {
       const result = validator.parse(data)
       if (isEmpty(result)) throw "Not found"

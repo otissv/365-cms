@@ -1,10 +1,12 @@
 "use client"
 
 import * as SheetPrimitive from "@radix-ui/react-dialog"
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
 import { type VariantProps, cva } from "class-variance-authority"
 import { X } from "lucide-react"
 import * as React from "react"
 
+import { DialogDescription } from "@radix-ui/react-dialog"
 import { cn } from "../lib/utils"
 
 const Sheet = SheetPrimitive.Root
@@ -181,6 +183,7 @@ export interface DialogContentProps
   overlayClassName?: string
   closeIcon?: React.ReactNode
   onClose?: () => void
+  description: string
 }
 
 const SheetContent = React.forwardRef<
@@ -196,19 +199,27 @@ const SheetContent = React.forwardRef<
       overlayClassName,
       closeIcon,
       onClose,
+      description,
       ...props
     },
     ref
   ) => {
     return (
-      <SheetPortal position={position}>
+      <SheetPortal
+        position={position}
+        aria-describedby='Create New Collection Content'
+      >
         <SheetOverlay className={overlayClassName} onClick={onClose} />
         <SheetPrimitive.Content
           ref={ref}
           className={cn(sheetVariants({ position, size }), className)}
           onClick={(e: React.MouseEvent<HTMLDivElement>) => e.preventDefault()}
           {...props}
+          aria-describedby='Create New Collection Content'
         >
+          <DialogDescription>
+            <VisuallyHidden.Root>{description}</VisuallyHidden.Root>
+          </DialogDescription>
           {children}
           {onClose && (
             <SheetClose

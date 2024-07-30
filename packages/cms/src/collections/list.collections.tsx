@@ -1,21 +1,20 @@
 "use client"
 
+import type * as React from "react"
+
 import { cn } from "@repo/ui/cn"
 import { Input } from "@repo/ui/input"
 import { Pagination } from "@repo/ui/page/pagination"
-import { type ArrayStoreState, useArrayStore } from "@repo/ui/useCreateStore"
 import { notify } from "@repo/ui/sonner"
+import { type ArrayStoreState, useArrayStore } from "@repo/ui/useCreateStore"
 
 import type {
   CmsCollection,
   CollectionState,
   CollectionsReturnType,
-} from "../cms.types"
-import { CmsToolbar } from "../components/cms-button"
-import {
-  ToggleLayout,
-  type ToggleLayoutTypes,
-} from "../components/toggle-layout"
+} from "../types.cms"
+import { CmsToolbar } from "../ui/cms-button"
+import { ToggleLayout, type ToggleLayoutTypes } from "../ui/toggle-layout"
 import {
   CollectionCard,
   CollectionCardRenameFormProvider,
@@ -23,15 +22,15 @@ import {
 import {
   NewCollectionDialog,
   NewCollectionDialogProvider,
-} from "./new-collection-dialog"
+} from "./new-collection.collections"
 import {
   CollectionProvider,
   type CollectionProviderProps,
-} from "./provider.collection"
-import type * as React from "react"
+} from "./provider.collections"
 
 export interface CollectionsListProps
   extends React.HTMLAttributes<HTMLDivElement> {
+  cmsPath?: string
   page: number
   limit: number
   layout: ToggleLayoutTypes
@@ -44,6 +43,7 @@ export interface CollectionsListProps
 }
 
 export function CollectionsList({
+  cmsPath,
   layout,
   data,
   totalPages,
@@ -57,8 +57,10 @@ export function CollectionsList({
 }: CollectionsListProps): React.JSX.Element {
   const isGridLayout: boolean = layout === "grid"
 
+  const rootPath = cmsPath ? `${cmsPath}/` : ""
+
   const state: ArrayStoreState<CollectionState> =
-    useArrayStore<CollectionState>(data as any)
+    useArrayStore<CollectionState>(data as any, "id")
 
   const handleOnDelete: (
     id: any
@@ -80,9 +82,10 @@ export function CollectionsList({
       onRename={onRenameCollection}
       onDelete={handleOnDelete}
       onNew={onNewCollection}
+      cmsPath={rootPath}
       {...state}
     >
-      <div className={cn("space-y-4", className)}>
+      <div className={cn("space-y-4 w-full", className)}>
         <CmsToolbar>
           <NewCollectionDialogProvider>
             <NewCollectionDialog />
@@ -95,7 +98,7 @@ export function CollectionsList({
               page,
               limit,
             }}
-            path='/cms/collections'
+            path={`${rootPath}/collections`}
           />
           sort Az, Za, Date, owner,
           <Input

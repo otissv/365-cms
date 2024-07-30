@@ -30,9 +30,10 @@
   "ts-node": {
     "transpileOnly": true,
     "files": true,
+
     "compilerOptions": {
-      "module": "node16",
-      "moduleResolution": "NodeNext"
+      "module": "ESNext",
+      "moduleResolution": "Bundler"
     }
   }
 }

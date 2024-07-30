@@ -1,8 +1,10 @@
 import "./globals.css"
 import "@repo/ui/styles.css"
 import type { Metadata } from "next"
+import { cn } from "@repo/ui/cn"
 
 import fonts from "../fonts"
+import { ThemeProvider } from "@repo/ui/theme-provider"
 
 export const metadata: Metadata = {
   title: "Create Turborepo",
@@ -15,8 +17,17 @@ export default function RootLayout({
   children: React.ReactNode
 }): JSX.Element {
   return (
-    <html lang='en'>
-      <body className={fonts.text.className}>{children}</body>
+    <html lang='en' className='scroll-smooth antialiased'>
+      <body className={cn(fonts.text.className, "flex min-h-screen flex-col")}>
+        <ThemeProvider
+          enableSystem
+          attribute='class'
+          defaultTheme='system'
+          disableTransitionOnChange
+        >
+          <main className='grow p-10'>{children}</main>
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
