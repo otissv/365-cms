@@ -8,8 +8,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "test": "jest --detectOpenHandles",
+    "test:watch": "jest --watch --detectOpenHandles"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",

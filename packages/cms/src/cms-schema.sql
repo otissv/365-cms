@@ -1,8 +1,8 @@
 
-CREATE TABLE t_1.cms_collections (
+CREATE TABLE test.cms_collections (
     id SERIAL PRIMARY KEY,
     "userId" integer NOT NULL,
-    name character varying(256) NOT NULL,
+    name character varying(256) NOT NULL UNIQUE,
     type character varying(25) NOT NULL,
     "createdBy" integer NOT NULL,
     "createdAt" timestamp with time zone NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE t_1.cms_collections (
     "columnOrder" character varying(255)[]
 );
 
-CREATE TABLE t_1.cms_collection_columns (
+CREATE TABLE test.cms_collection_columns (
     id SERIAL PRIMARY KEY,
     "collectionId" integer REFERENCES t_1.cms_collections(id),
     "columnName" character varying(100) NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE t_1.cms_collection_columns (
 
 
 
-CREATE TABLE t_1.cms_documents (
+CREATE TABLE test.cms_documents (
     id SERIAL PRIMARY KEY,
     "collectionId" integer REFERENCES t_1.cms_collections(id),
     "createdBy" integer,

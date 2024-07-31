@@ -26,7 +26,7 @@ export type CmsCollectionsDao = {
     columns?: Record<string, string>
   }): Promise<AppResponse<CmsCollectionView>>
   remove(props: {
-    id: number
+    where: [string, string, any]
     columns?: string[]
   }): Promise<AppResponse<Partial<CmsCollection>>>
   insert(props: {
@@ -173,15 +173,18 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
     },
 
     async remove({
-      id,
       columns = ["id"],
+      where,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
       try {
+        if (isEmpty(where)) {
+          throw new Error("remove requires a where tuple argument")
+        }
         //TODO: delete columns and documents
         const result = await db
           .withSchema(schema)
           .from("cms_collections")
-          .where("cms_collections.id", "=", id)
+          .where(...where)
           .del(columns)
 
         return {
