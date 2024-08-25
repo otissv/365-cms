@@ -4,7 +4,11 @@
   "sideEffects": ["**/*.css"],
   "files": ["dist"],
   "exports": {
-    "./*": ["./src/*.ts", "./src/*.tsx"]
+    "./*": ["./src/*.ts", "./src/*.tsx"],
+    "./actions": ["./src/*.ts", "./src/*.tsx"],
+    "./dao": ["./src/*.ts", "./src/*.tsx"],
+    "./schema": ["./src/*.ts", "./src/*.tsx"],
+    "./services": ["./src/*.ts", "./src/*.tsx"]
   },
   "license": "MIT",
   "scripts": {
@@ -12,6 +16,7 @@
     "test:watch": "jest --watch --detectOpenHandles"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@repo/config": "workspace:*",
     "@repo/jest-config": "workspace:*",
     "@repo/lib": "workspace:*",

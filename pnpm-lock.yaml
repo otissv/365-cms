@@ -53,6 +53,9 @@ importers:
       '@repo/cms':
         specifier: workspace:*
         version: link:../../packages/cms
+      '@repo/cms-ui':
+        specifier: workspace:*
+        version: link:../../packages/cms-ui
       '@repo/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -171,6 +174,67 @@ importers:
       knex:
         specifier: ^3.1.0
         version: 3.1.0(pg@8.12.0)
+      lucide-react:
+        specifier: ^0.408.0
+        version: 0.408.0(react@18.2.0)
+      next:
+        specifier: ^14.2.3
+        version: 14.2.3(@babel/core@7.24.8)(@playwright/test@1.45.1)(react-dom@18.2.0)(react@18.2.0)
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dnd:
+        specifier: ^16.0.1
+        version: 16.0.1(@types/node@20.11.24)(@types/react@18.2.61)(react@18.2.0)
+      react-dnd-html5-backend:
+        specifier: ^16.0.1
+        version: 16.0.1
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      sonner:
+        specifier: ^1.5.0
+        version: 1.5.0(react-dom@18.2.0)(react@18.2.0)
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+    devDependencies:
+      '@faker-js/faker':
+        specifier: ^8.4.1
+        version: 8.4.1
+      '@repo/config':
+        specifier: workspace:*
+        version: link:../config
+      '@repo/jest-config':
+        specifier: workspace:*
+        version: link:../../config/config-jest
+      '@repo/lib':
+        specifier: workspace:*
+        version: link:../lib
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../config/config-typescript
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../ui
+      '@types/react':
+        specifier: ^18.2.61
+        version: 18.2.61
+      typescript:
+        specifier: ^5.3.3
+        version: 5.4.5
+
+  packages/cms-ui:
+    dependencies:
+      '@repo/cms':
+        specifier: workspace:*
+        version: link:../cms
+      '@tanstack/react-table':
+        specifier: ^8.19.3
+        version: 8.19.3(react-dom@18.2.0)(react@18.2.0)
+      date-fns:
+        specifier: ^3.6.0
+        version: 3.6.0
       lucide-react:
         specifier: ^0.408.0
         version: 0.408.0(react@18.2.0)
@@ -1876,6 +1940,11 @@ packages:
       tslib: 2.6.3
     dev: true
     optional: true
+
+  /@faker-js/faker@8.4.1:
+    resolution: {integrity: sha512-XQ3cU+Q8Uqmrbf2e0cIC/QN43sTBSC8KF12u29Mb47tWrt2hAgBXSgpZMj4Ao8Uk0iJcU99QsOCaIL8934obCg==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
+    dev: true
 
   /@floating-ui/core@1.6.4:
     resolution: {integrity: sha512-a4IowK4QkXl4SCWTGUR0INAfEOX3wtsYw3rKK5InQEHMGObkR8Xk44qYQD9P4r6HHw0iIfK6GUKECmY8sTkqRA==}

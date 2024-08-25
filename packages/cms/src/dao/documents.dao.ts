@@ -7,10 +7,9 @@ import { errorResponse } from "@repo/lib/utils/customError"
 
 import type {
   AppResponse,
-  CmsCollection,
-  CmsCollectionColumn,
   CmsCollectionDocument,
   CmsCollectionDocumentInsert,
+  CmsCollectionDocumentTableColumn,
   CmsCollectionDocumentUpdate,
   CmsDocumentsView,
 } from "../types.cms"
@@ -27,16 +26,33 @@ type CmsDocumentsDaoGetReturnType =
       totalPages: number
     }
 
+type CmsDocumentsDaoRemoveWhereEquals = [
+  CmsCollectionDocumentTableColumn<keyof CmsCollectionDocument>,
+  string,
+  any,
+]
+
+type CmsDocumentsDaoRemoveWhereAndOr = (
+  | CmsDocumentsDaoRemoveWhereEquals
+  | "AND"
+  | "OR"
+)[]
+
+export type CmsDocumentsDaoRemoveWhere =
+  | CmsDocumentsDaoRemoveWhereEquals
+  | CmsDocumentsDaoRemoveWhereAndOr
+
 export type CmsDocumentsDao = {
   get(props: {
     page?: number
     limit?: number
-    where: [string, string, string]
-    orderBy: [string, "asc" | "desc", "first" | "last"]
+    /** [column, direction, nulls] */
+    orderBy?: [string, "asc" | "desc", "first" | "last"]
+    collectionName: string
   }): Promise<CmsDocumentsDaoGetReturnType>
   remove(props: {
-    id: number | number[]
-    columns?: string[]
+    where: CmsDocumentsDaoRemoveWhere
+    returning?: (keyof CmsCollectionDocument)[]
   }): Promise<
     AppResponse<
       Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
@@ -44,37 +60,48 @@ export type CmsDocumentsDao = {
   >
   insert(props: {
     data: CmsCollectionDocumentInsert
-    id?: number
-    columns?: string[]
+    returning?: (keyof CmsCollectionDocument)[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
   update(props: {
-    data: CmsCollectionDocumentUpdate
-    id?: number
-    columns?: string[]
+    where: [
+      CmsCollectionDocumentTableColumn<keyof CmsCollectionDocument>,
+      string,
+      any,
+    ]
+    data: CmsCollectionDocumentUpdate["data"]
+    returning?: (keyof CmsCollectionDocument)[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
 }
 
 function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
-  if (!schema) throw new Error("Must provide a schema")
+  if (!schema)
+    throw new Error("Must provide a schema for cmsCollectionDocumentsDao")
 
   const db = getConnection()
 
   const methods: CmsDocumentsDao = {
     async get(props): Promise<CmsDocumentsDaoGetReturnType> {
       try {
+        if (!props?.collectionName) {
+          return {
+            data: [],
+            error: "",
+            totalPages: 0,
+          }
+        }
+
         const page = props?.page || 1
         const limit = props?.limit || 10
         const offset = (page - 1) * limit
-        const where: [any] = props.where as any
-        const orderBy = props.orderBy || ["createdAt", "asc"]
+        const orderBy = props?.orderBy || []
 
         const collection = await db
           .withSchema(schema)
           .select("id")
           .from("cms_collections")
-          .where(...where)
+          .where("cms_collections.name", "=", props?.collectionName)
 
         if (isEmpty(collection[0])) {
           return {
@@ -84,22 +111,38 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
           }
         }
 
-        let order = ""
-
-        if (
-          orderBy?.[0] === "createdBy" ||
-          orderBy?.[0] === "createdAt" ||
-          orderBy?.[0] === "updatedBy" ||
-          orderBy?.[0] === "updatedAt"
-        ) {
-          order = `cms_documents."${orderBy[0]}" ${orderBy[1]}`
-        } else {
-          order = `(data->>'${orderBy[0]}')::text ${orderBy[1]}`
-        }
+        const order = `cms_documents."${orderBy[0] || "id"}" ${orderBy[1] || "asc"} NULLS ${orderBy[2] || "last"}`
 
         const collectionId = collection[0].id
 
-        const query: CmsDocumentsView[] = await db
+        const documents = await db
+          .raw(
+            `
+                SELECT
+                json_agg(
+                      json_build_object(
+                          'id', cms_documents.id,
+                          'collectionId', cms_documents."collectionId",
+                          'data', cms_documents.data,
+                          'createdBy', cms_documents."createdBy",
+                          'createdAt', cms_documents."createdAt",
+                          'updatedBy', cms_documents."updatedBy",
+                          'updatedAt', cms_documents."updatedAt"
+                      )
+                  ) as data
+                FROM (
+                    SELECT *
+                      FROM ${schema}.cms_documents
+                      WHERE cms_documents."collectionId" = ${collectionId}
+                      ORDER BY ${order}
+                      LIMIT ${limit}
+                      OFFSET ${offset}
+                  ) as cms_documents
+      `
+          )
+          .then(({ rows }) => rows[0].data)
+
+        const query = await db
           .with("collection_docs", function () {
             // @ts-ignore
             this.withSchema(schema)
@@ -145,7 +188,6 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
                           'enableSort', cms_collection_columns."enableSort",
                           'enableHide', cms_collection_columns."enableHide",
                           'enableFilter', cms_collection_columns."enableFilter",
-                          'filter', cms_collection_columns."filter",
                           'sortBy', cms_collection_columns."sortBy",
                           'visibility', cms_collection_columns."visibility",
                           'index', cms_collection_columns."index"
@@ -156,32 +198,6 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
               .groupBy("cms_collection_columns.collectionId")
               .where("cms_collection_columns.collectionId", "=", collectionId)
           })
-          .with("collection_data", function () {
-            // @ts-ignore
-            this.withSchema(schema)
-              .from("cms_documents")
-              .select(
-                "collectionId",
-
-                db.raw(`
-                      json_agg(
-                          json_build_object(
-                              'id', cms_documents.id,
-                              'data', cms_documents.data,
-                              'createdBy', cms_documents."createdBy",
-                              'createdAt', cms_documents."createdAt",
-                              'updatedBy', cms_documents."updatedBy",
-                              'updatedAt', cms_documents."updatedAt"
-                          )
-                          ORDER BY ${order}
-                      ) AS data
-                  `)
-              )
-              .where("cms_documents.collectionId", "=", collectionId)
-              .groupBy("collectionId")
-              .limit(limit)
-              .offset(offset)
-          })
           .select([
             "cd.collectionId",
             "cd.collectionName",
@@ -189,7 +205,6 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
             "cd.type",
             "cd.roles",
             "cc.columns",
-            "cdta.data",
           ])
           .from(db.raw('"collection_docs" as cd'))
           .leftJoin(
@@ -197,39 +212,45 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
             "cd.collectionId",
             "cc.collectionId"
           )
-          .leftJoin(
-            db.raw('"collection_data" as cdta'),
-            "cd.collectionId",
-            "cdta.collectionId"
-          )
 
-        const totalPages = await db
+        const totalDocs = await db
           .withSchema(schema)
           .count("collectionId")
           .from("cms_documents")
           .where("collectionId", "=", collectionId)
 
-        const documents = query[0] || {}
+        const docCollection = query[0]
 
         const data: CmsDocumentsView[] = [
           {
-            ...documents,
-            columnOrder: documents.columnOrder || [],
-            roles: documents.roles || [],
-            columns: documents.columns || [],
-            data: (query[0]?.data || []).map(({ id, data, ...rest }) => {
-              return {
-                id,
-                ...data,
-                ...rest,
+            ...docCollection,
+            columnOrder: docCollection.columnOrder || [],
+            roles: docCollection.roles || [],
+            columns: docCollection.columns || [],
+            data: (documents || []).map(
+              (doc: {
+                id: number
+                collectionId: number
+                data: Record<string, any>
+                createdBy: string
+                createdAt: string
+                updatedBy: string
+                updatedAt: string
+              }) => {
+                const { data, ...rest } = doc
+                return { ...data, ...rest }
               }
-            }),
+            ),
           },
         ]
 
+        const totalPages = Math.ceil(
+          mayBeToNumber()(totalDocs[0]?.count) / limit
+        )
+
         return {
           data,
-          totalPages: mayBeToNumber()(totalPages[0]?.count) || 0,
+          totalPages,
           error: "",
         }
       } catch (error) {
@@ -241,38 +262,41 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
     },
 
     async remove({
-      id,
-      columns = ["id"],
+      where,
+      returning = ["id"],
     }): Promise<
       AppResponse<
         Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
       >
     > {
       try {
-        let result: (
-          | Partial<CmsCollectionDocument>
-          | Partial<CmsCollectionDocument>[]
-        )[]
+        if (isEmpty(where)) {
+          return {
+            data: [],
+            error:
+              "cmsCollectionDocumentsDao.remove collection requires a 'where' tuple prop",
+          }
+        }
 
-        if (Array.isArray(id)) {
-          const ids = id as [number]
-
-          result = await Promise.all(
-            ids.map((i) =>
-              db
-                .withSchema(schema)
-                .from("cms_documents")
-                .where("cms_documents.id", "=", i)
-                .del(columns)
-            )
-          )
-        } else {
-          result = (await db
+        if (Array.isArray(where[0])) {
+          const whereRaw = db.raw(`${where.flat().join(" ")}`)
+          const result = (await db
             .withSchema(schema)
             .from("cms_documents")
-            .where("cms_documents.id", "=", id)
-            .del(columns)) as Partial<CmsCollectionDocument>[]
+            .whereRaw(whereRaw)
+            .del(returning)) as Partial<CmsCollectionDocument>[]
+
+          return {
+            data: result,
+            error: "",
+          }
         }
+
+        const result = (await db
+          .withSchema(schema)
+          .from("cms_documents")
+          .where(...(where as CmsDocumentsDaoRemoveWhereEquals))
+          .del(returning)) as Partial<CmsCollectionDocument>[]
 
         return {
           data: result,
@@ -285,10 +309,32 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
 
     async insert({
       data: { collectionId, data },
-      columns = ["id"],
+      returning = ["id"],
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
       try {
+        if (isEmpty(data)) {
+          return {
+            data: [],
+            error:
+              "cmsCollectionDocumentsDao.insert collection requires a 'data' object prop",
+          }
+        }
+
+        if (isEmpty(collectionId)) {
+          return {
+            data: [],
+            error:
+              "cmsCollectionDocumentsDao.insert collection requires a collectionId prop",
+          }
+        }
+
+        if (isEmpty(userId)) {
+          throw new Error(
+            "cmsCollectionDocumentsDao.insert collection requires a 'userId'"
+          )
+        }
+
         const result = await db
           .withSchema(schema)
           .from("cms_documents")
@@ -301,7 +347,7 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
               createdAt: new Date(),
               createdBy: userId,
             })),
-            columns
+            returning
           )
         return {
           data: result,
@@ -314,28 +360,47 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
 
     async update({
       data,
-      id,
-      columns = ["id"],
+      where,
+      returning = ["id"],
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
       try {
+        if (isEmpty(data)) {
+          return {
+            data: [],
+            error:
+              "cmsCollectionDocumentsDao.update collection requires a 'data' object prop",
+          }
+        }
+
+        if (isEmpty(where)) {
+          throw new Error(
+            "cmsCollectionDocumentsDao.update collection requires a 'where' tuple prop"
+          )
+        }
+
+        if (isEmpty(userId)) {
+          throw new Error(
+            "cmsCollectionDocumentsDao.update collection requires a 'userId'"
+          )
+        }
         const documents = await db
           .withSchema(schema)
           .from("cms_documents")
           .select("data")
-          .where("cms_documents.id" as any, "=", id as any)
+          .where(...where)
 
         const result = await db
           .withSchema(schema)
           .from("cms_documents")
-          .where("cms_documents.id" as any, "=", id as any)
+          .where(...where)
           .update(
             {
-              data: { ...documents[0]?.data, ...data.data },
+              data: { ...documents[0]?.data, ...data },
               updatedAt: new Date(),
               updatedBy: userId,
             },
-            columns
+            returning
           )
 
         return {

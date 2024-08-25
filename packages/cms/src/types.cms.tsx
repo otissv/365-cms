@@ -1,7 +1,5 @@
 import type { z } from "zod"
 
-import type { ToggleLayoutTypes } from "./ui/toggle-layout"
-
 import type {
   cmsCollectionColumnInsertValidator,
   cmsCollectionColumnUpdateValidator,
@@ -16,17 +14,28 @@ import type {
   formCmsCollectionInsertValidator,
 } from "./validators.cms"
 
+export type ToggleLayoutTypes = "grid" | "list"
+
 export type SearchParams = {
   page?: number
   limit?: number
-  layout: ToggleLayoutTypes
-  orderBy: [string, "asc" | "desc", "first" | "last"]
+  layout?: ToggleLayoutTypes
+  orderBy?: [string, "asc" | "desc", "first" | "last"]
 }
 
 export type AppResponse<Data> = {
   data: Data[] | []
   error: string
 }
+
+export type CmsCollectionTableColumn<T extends keyof CmsCollection> =
+  `cms_collections.${T}`
+export type CmsCollectionColumnTableColumn<
+  T extends keyof CmsCollectionColumn,
+> = `cms_collection_columns.${T}`
+export type CmsCollectionDocumentTableColumn<
+  T extends keyof CmsCollectionDocument,
+> = `cms_documents.${T}`
 
 export type CollectionState = Omit<CmsCollection, "columnOrder" | "userId">
 export type CollectionsReturnType = AppResponse<Partial<CollectionState>>
@@ -64,7 +73,6 @@ export type CmsCollectionDocument = z.infer<
 export type CmsCollectionDocumentInsert = z.infer<
   typeof cmsCollectionDocumentInsertValidator
 >
-
 export type CmsCollectionDocumentUpdate = z.infer<
   typeof cmsCollectionDocumentUpdateValidator
 >

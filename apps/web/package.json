@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@repo/cms": "workspace:*",
+    "@repo/cms-ui": "workspace:*",
     "@repo/config": "workspace:*",
     "@repo/lib": "workspace:*",
     "@repo/ui": "workspace:*",

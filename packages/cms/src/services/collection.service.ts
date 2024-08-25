@@ -2,7 +2,6 @@
 
 import "server-only"
 
-import { isNumber } from "@repo/lib/isNumber"
 import { errorResponse } from "@repo/lib/utils/customError"
 
 import {
@@ -13,43 +12,46 @@ import type {
   AppResponse,
   CmsCollection,
   CmsCollectionInsert,
+  CmsCollectionTableColumn,
   CmsCollectionUpdate,
   CmsCollectionView,
 } from "../types.cms"
 import collectionDao from "../dao/collection.dao"
 
-export type CmsCollectionServices = {
+export type CmsCollectionService = {
   get(props?: {
     page?: number
     limit?: number
-    columns?: Record<string, string>
+    select?: Record<string, CmsCollectionTableColumn<keyof CmsCollection>>
+    orderBy?: [string, "asc" | "desc", "first" | "last"]
   }): Promise<
     AppResponse<CmsCollection> & {
       totalPages: number
     }
   >
   getAll(props?: {
-    columns?: Record<string, string>
+    select?: Record<string, CmsCollectionTableColumn<keyof CmsCollection>>
   }): Promise<AppResponse<CmsCollectionView>>
+
+  remove(props: {
+    where: [CmsCollectionTableColumn<keyof CmsCollection>, string, any]
+    returning?: (keyof CmsCollection)[]
+  }): Promise<AppResponse<Partial<CmsCollection>>>
   insert(props: {
     data: CmsCollectionInsert
-    columns?: string[]
+    returning?: (keyof CmsCollection)[]
     userId: CmsCollection["userId"]
   }): Promise<AppResponse<Partial<CmsCollection>>>
-  remove(props: {
-    id: number
-    columns?: (keyof CmsCollection)[]
-  }): Promise<AppResponse<Partial<CmsCollection>>>
   update(props: {
-    id: number
+    where: [CmsCollectionTableColumn<keyof CmsCollection>, string, any]
     data: CmsCollectionUpdate
-    columns?: (keyof CmsCollection)[]
+    returning?: (keyof CmsCollection)[]
     userId: CmsCollection["userId"]
   }): Promise<AppResponse<Partial<CmsCollection>>>
 }
 
-function cmsCollectionServices(schema: string): CmsCollectionServices {
-  if (!schema) throw new Error("Must provide a schema")
+function cmsCollectionService(schema: string): CmsCollectionService {
+  if (!schema) throw new Error("Must provide a schema for cmsCollectionService")
 
   return {
     async get(props): Promise<
@@ -64,9 +66,13 @@ function cmsCollectionServices(schema: string): CmsCollectionServices {
       return collectionDao(schema).getAll(props)
     },
 
+    async remove(props): Promise<AppResponse<Partial<CmsCollection>>> {
+      return collectionDao(schema).remove(props)
+    },
+
     async insert({
       data,
-      columns,
+      returning,
       userId,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
       try {
@@ -80,7 +86,7 @@ function cmsCollectionServices(schema: string): CmsCollectionServices {
 
         const result = await collectionDao(schema).insert({
           data,
-          columns,
+          returning,
           userId,
         })
 
@@ -90,29 +96,21 @@ function cmsCollectionServices(schema: string): CmsCollectionServices {
       }
     },
 
-    async remove(props): Promise<AppResponse<Partial<CmsCollection>>> {
-      return collectionDao(schema).remove(props)
-    },
-
     async update({
-      id,
+      where,
       data,
-      columns = ["id"],
+      returning = ["id"],
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionUpdate>>> {
       try {
-        if (!isNumber(id)) {
-          throw new Error("ID must be a number")
-        }
-
         const error = await cmsCollectionUpdateValidate(data)
 
         if (error instanceof Error) throw error
 
         const result = await collectionDao(schema).update({
-          id,
+          where,
           data,
-          columns,
+          returning,
           userId,
         })
 
@@ -124,4 +122,4 @@ function cmsCollectionServices(schema: string): CmsCollectionServices {
   }
 }
 
-export default cmsCollectionServices
+export default cmsCollectionService

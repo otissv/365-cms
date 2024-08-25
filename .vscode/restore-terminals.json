@@ -6,14 +6,6 @@
     {
       "splitTerminals": [
         {
-          "name": "root",
-          "commands": ["git status"]
-        }
-      ]
-    },
-    {
-      "splitTerminals": [
-        {
           "name": "a/",
           "commands": ["cd apps/web"]
         }
@@ -39,6 +31,14 @@
       "splitTerminals": [
         {
           "name": "p/",
+          "commands": ["cd packages/cms-ui"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "p/",
           "commands": ["cd packages/lib"]
         }
       ]
@@ -50,7 +50,14 @@
           "commands": ["cd packages/ui"]
         }
       ]
-    }
-    
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "root",
+          "commands": ["git status"]
+        }
+      ]
+    }    
   ]
 }

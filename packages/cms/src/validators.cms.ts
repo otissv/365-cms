@@ -1,7 +1,7 @@
 import { z } from "zod"
 
-import type { CustomError } from "@repo/lib/customError"
-import { validate } from "@repo/lib/validate"
+import type { CustomError } from "@repo/lib/utils/customError"
+import { validate } from "@repo/lib/utils/validate"
 
 import type {
   CmsCollection,
@@ -59,8 +59,11 @@ export const cmsCollectionDocumentUpdateValidator =
   cmsCollectionDocumentValidator
     .omit({
       id: true,
+      createdAt: true,
+      createdBy: true,
       updatedAt: true,
       updatedBy: true,
+      collectionId: true,
     })
     .partial()
 
@@ -109,7 +112,6 @@ export const cmsCollectionColumnDefaultValidator = z.object({
   enableSort: z.boolean().optional(),
   enableHide: z.boolean().optional(),
   enableFilter: z.boolean().optional(),
-  filter: z.union([z.string(), z.number(), z.boolean()]).optional(),
   sortBy: z.enum(["asc", "desc"]).optional().default("asc").optional(),
   visibility: z.boolean().optional().default(true).optional(),
   index: z
@@ -246,7 +248,6 @@ export const cmsCollectionColumnInsertValidator = z.union([
   cmsCollectionRequiredColumnValidator
     .omit({
       id: true,
-      fieldId: true,
     })
     .extend({
       columnOrder: columnOrderValidator,
@@ -254,7 +255,6 @@ export const cmsCollectionColumnInsertValidator = z.union([
   cmsCollectionTextColumnValidator
     .omit({
       id: true,
-      fieldId: true,
     })
     .extend({
       columnOrder: columnOrderValidator,
@@ -262,7 +262,6 @@ export const cmsCollectionColumnInsertValidator = z.union([
   cmsCollectionNumberColumnValidator
     .omit({
       id: true,
-      fieldId: true,
     })
     .extend({
       columnOrder: columnOrderValidator,
@@ -272,6 +271,7 @@ export const cmsCollectionColumnUpdateValidator = z.union([
   cmsCollectionRequiredColumnValidator
     .omit({
       id: true,
+      collectionId: true,
       fieldId: true,
       updatedAt: true,
       updatedBy: true,
@@ -280,6 +280,7 @@ export const cmsCollectionColumnUpdateValidator = z.union([
   cmsCollectionTextColumnValidator
     .omit({
       id: true,
+      collectionId: true,
       fieldId: true,
       updatedAt: true,
       updatedBy: true,
@@ -288,6 +289,7 @@ export const cmsCollectionColumnUpdateValidator = z.union([
   cmsCollectionNumberColumnValidator
     .omit({
       id: true,
+      collectionId: true,
       fieldId: true,
       createdAt: true,
       updatedAt: true,

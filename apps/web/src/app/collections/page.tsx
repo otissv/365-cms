@@ -1,12 +1,12 @@
-import type { CmsCollection } from "@repo/cms/types.cms"
-import type { ToggleLayoutTypes } from "@repo/cms/ui/toggle-layout"
-import Collections, {
+import {
   onDeleteCollectionAction,
   onNewCollectionAction,
   onRenameCollectionAction,
-} from "@repo/cms/collections/collections"
+} from "@repo/cms/actions/collection.actions"
+import type { CmsCollection, ToggleLayoutTypes } from "@repo/cms/types.cms"
 import { PageHeader } from "@repo/ui/page/page-header"
 import { Toaster } from "@repo/ui/sonner"
+import Collections from "@repo/cms-ui/collections/collections"
 
 export default function CollectionsPage({
   searchParams,
@@ -17,16 +17,17 @@ export default function CollectionsPage({
 
   const userId = 1
 
-  const handleOnRenameCollection = async (
-    ...props: [id: number, name: string]
-  ) => {
+  const handleOnRenameCollection = async (props: {
+    id: number
+    name: string
+  }) => {
     "use server"
 
-    return onRenameCollectionAction({ schema, userId })(...props)
+    return onRenameCollectionAction({ schema, userId })(props)
   }
-  const handleOnDeleteCollection = async (id: number) => {
+  const handleOnDeleteCollection = async (props: { id: number }) => {
     "use server"
-    return onDeleteCollectionAction({ schema })(id)
+    return onDeleteCollectionAction({ schema })(props)
   }
   const handleOnNewCollection = async (data: {
     name: string

@@ -8,6 +8,7 @@ import type {
   AppResponse,
   CmsCollection,
   CmsCollectionInsert,
+  CmsCollectionTableColumn,
   CmsCollectionUpdate,
   CmsCollectionView,
 } from "../types.cms"
@@ -16,34 +17,35 @@ export type CmsCollectionsDao = {
   get(props?: {
     page?: number
     limit?: number
-    columns?: Record<string, string>
+    select?: Record<string, CmsCollectionTableColumn<keyof CmsCollection>>
+    orderBy?: [string, "asc" | "desc", "first" | "last"]
   }): Promise<
     AppResponse<CmsCollection> & {
       totalPages: number
     }
   >
   getAll(props?: {
-    columns?: Record<string, string>
+    select?: Record<string, CmsCollectionTableColumn<keyof CmsCollection>>
   }): Promise<AppResponse<CmsCollectionView>>
   remove(props: {
-    where: [string, string, any]
-    columns?: string[]
+    where: [CmsCollectionTableColumn<keyof CmsCollection>, string, any]
+    returning?: (keyof CmsCollection)[]
   }): Promise<AppResponse<Partial<CmsCollection>>>
   insert(props: {
     data: CmsCollectionInsert
-    columns?: string[]
+    returning?: (keyof CmsCollection)[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollection>>>
   update(props: {
-    id: number
+    where: [CmsCollectionTableColumn<keyof CmsCollection>, string, any]
     data: CmsCollectionUpdate
-    columns?: string[]
+    returning?: (keyof CmsCollection)[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollection>>>
 }
 
 function cmsCollectionsDao(schema: string): CmsCollectionsDao {
-  if (!schema) throw new Error("Must provide a schema")
+  if (!schema) throw new Error("Must provide a schema for cmsCollectionsDao")
 
   const db = getConnection()
 
@@ -57,6 +59,7 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
         const page = props?.page || 1
         const limit = props?.limit || 10
         const offset = (page - 1) * limit
+        const orderBy = props?.orderBy || ["id", "asc", "last"]
 
         const collections = await db
           .withSchema(schema)
@@ -69,18 +72,21 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
           )
           .distinct("collectionId")
           .select(
-            props?.columns || {
-              id: "cms_collections.id",
-              name: "cms_collections.name",
-              columnOrder: "cms_collections.columnOrder",
-              type: "cms_collections.type",
-              roles: "cms_collections.roles",
-              createdBy: "cms_collections.createdBy",
-              createdAt: "cms_collections.createdAt",
-              updatedBy: "cms_collections.updatedBy",
-              updatedAt: "cms_collections.updatedAt",
-            }
+            props?.select
+              ? { ...props?.select, id: "cms_collections.id" }
+              : {
+                  id: "cms_collections.id",
+                  name: "cms_collections.name",
+                  columnOrder: "cms_collections.columnOrder",
+                  type: "cms_collections.type",
+                  roles: "cms_collections.roles",
+                  createdBy: "cms_collections.createdBy",
+                  createdAt: "cms_collections.createdAt",
+                  updatedBy: "cms_collections.updatedBy",
+                  updatedAt: "cms_collections.updatedAt",
+                }
           )
+          .orderBy(...orderBy)
           .limit(limit)
           .offset(offset)
 
@@ -124,7 +130,7 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
           )
           .distinct("collectionId")
           .select(
-            props?.columns || {
+            props?.select || {
               id: "cms_collections.id",
               name: "cms_collections.name",
               columnOrder: "cms_collections.columnOrder",
@@ -173,19 +179,21 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
     },
 
     async remove({
-      columns = ["id"],
+      returning = ["id"],
       where,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
       try {
         if (isEmpty(where)) {
-          throw new Error("remove requires a where tuple argument")
+          throw new Error(
+            "cmsCollectionsDao.remove requires a 'where' tuple argument"
+          )
         }
         //TODO: delete columns and documents
         const result = await db
           .withSchema(schema)
           .from("cms_collections")
           .where(...where)
-          .del(columns)
+          .del(returning)
 
         return {
           data: result,
@@ -198,10 +206,22 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
 
     async insert({
       data,
-      columns = ["id"],
+      returning = ["id"],
       userId,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
       try {
+        if (isEmpty(data)) {
+          throw new Error(
+            "cmsCollectionsDao.insert requires a 'data' object argument"
+          )
+        }
+
+        if (isEmpty(userId)) {
+          throw new Error(
+            "cmsCollectionsDao.insert requires a 'userId' argument"
+          )
+        }
+
         const collections = await db
           .withSchema(schema)
           .insert(
@@ -212,7 +232,7 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
               createdAt: new Date(),
               createdBy: userId,
             },
-            columns
+            returning
           )
           .into("cms_collections")
 
@@ -226,25 +246,40 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
     },
 
     async update({
-      id,
+      returning = ["id"],
       data,
-      columns = ["id"],
       userId,
+      where,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
       try {
-        //TODO: updatedAt / updatedBy
+        if (isEmpty(data)) {
+          throw new Error(
+            "cmsCollectionsDao.update collection requires a 'data' object argument"
+          )
+        }
 
+        if (isEmpty(where)) {
+          throw new Error(
+            "cmsCollectionsDao.update collection requires a 'where' tuple argument"
+          )
+        }
+
+        if (isEmpty(userId)) {
+          throw new Error(
+            "cmsCollectionsDao.update collection requires a 'userId' tuple argument"
+          )
+        }
         const result = await db
           .withSchema(schema)
           .from("cms_collections")
-          .where("cms_collections.id", "=", id)
+          .where(...where)
           .update(
             {
               ...data,
               updatedAt: new Date(),
               updatedBy: userId,
             },
-            columns
+            returning
           )
 
         return {

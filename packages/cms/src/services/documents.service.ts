@@ -13,12 +13,15 @@ import type {
   CmsCollectionDocumentUpdate,
   CmsDocumentsView,
 } from "../types.cms"
-import documentDao from "../dao/documents.dao"
+import documentDao, {
+  type CmsDocumentsDaoRemoveWhere,
+} from "../dao/documents.dao"
 
 import { isError } from "@repo/lib/isError"
+import { insertBetween } from "@repo/lib/utils/insertBetween"
 import { errorResponse } from "@repo/lib/utils/customError"
 
-export type CmsDocumentServicesGetReturnType =
+export type CmsDocumentServiceGetReturnType =
   | {
       data: []
       error: string
@@ -30,101 +33,96 @@ export type CmsDocumentServicesGetReturnType =
       totalPages: number
     }
 
-export type CmsDocumentServices = {
-  get(
-    props: {
-      page?: number
-      limit?: number
-      where: [string, string, string]
-      orderBy: [string, "asc" | "desc", "first" | "last"]
-    },
-    meta?: { userId: number }
-  ): Promise<CmsDocumentServicesGetReturnType>
+export type CmsDocumentService = {
+  get(props: {
+    page?: number
+    limit?: number
+    orderBy?: [string, "asc" | "desc", "first" | "last"]
+    collectionName: string
+  }): Promise<CmsDocumentServiceGetReturnType>
 
-  remove(
-    props: {
-      id: number | number[]
-      columns?: string[]
-    },
-    meta?: { userId: number }
-  ): Promise<
+  remove(props: {
+    ids: number[]
+    returning?: (keyof CmsCollectionDocument)[]
+  }): Promise<
     AppResponse<
       Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
     >
   >
-  insert(
-    {
-      data,
-      columns,
-    }: {
-      data: CmsCollectionDocumentInsert
-      columns?: string[]
-    },
-    meta?: { userId: number }
-  ): Promise<AppResponse<Partial<CmsCollectionDocument>>>
-  update(
-    {
-      data,
-      id,
-      columns,
-    }: {
-      data: CmsCollectionDocumentUpdate
-      id?: number
-      columns?: string[]
-    },
-    meta?: { userId: number }
-  ): Promise<AppResponse<Partial<CmsCollectionDocument>>>
+  insert(props: {
+    data: CmsCollectionDocumentInsert
+    returning?: (keyof CmsCollectionDocument)[]
+    userId: number
+  }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
+  update(props: {
+    data: CmsCollectionDocumentUpdate["data"]
+    id?: number
+    returning?: (keyof CmsCollectionDocument)[]
+    userId: number
+  }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
 }
 
-function cmsDocumentsServices(schema: string): CmsDocumentServices {
-  if (!schema) throw new Error("Must provide a schema")
+function cmsDocumentsService(schema: string): CmsDocumentService {
+  if (!schema) throw new Error("Must provide a schema for cmsDocumentsService")
 
   return {
-    async get(props): Promise<CmsDocumentServicesGetReturnType> {
+    async get(props): Promise<CmsDocumentServiceGetReturnType> {
       return documentDao(schema).get(props)
     },
 
-    async remove(
-      props
-    ): Promise<
+    async remove({
+      ids,
+      returning,
+    }): Promise<
       AppResponse<
         Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
       >
     > {
-      return documentDao(schema).remove(props)
+      const x = ids.map((id) => ["cms_documents.id", "=", id])
+      const where = insertBetween("OR")(x) as CmsDocumentsDaoRemoveWhere
+
+      // const combined
+
+      return documentDao(schema).remove({
+        where,
+        returning,
+      })
     },
 
-    async insert(
-      { data, columns = ["id"] },
-      meta
-    ): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
+    async insert({
+      data,
+      returning = ["id"],
+      userId,
+    }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
       try {
         const error = await cmsCollectionDocumentInsertValidate(data)
 
         if (isError(error)) throw error
         return documentDao(schema).insert({
           data,
-          columns,
-          userId: meta?.userId as number,
+          returning,
+          userId,
         })
       } catch (error) {
         return errorResponse(error)
       }
     },
 
-    async update(
-      { data, id, columns = ["id"] },
-      meta
-    ): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
+    async update({
+      data,
+      id,
+      returning = ["id"],
+      userId,
+    }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
       try {
-        const error = await cmsCollectionDocumentUpdateValidate(data)
+        const error = await cmsCollectionDocumentUpdateValidate({ data })
         if (isError(error)) throw error
 
         return documentDao(schema).update({
-          id,
+          where: ["cms_documents.id", "=", id],
           data,
-          columns,
-          userId: meta?.userId as number,
+          returning,
+          userId,
         })
       } catch (error) {
         return errorResponse(error)
@@ -133,4 +131,4 @@ function cmsDocumentsServices(schema: string): CmsDocumentServices {
   }
 }
 
-export default cmsDocumentsServices
+export default cmsDocumentsService

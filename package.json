@@ -9,8 +9,8 @@
     "clean": "turbo clean",
     "lint": "dotenvx run -- biome check .",
     "lint:fix": "dotenvx run -- biome check . --write",
-    "test": "dotenvx run -- turbo run test",
-    "test:watch": "dotenvx run -- turbo run test:watch"
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",

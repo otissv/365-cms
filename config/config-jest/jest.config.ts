@@ -8,6 +8,7 @@ const config: Config = {
   testEnvironment: "node",
   maxWorkers: 100,
   setupFiles: [path.join(__dirname, "../../config/config-jest/test-setup.ts")],
+  moduleDirectories: ["node_modules"],
 }
 
 export default config

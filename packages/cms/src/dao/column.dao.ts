@@ -6,16 +6,18 @@ import { errorResponse } from "@repo/lib/utils/customError"
 
 import type {
   AppResponse,
+  CmsCollection,
   CmsCollectionColumn,
   CmsCollectionColumnInsert,
+  CmsCollectionColumnTableColumn,
   CmsCollectionColumnUpdate,
 } from "../types.cms"
 
 export type CmsCollectionColumnsDao = {
-  getByCollectionIdAndFieldId(props?: {
+  getByFieldId(props?: {
     collectionId: number
     fieldId: string
-    columns?: Record<string, string> | string[]
+    select?: Record<string, keyof CmsCollectionColumn>
   }): Promise<
     AppResponse<Partial<CmsCollectionColumn>> & {
       totalPages: number
@@ -23,52 +25,71 @@ export type CmsCollectionColumnsDao = {
   >
   remove(props: {
     fieldId: string
-    columns?: string[]
+    returning?: (keyof CmsCollectionColumn)[]
   }): Promise<AppResponse<Partial<CmsCollectionColumn>>>
   insert(props: {
     data: Omit<
       CmsCollectionColumnInsert,
       "createdAt" | "createdBy" | "updatedAt" | "updatedBy"
     >
-    columns?: string[]
+    returning?: (keyof CmsCollectionColumn | "columnOrder")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionColumn>>>
   update(props: {
-    id: number
+    collectionId: number
+    where: [
+      CmsCollectionColumnTableColumn<keyof CmsCollectionColumn>,
+      string,
+      any,
+    ]
     data: CmsCollectionColumnUpdate
-    columns?: string[]
+    returning?: (keyof CmsCollectionColumn)[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionColumn>>>
 }
 
 function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
-  if (!schema) throw new Error("Must provide a schema")
+  if (!schema) throw new Error("Must provide a schema for cmsColumnsDao")
 
   const db = getConnection()
 
   return {
-    async getByCollectionIdAndFieldId(props): Promise<
+    async getByFieldId(props): Promise<
       AppResponse<Partial<CmsCollectionColumn>> & {
         totalPages: number
       }
     > {
       try {
+        if (isEmpty(props?.collectionId)) {
+          return {
+            data: [],
+            error: "cmsColumnsDao.getByFieldId requires 'collectionId' prop",
+            totalPages: 0,
+          }
+        }
+
+        if (isEmpty(props?.fieldId)) {
+          return {
+            data: [],
+            error: "cmsColumnsDao.getByFieldId requires 'fieldId' prop",
+            totalPages: 0,
+          }
+        }
+
         const collectionColumns = await db
           .withSchema(schema)
           .from("cms_collection_columns")
           .select(
-            props?.columns || {
+            props?.select || {
               collectionId: "collectionId",
               columnName: "columnName",
               fieldId: "fieldId",
               type: "type",
-              defaultValue: "defaultValue",
               help: "help",
               enableDelete: "enableDelete",
               enableSort: "enableSort",
               enableHide: "enableHide",
               enableFilter: "enableFilter",
-              filter: "filter",
               sortBy: "sortBy",
               visibility: "visibility",
               index: "index",
@@ -106,16 +127,30 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
 
     async remove({
       fieldId,
-      columns = ["id"],
+      returning = ["id"],
     }): Promise<AppResponse<Partial<CmsCollectionColumn>>> {
       try {
+        if (isEmpty(fieldId)) {
+          return {
+            data: [],
+            error: "cmsColumnsDao.remove requires a 'fieldId' prop",
+          }
+        }
+
         return db.transaction(async (trx) => {
           try {
             const result = await trx
               .withSchema(schema)
               .from("cms_collection_columns")
               .where("cms_collection_columns.fieldId", "=", fieldId)
-              .del([...columns, "collectionId"])
+              .del([...returning, "collectionId"])
+
+            if (isEmpty(result)) {
+              return {
+                data: [],
+                error: "",
+              }
+            }
 
             const collections = await trx
               .withSchema(schema)
@@ -158,11 +193,33 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
     },
 
     async insert({
-      data: { columnOrder, ...data },
-      columns = ["id"],
+      data: doc,
+      returning = ["id"],
       userId,
-    }): Promise<AppResponse<Partial<CmsCollectionColumn>>> {
+    }): Promise<
+      AppResponse<
+        Partial<
+          CmsCollectionColumn & { columnOrder: CmsCollection["columnOrder"] }
+        >
+      >
+    > {
       try {
+        const { columnOrder = [], ...data } = doc || {}
+
+        if (isEmpty(data)) {
+          return {
+            data: [],
+            error: "cmsColumnsDao.insert requires a 'data' prop",
+          }
+        }
+
+        if (isEmpty(userId)) {
+          return {
+            data: [],
+            error: "cmsColumnsDao.insert requires a 'userId' prop",
+          }
+        }
+
         const result = await db.transaction(async (trx) => {
           try {
             const collectionColumns = await trx
@@ -176,7 +233,7 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
                   updatedAt: new Date(),
                   updatedBy: userId,
                 },
-                columns
+                returning
               )
 
             await trx
@@ -208,23 +265,53 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
     },
 
     async update({
-      id,
+      collectionId,
+      where,
       data,
-      columns = ["id"],
+      returning = ["id"],
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionColumn>>> {
       try {
+        if (isEmpty(collectionId)) {
+          return {
+            data: [],
+            error: "cmsColumnsDao.update requires a 'collectionId' prop",
+          }
+        }
+
+        if (isEmpty(data)) {
+          return {
+            data: [],
+            error: "cmsColumnsDao.update requires a 'data' object prop",
+          }
+        }
+
+        if (isEmpty(where)) {
+          return {
+            data: [],
+            error: "cmsColumnsDao.update requires a 'where' tuple prop",
+          }
+        }
+
+        if (isEmpty(userId)) {
+          return {
+            data: [],
+            error: "cmsColumnsDao.update requires a 'userId' prop",
+          }
+        }
+
         const result = await db
           .withSchema(schema)
           .from("cms_collection_columns")
-          .where("cms_collection_columns.id", "=", id)
+          .where("cms_collection_columns.collectionId", "=", collectionId)
+          .andWhere(...where)
           .update(
             {
               ...data,
               updatedAt: new Date(),
               updatedBy: userId,
             },
-            columns
+            returning
           )
 
         return {
