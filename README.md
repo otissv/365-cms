@@ -56,3 +56,54 @@ This Turborepo has some additional tools already setup for you:
 - [TypeScript](https://www.typescriptlang.org/) for static type checking
 - [ESLint](https://eslint.org/) for code linting
 - [Prettier](https://prettier.io) for code formatting
+
+### Playwright 
+
+
+```pnpm exec playwright install```
+
+```npm init playwright```
+
+### Playwright Ubuntu
+```sudo pnpm exec playwright install-deps```
+
+#### Playwright Arch linux - trouble Shooting
+
+```
+sudo pacman -S --needed core/nss core/nspr extra/at-spi2-core extra/libcups extra/libdrm core/dbus extra/libxcb extra/libxkbcommon extra/at-spi2-core extra/libx11 extra/libxcomposite extra/libxdamage extra/libxext extra/libxfixes extra/libxrandr extra/mesa extra/pango extra/cairo extra/alsa-lib extra/xorg-server-xvfb extra/flite
+
+
+yay -S enchant1.6 icu66 libwebp libffi7
+
+sudo ln -s /usr/lib/libicui18n.so.67 /usr/lib/libicui18n.so.66
+sudo ln -s /usr/lib/libicuuc.so.67 /usr/lib/libicuuc.so.66
+sudo ln -s /usr/lib/libwebp.so.7 /usr/lib/libwebp.so.6
+sudo ln -s /usr/lib/libffi /usr/lib/libffi.so.8.1.2```
+
+```
+git clone https://github.com/festvox/flite.git
+cd flite
+./configure --enable-shared
+make
+make get_voices
+
+sudo cp build/x86_64-linux-gnu/lib/libflite.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_grapheme_lang.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_grapheme_lex.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_indic_lang.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_indic_lex.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_time_awb.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_us_awb.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_us_kal.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_us_kal16.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_us_rms.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmu_us_slt.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_cmulex.so.1 /usr/lib
+sudo cp build/x86_64-linux-gnu/lib/libflite_usenglish.so.1 /usr/lib
+```
+
+```
+npm init playwright
+```
+
+If apt-get not found ```npx playwright install-deps --dry-run``` to see what packages apt-get is trying to be installed and are missing from your system. Google the names as the might be different from in Arch.

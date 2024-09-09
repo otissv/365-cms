@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "e2e": "pnpm create playwright",
+    "e2e:create": "pnpm create playwright",
     "e2e:ui": "pnpm exec playwright test --ui",
     "e2e:codegen": "pnpx playwright codegen"
   },
