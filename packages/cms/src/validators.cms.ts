@@ -68,20 +68,23 @@ export const cmsCollectionDocumentUpdateValidator =
     .partial()
 
 export function cmsCollectionDocumentValidate(
-  data: CmsCollectionDocument
+  data: CmsCollectionDocument,
+  message?: string
 ): CmsCollectionDocument | CustomError {
-  return validate(cmsCollectionDocumentValidator)(data)
+  return validate(cmsCollectionDocumentValidator, message)(data)
 }
 export function cmsCollectionDocumentInsertValidate(
-  data: CmsCollectionDocumentInsert
+  data: CmsCollectionDocumentInsert,
+  message?: string
 ): CmsCollectionDocumentInsert | CustomError {
-  return validate(cmsCollectionDocumentInsertValidator)(data)
+  return validate(cmsCollectionDocumentInsertValidator, message)(data)
 }
 
 export function cmsCollectionDocumentUpdateValidate(
-  data: CmsCollectionDocumentUpdate
+  data: CmsCollectionDocumentUpdate,
+  message?: string
 ): CmsCollectionDocumentUpdate | CustomError {
-  return validate(cmsCollectionDocumentUpdateValidator)(data)
+  return validate(cmsCollectionDocumentUpdateValidator, message)(data)
 }
 
 /** Cms Collection Column **/
@@ -248,6 +251,8 @@ export const cmsCollectionColumnInsertValidator = z.union([
   cmsCollectionRequiredColumnValidator
     .omit({
       id: true,
+      updatedAt: true,
+      updatedBy: true,
     })
     .extend({
       columnOrder: columnOrderValidator,
@@ -299,19 +304,22 @@ export const cmsCollectionColumnUpdateValidator = z.union([
 ])
 
 export function cmsCollectionColumnValidate(
-  data: CmsCollectionColumn
+  data: CmsCollectionColumn,
+  message?: string
 ): CmsCollectionColumn | CustomError {
-  return validate(cmsCollectionColumnValidator)(data)
+  return validate(cmsCollectionColumnValidator, message)(data)
 }
 export function cmsCollectionColumnInsertValidate(
-  data: CmsCollectionColumnInsert
+  data: CmsCollectionColumnInsert,
+  message?: string
 ): CmsCollectionColumnInsert | CustomError {
-  return validate(cmsCollectionColumnInsertValidator)(data)
+  return validate(cmsCollectionColumnInsertValidator, message)(data)
 }
 export function cmsCollectionColumnUpdateValidate(
-  data: CmsCollectionColumnUpdate
+  data: CmsCollectionColumnUpdate,
+  message?: string
 ): CmsCollectionColumnUpdate | CustomError {
-  return validate(cmsCollectionColumnUpdateValidator)(data)
+  return validate(cmsCollectionColumnUpdateValidator, message)(data)
 }
 
 export const cmsCollectionUpdateValidator = cmsCollectionValidator
@@ -337,25 +345,29 @@ export const formCmsCollectionInsertValidator =
   })
 
 export function cmsCollectionValidate(
-  data: CmsCollection
+  data: CmsCollection,
+  message?: string
 ): CmsCollection | CustomError {
-  return validate(cmsCollectionValidator)(data)
+  return validate(cmsCollectionValidator, message)(data)
 }
 export function cmsCollectionInsertValidate(
-  data: CmsCollectionInsert
+  data: CmsCollectionInsert,
+  message?: string
 ): CmsCollectionInsert | CustomError {
-  return validate(cmsCollectionInsertValidator)(data)
+  return validate(cmsCollectionInsertValidator, message)(data)
 }
 export function cmsCollectionUpdateValidate(
-  data: CmsCollectionUpdate
+  data: CmsCollectionUpdate,
+  message?: string
 ): CmsCollectionUpdate | CustomError {
-  return validate(cmsCollectionUpdateValidator)(data)
+  return validate(cmsCollectionUpdateValidator, message)(data)
 }
 
 export function formCmsCollectionInsertFormValidate(
-  data: FormCmsCollectionInsertValidator
+  data: FormCmsCollectionInsertValidator,
+  message?: string
 ): FormCmsCollectionInsertValidator | CustomError {
-  return validate(formCmsCollectionInsertValidator)(data)
+  return validate(formCmsCollectionInsertValidator, message)(data)
 }
 
 /* CMS UI */

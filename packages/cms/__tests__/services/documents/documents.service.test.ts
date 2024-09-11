@@ -197,8 +197,7 @@ describe("CMS Documents Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error:
-        "cmsCollectionDocumentsDao.insert collection requires a 'data' object prop",
+      error: "cmsDocumentsService.insert has invalid 'data' object data",
     })
   })
   test("Insert document returns error if no collectionId prop ", async () => {
@@ -219,12 +218,11 @@ describe("CMS Documents Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error:
-        "cmsCollectionDocumentsDao.insert collection requires a collectionId prop",
+      error: "cmsDocumentsService.insert has invalid 'data' object data",
     })
   })
 
-  test("Insert document returns error if no userId prop ", async () => {
+  test("Insert document returns error if no userId prop", async () => {
     const result = await cmsDocumentsService(
       DOCUMENTS_SCHEMA_SERVICE_INSERT
     ).insert(
@@ -244,7 +242,7 @@ describe("CMS Documents Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "cmsCollectionDocumentsDao.insert collection requires a 'userId'",
+      error: "cmsDocumentsService.insert requires a 'userId' prop",
     })
   })
 

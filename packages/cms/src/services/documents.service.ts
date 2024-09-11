@@ -20,6 +20,7 @@ import documentDao, {
 import { isError } from "@repo/lib/isError"
 import { insertBetween } from "@repo/lib/utils/insertBetween"
 import { errorResponse } from "@repo/lib/utils/customError"
+import { isEmpty } from "@repo/lib/isEmpty"
 
 export type CmsDocumentServiceGetReturnType =
   | {
@@ -95,7 +96,13 @@ function cmsDocumentsService(schema: string): CmsDocumentService {
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
       try {
-        const error = await cmsCollectionDocumentInsertValidate(data)
+        if (isEmpty(userId)) {
+          throw new Error("cmsDocumentsService.insert requires a 'userId' prop")
+        }
+        const error = await cmsCollectionDocumentInsertValidate(
+          data,
+          "cmsDocumentsService.insert has invalid 'data' object data"
+        )
 
         if (isError(error)) throw error
         return documentDao(schema).insert({
@@ -115,7 +122,15 @@ function cmsDocumentsService(schema: string): CmsDocumentService {
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
       try {
-        const error = await cmsCollectionDocumentUpdateValidate({ data })
+        if (isEmpty(userId)) {
+          throw new Error("cmsDocumentsService.update requires a 'userId' prop")
+        }
+
+        const error = await cmsCollectionDocumentUpdateValidate(
+          { data },
+          "cmsDocumentsService.update has invalid 'data' object prop"
+        )
+
         if (isError(error)) throw error
 
         return documentDao(schema).update({

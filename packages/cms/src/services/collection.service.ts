@@ -17,6 +17,7 @@ import type {
   CmsCollectionView,
 } from "../types.cms"
 import collectionDao from "../dao/collection.dao"
+import { isEmpty } from "@repo/lib/isEmpty"
 
 export type CmsCollectionService = {
   get(props?: {
@@ -76,12 +77,21 @@ function cmsCollectionService(schema: string): CmsCollectionService {
       userId,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
       try {
+        if (isEmpty(userId)) {
+          throw new Error(
+            "cmsCollectionService.insert requires a 'userId' prop"
+          )
+        }
+
         const dataWithUserId: CmsCollectionInsert = {
           ...data,
           userId,
         }
 
-        const error = await cmsCollectionInsertValidate(dataWithUserId)
+        const error = await cmsCollectionInsertValidate(
+          dataWithUserId,
+          "cmsCollectionService.insert has invalid 'data' object prop"
+        )
         if (error instanceof Error) throw error
 
         const result = await collectionDao(schema).insert({
@@ -103,7 +113,16 @@ function cmsCollectionService(schema: string): CmsCollectionService {
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionUpdate>>> {
       try {
-        const error = await cmsCollectionUpdateValidate(data)
+        if (isEmpty(userId)) {
+          throw new Error(
+            "cmsCollectionService.update requires a 'userId' prop"
+          )
+        }
+
+        const error = await cmsCollectionUpdateValidate(
+          data,
+          "cmsCollectionService.update has invalid 'data' object prop"
+        )
 
         if (error instanceof Error) throw error
 

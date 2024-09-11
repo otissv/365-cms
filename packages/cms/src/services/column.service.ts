@@ -16,6 +16,7 @@ import type {
   CmsCollectionColumnUpdate,
 } from "../types.cms"
 import columnDao from "../dao/column.dao"
+import { isEmpty } from "@repo/lib/isEmpty"
 
 export type CmsColumnService = {
   get(props?: {
@@ -71,7 +72,12 @@ function cmsColumnService(schema: string): CmsColumnService {
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionColumn>>> {
       const { columnOrder = [], ...data } = d
+
       try {
+        if (isEmpty(userId)) {
+          throw new Error("cmsColumnsService.insert requires a 'userId' prop")
+        }
+
         const dataWithMeta: CmsCollectionColumnInsert = {
           ...data,
           columnOrder,
@@ -81,7 +87,10 @@ function cmsColumnService(schema: string): CmsColumnService {
           createdBy: userId,
         }
 
-        const error = await cmsCollectionColumnInsertValidate(dataWithMeta)
+        const error = await cmsCollectionColumnInsertValidate(
+          dataWithMeta,
+          "cmsColumnService.insert has invalid 'data' object prop"
+        )
 
         if (error instanceof Error) throw error
 
@@ -105,9 +114,17 @@ function cmsColumnService(schema: string): CmsColumnService {
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionColumn>>> {
       try {
-        if (!isNumber(id)) throw new Error("ID must be a number")
+        if (!isNumber(id)) {
+          throw new Error("cmsColumnsService.update 'id' must be a number")
+        }
+        if (isEmpty(userId)) {
+          throw new Error("cmsColumnsService.update requires a 'userId' prop")
+        }
 
-        const error = await cmsCollectionColumnUpdateValidate(data)
+        const error = await cmsCollectionColumnUpdateValidate(
+          data,
+          "cmsColumnService.update has invalid 'data' object prop"
+        )
 
         if (error instanceof Error) throw error
 

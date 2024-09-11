@@ -246,7 +246,7 @@ describe("CMS Column Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "cmsColumnsDao.insert requires a 'userId' prop",
+      error: "cmsColumnsService.insert requires a 'userId' prop",
     })
   })
 
@@ -369,7 +369,7 @@ describe("CMS Column Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "cmsColumnsDao.update requires a 'data' object prop",
+      error: "cmsColumnService.update has invalid 'data' object prop",
     })
   })
 
@@ -388,7 +388,7 @@ describe("CMS Column Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "ID must be a number",
+      error: "cmsColumnsService.update 'id' must be a number",
     })
   })
 
@@ -407,7 +407,7 @@ describe("CMS Column Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "cmsColumnsDao.update requires a 'userId' prop",
+      error: "cmsColumnsService.update requires a 'userId' prop",
     })
   })
 })

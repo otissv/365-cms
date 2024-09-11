@@ -242,7 +242,7 @@ describe("CMS Documents Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "cmsCollectionsDao.insert requires a 'data' object argument",
+      error: "cmsCollectionService.insert has invalid 'data' object prop",
     })
   })
 
@@ -263,7 +263,7 @@ describe("CMS Documents Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "cmsCollectionsDao.insert requires a 'userId' argument",
+      error: "cmsCollectionService.insert requires a 'userId' prop",
     })
   })
 
@@ -338,8 +338,7 @@ describe("CMS Documents Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error:
-        "cmsCollectionsDao.update collection requires a 'data' object argument",
+      error: "cmsCollectionService.update has invalid 'data' object prop",
     })
   })
 
@@ -393,8 +392,7 @@ describe("CMS Documents Service", () => {
 
     expect(result).toEqual({
       data: [],
-      error:
-        "cmsCollectionsDao.update collection requires a 'userId' tuple argument",
+      error: "cmsCollectionService.update requires a 'userId' prop",
     })
   })
 })

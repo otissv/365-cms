@@ -75,6 +75,7 @@ test("Collection already exists", async ({ page }) => {
   await page.getByRole("textbox").fill(`${collectionName}`)
   await page.getByLabel("Type").click()
   await page.getByRole("button", { name: "Add Collection" }).click()
+  await page.locator("html").click()
 
   await page.getByRole("button", { name: "New Collection" }).click()
   await page.getByRole("textbox").fill(`${collectionName}`)
@@ -97,6 +98,7 @@ test("Rename collection", async ({ page }) => {
   await page.getByRole("textbox").fill(`${collectionName}`)
   await page.getByLabel("Type").click()
   await page.getByRole("button", { name: "Add Collection" }).click()
+  await page.locator("html").click()
 
   await page
     .getByTestId(testId)
