@@ -17,7 +17,11 @@ export default function RootLayout({
   children: React.ReactNode
 }): JSX.Element {
   return (
-    <html lang='en' className='scroll-smooth antialiased'>
+    <html
+      lang='en'
+      className='scroll-smooth antialiased relative'
+      suppressHydrationWarning
+    >
       <body className={cn(fonts.text.className, "flex min-h-screen flex-col")}>
         <ThemeProvider
           enableSystem

@@ -4,7 +4,6 @@ import {
   onUpdateDataAction,
 } from "../../../src/actions/document.actions"
 import type {
-  CmsCollectionDocumentInsert,
   CmsCollectionDocumentUpdate,
   CmsDocumentsView,
 } from "../../../src/types.cms"
@@ -109,7 +108,9 @@ describe("CMS Document Actions", () => {
       searchParams: {
         page: 1,
         limit,
-        orderBy: ["id", "desc", "last"],
+        orderBy: "id",
+        direction: "desc",
+        nulls: "last",
       },
     })
 
@@ -268,10 +269,8 @@ describe("CMS Document Actions", () => {
     })
 
     const result = await action({
-      data: {
-        collectionId: 1,
-        data: [{ title: "with defaults" }],
-      } as CmsCollectionDocumentInsert,
+      collectionId: 1,
+      data: [{ title: "with defaults" }],
     })
 
     expect(result).toEqual({ data: [{ id: 5 }], error: "" })
@@ -285,10 +284,8 @@ describe("CMS Document Actions", () => {
 
     const result = await action(
       {
-        data: {
-          collectionId: 1,
-          data: [{ title: "with defaults returning" }],
-        } as CmsCollectionDocumentInsert,
+        collectionId: 1,
+        data: [{ title: "with defaults returning" }],
       },
       ["collectionId", "data"]
     )

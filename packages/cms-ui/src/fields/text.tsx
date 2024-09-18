@@ -11,6 +11,11 @@ import { isFieldRequired } from "@repo/lib/isFieldRequired"
 import { cn } from "@repo/ui/cn"
 import { Input } from "@repo/ui/input"
 import { Label } from "@repo/ui/label"
+import type {
+  CmsCollectionColumn,
+  CmsConfigField,
+  CmsField,
+} from "@repo/cms/types.cms"
 import {
   Tooltip,
   TooltipContent,
@@ -19,7 +24,6 @@ import {
 } from "@repo/ui/tooltip"
 
 import { TextValidation } from "../validation.cms"
-import type { CmsConfigField, CmsField } from "../types.cms"
 
 type Option = {
   value: { defaultValue?: string }
@@ -28,7 +32,10 @@ type Option = {
 export type FieldOptionsProps = {
   type?: "text" | "title"
   fieldId: string
-  onUpdate: (newValue: unknown, errorMessage?: "string") => void
+  onUpdate: (
+    newValue: NonNullable<CmsCollectionColumn["fieldOptions"]>,
+    errorMessage?: "string"
+  ) => void
 } & Option
 
 export type FieldProps = CmsField<HTMLInputElement, string> & {
@@ -77,16 +84,20 @@ const fieldConfig: CmsConfigField<string, TextFieldValidation, Option> = {
         }
 
       case isFieldMinLength(value, minLength):
-        return {
-          value,
-          error: `${columnName} must have a minium length of ${minLength} and a maximum length of ${maxLength}`,
-        }
+        return minLength === 0
+          ? { value, error: "" }
+          : {
+              value,
+              error: `${columnName} must have a minium length of ${minLength} and a maximum length of ${maxLength}`,
+            }
 
       case isFieldMaxLength(value, maxLength):
-        return {
-          value,
-          error: `${columnName} must have a minium length of ${minLength} and a maximum length of ${maxLength}`,
-        }
+        return maxLength === 0
+          ? { value, error: "" }
+          : {
+              value,
+              error: `${columnName} must have a minium length of ${minLength} and a maximum length of ${maxLength}`,
+            }
 
       default:
         return { value, error: "" }

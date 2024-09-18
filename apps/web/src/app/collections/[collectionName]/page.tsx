@@ -1,52 +1,50 @@
 import { notFound } from "next/navigation"
 
-import type { SearchParams } from "@repo/cms/types.cms"
-// import { onUpdateColumnOrderAction } from "@repo/cms/actions/collection.actions"
+import type { CmsDocumentsView, SearchParams } from "@repo/cms/types.cms"
+import { onUpdateColumnOrderAction } from "@repo/cms/actions/collection.actions"
 
-// import {
-//   getDocumentsAction,
-//   onDeleteRowAction,
-//   onUpdateDataAction,
-// } from "@repo/cms/actions/document.actions"
-// import {
-//   onDeleteColumnAction,
-//   onInsertColumnAction,
-//   onSortColumnAction,
-//   onUpdateColumnAction,
-// } from "@repo/cms/actions/column.actions"
+import {
+  getDocumentsAction,
+  onDeleteRowAction,
+  onUpdateDataAction,
+} from "@repo/cms/actions/document.actions"
+import {
+  onDeleteColumnAction,
+  onInsertColumnAction,
+  onSortColumnAction,
+  onUpdateColumnAction,
+} from "@repo/cms/actions/column.actions"
 
-import type { ToggleLayoutTypes } from "@repo/cms/types.cms"
 import { isEmpty } from "@repo/lib/isEmpty"
 import { PageHeader } from "@repo/ui/page/page-header"
-// import TextField from "@repo/cms-ui/fields/text"
-// import TitleField from "@repo/cms-ui/fields/title"
-// import Documents from "@repo/cms-ui/documents/documents"
+import TextField from "@repo/cms-ui/fields/text"
+import Documents from "@repo/cms-ui/documents/documents"
+import type { FieldConfig } from "@repo/cms-ui/documents/provider.documents"
 
 export default async function CollectionPage({
   params,
-  // searchParams,
+  searchParams,
 }: {
   params: { collectionName: string }
-  searchParams: SearchParams & {
-    layout: ToggleLayoutTypes
-  }
+  searchParams: SearchParams
 }) {
-  // const schema = "t_1"
-  // const userId = 1
+  const schema = "t_1"
+  const userId = 1
+
   const { collectionName } = params
 
   if (isEmpty(collectionName)) {
     notFound()
   }
 
-  // const { data, totalPages } = await getDocumentsAction({ schema })({
-  //   searchParams,
-  //   collectionName,
-  // })
+  const { data, totalPages } = await getDocumentsAction({ schema })({
+    searchParams,
+    collectionName,
+  })
 
-  // if (isEmpty(data)) {
-  //   notFound()
-  // }
+  if (isEmpty(data)) {
+    notFound()
+  }
 
   return (
     <>
@@ -57,8 +55,8 @@ export default async function CollectionPage({
           { label: `${collectionName} collection` },
         ]}
       />
-      {/* <Documents
-        collection={data}
+      <Documents
+        collection={data as CmsDocumentsView}
         collectionName={collectionName}
         searchParams={searchParams}
         totalPages={totalPages}
@@ -66,16 +64,16 @@ export default async function CollectionPage({
         onDeleteRow={onDeleteRowAction({ schema })}
         onInsertColumn={onInsertColumnAction({ schema, userId })}
         onSortColumn={onSortColumnAction({
-          searchParams,
           schema,
           collectionName,
+          searchParams,
           userId,
         })}
         onUpdateColumn={onUpdateColumnAction({ schema, userId })}
         onUpdateColumnOrder={onUpdateColumnOrderAction({ schema, userId })}
         onUpdateData={onUpdateDataAction({ schema, userId })}
-        fields={[TextField, TitleField]}
-      /> */}
+        fields={[TextField] as FieldConfig[]}
+      />
     </>
   )
 }

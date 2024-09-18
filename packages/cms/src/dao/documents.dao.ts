@@ -111,7 +111,23 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
           }
         }
 
-        const order = `cms_documents."${orderBy[0] || "id"}" ${orderBy[1] || "asc"} NULLS ${orderBy[2] || "last"}`
+        const keys = [
+          "id",
+          "collectionId",
+          "createdAt",
+          "createdBy",
+          "updatedAt",
+          "updatedBy",
+        ]
+
+        let keysOrderBy = ""
+        let dataOrderBy = ""
+
+        if (keys.includes(orderBy[0] || "")) {
+          keysOrderBy = `ORDER BY "${orderBy[0] || "id"}" ${orderBy[1] || "asc"} NULLS ${orderBy[2] || "last"}`
+        } else if (orderBy[0]) {
+          dataOrderBy = `ORDER BY cms_documents.data->>'${orderBy[0] || "id"}' ${orderBy[1] || "asc"} NULLS ${orderBy[2] || "last"}`
+        }
 
         const collectionId = collection[0].id
 
@@ -119,25 +135,26 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
           .raw(
             `
                 SELECT
-                json_agg(
-                      json_build_object(
-                          'id', cms_documents.id,
-                          'collectionId', cms_documents."collectionId",
-                          'data', cms_documents.data,
-                          'createdBy', cms_documents."createdBy",
-                          'createdAt', cms_documents."createdAt",
-                          'updatedBy', cms_documents."updatedBy",
-                          'updatedAt', cms_documents."updatedAt"
-                      )
+                  json_agg(
+                    json_build_object(
+                        'id', cms_documents.id,
+                        'collectionId', cms_documents."collectionId",
+                        'data', cms_documents.data,
+                        'createdBy', cms_documents."createdBy",
+                        'createdAt', cms_documents."createdAt",
+                        'updatedBy', cms_documents."updatedBy",
+                        'updatedAt', cms_documents."updatedAt"
+                    )
+                    ${dataOrderBy}
                   ) as data
                 FROM (
-                    SELECT *
-                      FROM ${schema}.cms_documents
-                      WHERE cms_documents."collectionId" = ${collectionId}
-                      ORDER BY ${order}
-                      LIMIT ${limit}
-                      OFFSET ${offset}
-                  ) as cms_documents
+                  SELECT *
+                    FROM ${schema}.cms_documents
+                    WHERE cms_documents."collectionId" = ${collectionId}
+                    ${keysOrderBy}
+                    LIMIT ${limit}
+                    OFFSET ${offset}
+                ) as cms_documents
       `
           )
           .then(({ rows }) => rows[0].data)

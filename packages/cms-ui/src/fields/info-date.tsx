@@ -4,8 +4,7 @@ import { format } from "date-fns"
 
 import { cn } from "@repo/ui/cn"
 import { Input } from "@repo/ui/input"
-
-import type { CmsConfigField, CmsField } from "../types.cms"
+import type { CmsConfigField, CmsField } from "@repo/cms/types.cms"
 
 export type FieldProps = CmsField<HTMLInputElement, string> & {
   id: string

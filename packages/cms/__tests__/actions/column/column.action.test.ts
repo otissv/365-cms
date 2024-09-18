@@ -36,7 +36,6 @@ describe("CMS Column Actions", () => {
 
     const result = await action({
       fieldId: "field_0",
-      documentId: 1,
     })
 
     expect(result).toEqual({
@@ -67,28 +66,7 @@ describe("CMS Column Actions", () => {
 
     const result = await action(
       // @ts-expect-error - testing no schema
-      {
-        documentId: 1,
-      }
-    )
-
-    expect(result).toEqual({
-      data: [],
-      error:
-        "onDeleteColumnAction requires a 'props' argument with fieldId and documentId props",
-    })
-  })
-
-  test("onDeleteColumnAction returns error if no documentId", async () => {
-    const action = await onDeleteColumnAction({
-      schema: ON_DELETE_COLUMN_ACTION_DATA,
-    })
-
-    const result = await action(
-      // @ts-expect-error - testing no schema
-      {
-        fieldId: "field_0",
-      }
+      {}
     )
 
     expect(result).toEqual({
@@ -105,7 +83,6 @@ describe("CMS Column Actions", () => {
 
     const result = await action({
       fieldId: "field_0",
-      documentId: 1,
     })
 
     expect(result).toEqual({
@@ -219,8 +196,9 @@ describe("CMS Column Actions", () => {
     })
 
     expect(result).toEqual({
-      data: [],
+      data: {},
       error: "onSortColumnAction requires a 'schema' prop",
+      totalPages: 0,
     })
   })
 
@@ -240,8 +218,9 @@ describe("CMS Column Actions", () => {
     })
 
     expect(result).toEqual({
-      data: [],
+      data: {},
       error: "onSortColumnAction requires a 'collectionName' prop",
+      totalPages: 0,
     })
   })
 
@@ -261,8 +240,9 @@ describe("CMS Column Actions", () => {
     })
 
     expect(result).toEqual({
-      data: [],
+      data: {},
       error: "onSortColumnAction requires a 'userId' prop",
+      totalPages: 0,
     })
   })
 
@@ -282,8 +262,9 @@ describe("CMS Column Actions", () => {
     )
 
     expect(result).toEqual({
-      data: [],
+      data: {},
       error: "onSortColumnAction requires an 'id' prop",
+      totalPages: 0,
     })
   })
 
@@ -303,8 +284,9 @@ describe("CMS Column Actions", () => {
     )
 
     expect(result).toEqual({
-      data: [],
+      data: {},
       error: "onSortColumnAction requires an 'collectionId' prop",
+      totalPages: 0,
     })
   })
 
@@ -324,8 +306,9 @@ describe("CMS Column Actions", () => {
     )
 
     expect(result).toEqual({
-      data: [],
+      data: {},
       error: "onSortColumnAction requires an 'sortBy' prop",
+      totalPages: 0,
     })
   })
 

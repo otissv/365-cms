@@ -13,7 +13,8 @@
       "./src/hooks/*.ts",
       "./src/hooks/*.tsx"
     ],
-    "./cn": "./src/lib/utils.ts"
+    "./cn": "./src/lib/utils.ts",
+    "./authorize": "./src/lib/authorize.ts"
   },
   "license": "MIT",
   "scripts": {

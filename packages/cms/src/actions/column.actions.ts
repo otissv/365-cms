@@ -14,7 +14,6 @@ import { isEmpty } from "@repo/lib/isEmpty"
 export function onDeleteColumnAction({ schema }: { schema: string }) {
   return async (props: {
     fieldId: string
-    documentId: number
   }) => {
     "use server"
 
@@ -25,11 +24,7 @@ export function onDeleteColumnAction({ schema }: { schema: string }) {
       }
     }
 
-    if (
-      isEmpty(props) ||
-      isEmpty(props?.documentId) ||
-      isEmpty(props?.fieldId)
-    ) {
+    if (isEmpty(props) || isEmpty(props?.fieldId)) {
       return {
         data: [],
         error:
@@ -113,43 +108,49 @@ export function onSortColumnAction({
 
     if (isEmpty(schema)) {
       return {
-        data: [],
+        data: {},
         error: "onSortColumnAction requires a 'schema' prop",
+        totalPages: 0,
       }
     }
 
     if (isEmpty(collectionName)) {
       return {
-        data: [],
+        data: {},
         error: "onSortColumnAction requires a 'collectionName' prop",
+        totalPages: 0,
       }
     }
 
     if (isEmpty(userId)) {
       return {
-        data: [],
+        data: {},
         error: "onSortColumnAction requires a 'userId' prop",
+        totalPages: 0,
       }
     }
 
     if (isEmpty(id)) {
       return {
-        data: [],
+        data: {},
         error: "onSortColumnAction requires an 'id' prop",
+        totalPages: 0,
       }
     }
 
     if (isEmpty(collectionId)) {
       return {
-        data: [],
+        data: {},
         error: "onSortColumnAction requires an 'collectionId' prop",
+        totalPages: 0,
       }
     }
 
     if (isEmpty(sortBy)) {
       return {
-        data: [],
+        data: {},
         error: "onSortColumnAction requires an 'sortBy' prop",
+        totalPages: 0,
       }
     }
 
@@ -162,7 +163,7 @@ export function onSortColumnAction({
 
     if (error) {
       return {
-        data: [],
+        data: {},
         error,
         totalPages: 0 as number,
       }

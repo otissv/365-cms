@@ -40,6 +40,7 @@ type NotifyOptions = {
 }
 
 function notify(message: string, options?: NotifyOptions) {
+  // TODO: FIX
   switch (options?.type) {
     case "success":
       return sonner.success(message, options?.data)

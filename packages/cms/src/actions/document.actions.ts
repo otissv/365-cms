@@ -4,8 +4,8 @@ import cmsDocumentsServices from "../services/documents.service"
 
 import type {
   CmsCollectionDocument,
-  CmsCollectionDocumentInsert,
-  CmsCollectionDocumentUpdate,
+  DocumentInsert,
+  DocumentUpdate,
   SearchParams,
 } from "../types.cms"
 import { isEmpty } from "@repo/lib/isEmpty"
@@ -14,6 +14,7 @@ export function getDocumentsAction({
   schema,
 }: {
   schema: string
+  revalidatePath?: string
 }) {
   return async ({
     searchParams,
@@ -40,13 +41,15 @@ export function getDocumentsAction({
       }
     }
 
-    const { page, limit, orderBy } = searchParams || {}
-
     const response = await cmsDocumentsServices(schema).get({
-      page,
-      limit,
+      page: searchParams?.page,
+      limit: searchParams?.limit,
       collectionName,
-      orderBy: orderBy,
+      orderBy: [
+        searchParams?.orderBy || "id",
+        searchParams?.direction || "asc",
+        searchParams?.nulls || "last",
+      ],
     })
 
     return {
@@ -83,10 +86,7 @@ export function onUpdateDataAction({
   userId,
 }: { schema: string; userId: number }) {
   return async (
-    props: {
-      id?: number
-      data: CmsCollectionDocumentUpdate | CmsCollectionDocumentInsert
-    },
+    props: DocumentInsert | DocumentUpdate,
 
     returning: (keyof CmsCollectionDocument)[] = ["id"]
   ) => {
@@ -114,22 +114,21 @@ export function onUpdateDataAction({
       }
     }
 
-    const { id, ...rest } = props
+    const { id, ...rest } = props as DocumentUpdate
 
     if (id) {
-      const data = rest.data as CmsCollectionDocumentUpdate
-
       return cmsDocumentsServices(schema).update({
-        id,
-        data,
+        ...(props as DocumentUpdate),
         returning,
         userId,
       })
     }
 
-    const data = rest.data as CmsCollectionDocumentInsert
-
-    return cmsDocumentsServices(schema).insert({ data, returning, userId })
+    return cmsDocumentsServices(schema).insert({
+      data: rest as DocumentInsert,
+      returning,
+      userId,
+    })
   }
 }
 

@@ -5,7 +5,7 @@ import {
   DOCUMENTS_SCHEMA_DAO_REMOVE,
   DOCUMENTS_SCHEMA_DAO_UPDATE,
   docCollection1Dao,
-  cleanUpCmsDocumentsDao,
+  // cleanUpCmsDocumentsDao,
   setUpCmsDocumentsDao,
 } from "./helpers.documents.dao"
 
@@ -16,7 +16,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  await cleanUpCmsDocumentsDao()
+  // await cleanUpCmsDocumentsDao()
 })
 
 describe("CMS Documents DAO", () => {
@@ -61,6 +61,30 @@ describe("CMS Documents DAO", () => {
     ).get({
       page: 2,
       limit,
+      collectionName: "collection_1",
+    })
+
+    const { data: documents, ...collection } = data[0]
+
+    expect(documents.length).toBe(limit)
+    expect(documents[0].title).toBe("title_2")
+    expect(documents[0].content).toBe("content_2")
+    expect(documents[1].title).toBe("title_3")
+    expect(documents[1].content).toBe("content_3")
+    expect(collection).toEqual(docCollection1Dao)
+
+    expect(totalPages).toBe(6)
+    expect(error).toBe("")
+  })
+
+  test("Get with search params orderBy id", async () => {
+    const limit = 2
+
+    const { data, error, totalPages } = await cmsCollectionDocumentsDao(
+      DOCUMENTS_SCHEMA_DAO_GET
+    ).get({
+      page: 2,
+      limit,
       orderBy: ["id", "desc", "last"],
       collectionName: "collection_1",
     })
@@ -72,6 +96,31 @@ describe("CMS Documents DAO", () => {
     expect(documents[0].content).toBe("content_9")
     expect(documents[1].title).toBe("title_8")
     expect(documents[1].content).toBe("content_8")
+    expect(collection).toEqual(docCollection1Dao)
+
+    expect(totalPages).toBe(6)
+    expect(error).toBe("")
+  })
+
+  test("Get with search params orderBy data field", async () => {
+    const limit = 2
+
+    const { data, error, totalPages } = await cmsCollectionDocumentsDao(
+      DOCUMENTS_SCHEMA_DAO_GET
+    ).get({
+      page: 2,
+      limit,
+      orderBy: ["title", "desc", "last"],
+      collectionName: "collection_1",
+    })
+
+    const { data: documents, ...collection } = data[0]
+
+    expect(documents.length).toBe(limit)
+    expect(documents[0].title).toBe("title_3")
+    expect(documents[0].content).toBe("content_3")
+    expect(documents[1].title).toBe("title_2")
+    expect(documents[1].content).toBe("content_2")
     expect(collection).toEqual(docCollection1Dao)
 
     expect(totalPages).toBe(6)

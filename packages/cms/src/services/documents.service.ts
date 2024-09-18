@@ -99,6 +99,7 @@ function cmsDocumentsService(schema: string): CmsDocumentService {
         if (isEmpty(userId)) {
           throw new Error("cmsDocumentsService.insert requires a 'userId' prop")
         }
+
         const error = await cmsCollectionDocumentInsertValidate(
           data,
           "cmsDocumentsService.insert has invalid 'data' object data"

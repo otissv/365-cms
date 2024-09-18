@@ -1,0 +1,101 @@
+import {
+  DocumentProvider,
+  type DocumentProviderProps,
+  useDocument,
+} from "../../src/documents/provider.documents"
+import { render, type RenderResult } from "@testing-library/react"
+import type { CmsDocumentsView } from "@repo/cms/types.cms"
+import {
+  onDeleteRowAction,
+  onUpdateDataAction,
+} from "@repo/cms/actions/document.actions"
+import { onUpdateColumnOrderAction } from "@repo/cms/actions/collection.actions"
+import {
+  onDeleteColumnAction,
+  onInsertColumnAction,
+  onSortColumnAction,
+  onUpdateColumnAction,
+} from "@repo/cms/actions/column.actions"
+
+const schema = "t_1"
+const userId = 1
+
+export const collection = {
+  data: [
+    {
+      id: 1,
+      content: "content_0",
+      title: "title_0",
+    },
+  ],
+  collectionId: 1,
+  collectionName: "collection_1",
+  columnOrder: ["col1", "col2"],
+  type: "multiple",
+  roles: ["ADMIN"],
+  columns: [
+    {
+      id: 1,
+      columnName: "col_1",
+      fieldId: "field_1",
+      type: "text",
+      fieldOptions: {
+        defaultValue: 1,
+      },
+      validation: {
+        required: true,
+      },
+      help: "Help text",
+      enableDelete: false,
+      enableSort: false,
+      enableHide: false,
+      enableFilter: false,
+      sortBy: "asc",
+      visibility: true,
+      index: {
+        nulls: "last",
+        direction: "asc",
+      },
+      collectionId: 1,
+      createdAt: new Date(),
+      createdBy: 1,
+      updatedAt: new Date(),
+      updatedBy: 1,
+    },
+  ],
+  id: 1,
+  createdAt: new Date(),
+  createdBy: 1,
+  updatedAt: new Date(),
+  updatedBy: 1,
+} as CmsDocumentsView
+
+export function DocumentConsumer() {
+  const { state } = useDocument()
+  state
+
+  return <>Consumer</>
+}
+export const providerRender: (
+  ui: React.ReactNode,
+  providerProps: {
+    collection: DocumentProviderProps["collection"]
+  }
+) => RenderResult = (ui, providerProps) => {
+  const props: Omit<DocumentProviderProps, "children"> = {
+    ...providerProps,
+    onDeleteColumn: onDeleteColumnAction({ schema }),
+    onDeleteRow: onDeleteRowAction({ schema }),
+    onInsertColumn: onInsertColumnAction({ schema, userId }),
+    onSortColumn: onSortColumnAction({
+      schema,
+      userId,
+      collectionName: "onSortColumn",
+    }),
+    onUpdateColumn: onUpdateColumnAction({ schema, userId }),
+    onUpdateColumnOrder: onUpdateColumnOrderAction({ schema, userId }),
+    onUpdateData: onUpdateDataAction({ schema, userId }),
+  }
+
+  return render(<DocumentProvider {...props}>{ui}</DocumentProvider>)
+}

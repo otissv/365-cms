@@ -97,12 +97,7 @@ export const cmsCollectionColumnDefaultValidator = z.object({
     })
     .min(1, "Must contain between 1 and 100 characters.")
     .max(100, "Must contain between 1 and 100 characters."),
-  collectionId: z
-    .number()
-    .int()
-    .positive()
-    .min(1, "Must contain between 1 and 50 characters.")
-    .max(50, "Must contain between 1 and 50 characters."),
+  collectionId: z.number().int().positive(),
   fieldId: z
     .string({ required_error: "Field ID is required." })
     .min(1, "Must contain between 1 and 15 characters.")

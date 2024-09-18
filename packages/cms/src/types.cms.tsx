@@ -20,7 +20,9 @@ export type SearchParams = {
   page?: number
   limit?: number
   layout?: ToggleLayoutTypes
-  orderBy?: [string, "asc" | "desc", "first" | "last"]
+  orderBy?: string
+  direction: "asc" | "desc"
+  nulls: "first" | "last"
 }
 
 export type AppResponse<Data> = {
@@ -137,3 +139,13 @@ export type CmsConfigField<Value, Validation, Options> = {
 }
 
 export type CmsColumnDialog = z.infer<typeof cmsColumnDialogValidator>
+
+export type DocumentInsert = {
+  collectionId: CmsCollectionDocument["collectionId"]
+  data: CmsCollectionDocumentInsert["data"]
+}
+
+export type DocumentUpdate = {
+  id?: CmsCollectionDocument["id"]
+  data: CmsCollectionDocumentUpdate["data"]
+}

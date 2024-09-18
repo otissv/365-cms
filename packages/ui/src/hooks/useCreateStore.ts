@@ -179,6 +179,14 @@ export function useArrayStore<Data extends Record<string, any>>(
 ): ArrayStoreState<Data> {
   const [state, setState] = React.useState(new Map(prepareData(data, key)))
 
+  React.useEffect(() => {
+    const nextState = new Map(prepareData(data, key))
+
+    if (JSON.stringify(data) !== JSON.stringify(Array.from(state.values()))) {
+      setState(nextState)
+    }
+  }, [key, data, state.values])
+
   return {
     data: () => {
       return new Map(state)
@@ -275,6 +283,17 @@ export function useObjectStore<Data extends Record<string, any>>(
   data: Data
 ): ObjectStoreState<Data> {
   const [state, setState] = React.useState(new Map(Object.entries(data)))
+
+  React.useEffect(() => {
+    const nextState = new Map(Object.entries(data))
+
+    if (
+      JSON.stringify(data) !==
+      JSON.stringify(Object.fromEntries(state.entries()))
+    ) {
+      setState(nextState)
+    }
+  }, [data, state.entries])
 
   return {
     data: () => {
