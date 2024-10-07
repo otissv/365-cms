@@ -18,6 +18,8 @@ import type {
 import columnDao from "../dao/column.dao"
 import { isEmpty } from "@repo/lib/isEmpty"
 
+//TODO: test returning '*'
+//TODO: test omit
 export type CmsColumnService = {
   get(props?: {
     collectionId: number
@@ -30,14 +32,16 @@ export type CmsColumnService = {
   >
   remove(props: {
     fieldId: string
-    returning?: (keyof CmsCollectionColumn)[]
+    omit?: (keyof CmsCollectionColumn)[]
+    returning?: (keyof CmsCollectionColumn | "*")[]
   }): Promise<AppResponse<Partial<CmsCollectionColumn>>>
   insert(props: {
     data: Omit<
       CmsCollectionColumnInsert,
       "createdAt" | "createdBy" | "updatedAt" | "updatedBy"
     >
-    returning?: (keyof CmsCollectionColumn)[]
+    omit?: (keyof CmsCollectionColumn)[]
+    returning?: (keyof CmsCollectionColumn | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionColumn>>>
 
@@ -45,7 +49,8 @@ export type CmsColumnService = {
     id: number
     collectionId: number
     data: CmsCollectionColumnUpdate
-    returning?: (keyof CmsCollectionColumn)[]
+    omit?: (keyof CmsCollectionColumn)[]
+    returning?: (keyof CmsCollectionColumn | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionColumn>>>
 }
@@ -68,8 +73,8 @@ function cmsColumnService(schema: string): CmsColumnService {
 
     async insert({
       data: d,
-      returning,
       userId,
+      ...props
     }): Promise<AppResponse<Partial<CmsCollectionColumn>>> {
       const { columnOrder = [], ...data } = d
 
@@ -95,8 +100,8 @@ function cmsColumnService(schema: string): CmsColumnService {
         if (error instanceof Error) throw error
 
         const result = await columnDao(schema).insert({
+          ...props,
           data: dataWithMeta,
-          returning,
           userId,
         })
 
@@ -109,9 +114,8 @@ function cmsColumnService(schema: string): CmsColumnService {
     async update({
       id,
       data,
-      returning = ["id"],
-      collectionId,
       userId,
+      ...props
     }): Promise<AppResponse<Partial<CmsCollectionColumn>>> {
       try {
         if (!isNumber(id)) {
@@ -129,10 +133,9 @@ function cmsColumnService(schema: string): CmsColumnService {
         if (error instanceof Error) throw error
 
         const result = await columnDao(schema).update({
-          collectionId,
+          ...props,
           where: ["cms_collection_columns.id", "=", id],
           data,
-          returning,
           userId,
         })
 

@@ -21,16 +21,10 @@ const fieldConfig: CmsConfigField<string, undefined, undefined> = {
 
 function Field({
   value,
-  onBlur,
   className,
   fieldId,
   isInline,
-  type,
-  onUpdate,
   errorMessage,
-  validate,
-  validation,
-  columnName,
 }: FieldProps): JSX.Element {
   return (
     <div

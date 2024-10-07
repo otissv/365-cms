@@ -1,10 +1,10 @@
 import { getConnection } from "@repo/config/database"
 import { createCmsDatabase } from "../../../src/schema/collections.schema"
 import {
-  onRenameCollectionActionData,
-  onDeleteCollectionActionData,
-  onNewCollectionActionData,
-  onUpdateColumnOrderActionData,
+  renameCollectionActionData,
+  deleteCollectionActionData,
+  addNewCollectionActionData,
+  updateColumnOrderActionData,
 } from "./data.collection.actions"
 import { cleanUpSchemas } from "../../__helpers___/cleanup-schemas.helpers"
 
@@ -35,28 +35,28 @@ export async function setUpCmsCollectionsAction() {
       if (schema === ON_RENAME_COLLECTION_ACTION) {
         await db
           .withSchema(ON_RENAME_COLLECTION_ACTION)
-          .insert(onRenameCollectionActionData, ["id"])
+          .insert(renameCollectionActionData, ["id"])
           .into("cms_collections")
       }
 
       if (schema === ON_DELETE_COLLECTION_ACTION) {
         await db
           .withSchema(ON_DELETE_COLLECTION_ACTION)
-          .insert(onDeleteCollectionActionData, ["id"])
+          .insert(deleteCollectionActionData, ["id"])
           .into("cms_collections")
       }
 
       if (schema === ON_NEW_COLLECTION_ACTION) {
         await db
           .withSchema(ON_NEW_COLLECTION_ACTION)
-          .insert(onNewCollectionActionData, ["id"])
+          .insert(addNewCollectionActionData, ["id"])
           .into("cms_collections")
       }
 
       if (schema === ON_UPDATE_COLUMN_ORDER_ACTION) {
         await db
           .withSchema(ON_UPDATE_COLUMN_ORDER_ACTION)
-          .insert(onUpdateColumnOrderActionData, ["id"])
+          .insert(updateColumnOrderActionData, ["id"])
           .into("cms_collections")
       }
       return

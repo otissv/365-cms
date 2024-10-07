@@ -1,4 +1,5 @@
 export const builtinColumns = [
+  "slug",
   "createdBy",
   "createdAt",
   "updatedBy",

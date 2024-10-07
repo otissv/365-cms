@@ -5,7 +5,7 @@ import {
   DOCUMENTS_SCHEMA_DAO_REMOVE,
   DOCUMENTS_SCHEMA_DAO_UPDATE,
   docCollection1Dao,
-  // cleanUpCmsDocumentsDao,
+  cleanUpCmsDocumentsDao,
   setUpCmsDocumentsDao,
 } from "./helpers.documents.dao"
 
@@ -16,7 +16,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  // await cleanUpCmsDocumentsDao()
+  await cleanUpCmsDocumentsDao()
 })
 
 describe("CMS Documents DAO", () => {

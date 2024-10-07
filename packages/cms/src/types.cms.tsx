@@ -20,9 +20,9 @@ export type SearchParams = {
   page?: number
   limit?: number
   layout?: ToggleLayoutTypes
-  orderBy?: string
-  direction: "asc" | "desc"
-  nulls: "first" | "last"
+  sortBy?: string
+  direction?: "asc" | "desc"
+  nulls?: "first" | "last"
 }
 
 export type AppResponse<Data> = {
@@ -39,8 +39,8 @@ export type CmsCollectionDocumentTableColumn<
   T extends keyof CmsCollectionDocument,
 > = `cms_documents.${T}`
 
-export type CollectionState = Omit<CmsCollection, "columnOrder" | "userId">
-export type CollectionsReturnType = AppResponse<Partial<CollectionState>>
+export type CollectionsState = Omit<CmsCollection, "columnOrder" | "userId">
+export type CollectionsReturnType = AppResponse<Partial<CollectionsState>>
 
 /* CMS Collection */
 export type CmsCollection = z.infer<typeof cmsCollectionValidator>

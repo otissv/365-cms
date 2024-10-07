@@ -1,43 +1,28 @@
-import {
-  onDeleteCollectionAction,
-  onNewCollectionAction,
-  onRenameCollectionAction,
-} from "@repo/cms/actions/collection.actions"
-import type { CmsCollection, ToggleLayoutTypes } from "@repo/cms/types.cms"
+import { notFound } from "next/navigation"
+
+import { isEmpty } from "@repo/lib/isEmpty"
+import type { SearchParams } from "@repo/cms/types.cms"
 import { PageHeader } from "@repo/ui/page/page-header"
 import { Toaster } from "@repo/ui/sonner"
 import Collections from "@repo/cms-ui/collections/collections"
 
-export default function CollectionsPage({
+import { Collections as CollectionsRoute } from "@/routes"
+import { getCollectionsAction } from "@repo/cms/actions/collection.actions"
+
+export default async function CollectionsPage({
   searchParams,
 }: {
-  searchParams: { page?: number; limit?: number; layout: ToggleLayoutTypes }
+  searchParams: SearchParams
 }) {
   const schema = "t_1"
 
-  const userId = 1
+  const { data, totalPages } = await getCollectionsAction({ schema })({
+    page: searchParams.page,
+    limit: searchParams.limit,
+  })
 
-  const handleOnRenameCollection = async (props: {
-    id: number
-    name: string
-  }) => {
-    "use server"
-
-    return onRenameCollectionAction({ schema, userId })(props)
-  }
-  const handleOnDeleteCollection = async (props: { id: number }) => {
-    "use server"
-    return onDeleteCollectionAction({ schema })(props)
-  }
-  const handleOnNewCollection = async (data: {
-    name: string
-    type: CmsCollection["type"]
-  }) => {
-    "use server"
-    return onNewCollectionAction({
-      schema,
-      userId,
-    })(data)
+  if (isEmpty(data)) {
+    notFound()
   }
 
   return (
@@ -47,10 +32,10 @@ export default function CollectionsPage({
       <Toaster />
 
       <Collections
+        collections={data}
+        route={CollectionsRoute.getPathname()}
         searchParams={searchParams}
-        onRenameCollection={handleOnRenameCollection}
-        onDeleteCollection={handleOnDeleteCollection}
-        onNewCollection={handleOnNewCollection}
+        totalPages={totalPages}
       />
     </>
   )

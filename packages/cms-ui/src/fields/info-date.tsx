@@ -24,18 +24,11 @@ const fieldConfig: CmsConfigField<string, undefined, undefined> = {
 
 function Field({
   value,
-  onBlur,
   className,
   fieldId,
   isInline,
-  type,
-  onUpdate,
   errorMessage,
-  validate,
-  validation,
   formatString = "MMMM dd yyyy HH:mm:ss OOOO",
-  columnName,
-  ...props
 }: FieldProps): JSX.Element {
   return (
     <div
@@ -48,7 +41,6 @@ function Field({
       )}
     >
       <Input
-        {...props}
         type='text'
         id={fieldId}
         className={cn(

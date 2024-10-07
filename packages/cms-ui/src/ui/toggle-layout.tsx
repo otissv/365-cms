@@ -6,12 +6,11 @@ import type * as React from "react"
 
 import { createQueryString } from "@repo/lib/querystring"
 import { ToggleGroup, ToggleGroupItem } from "@repo/ui/toggle-group"
-import type { ToggleLayoutTypes } from "@repo/cms/types.cms"
+import type { SearchParams, ToggleLayoutTypes } from "@repo/cms/types.cms"
 
 export interface ToggleLayoutProps {
   className?: string
-  layout: ToggleLayoutTypes
-  searchParams: Record<string, any>
+  searchParams: SearchParams
   path: string
   size?: "default" | "sm" | "lg" | "icon"
   onChange?: (layout: ToggleLayoutTypes) => void
@@ -19,15 +18,12 @@ export interface ToggleLayoutProps {
 
 export function ToggleLayout({
   className,
-  layout,
   searchParams,
   path,
   size,
   onChange,
 }: ToggleLayoutProps): React.JSX.Element {
   const router = useRouter()
-
-  const defaultValue = layout || "list"
 
   const handleOnLayoutClick = (layout: ToggleLayoutTypes) => (): void => {
     const querystring = createQueryString({
@@ -41,7 +37,7 @@ export function ToggleLayout({
   return (
     <ToggleGroup
       type='single'
-      defaultValue={defaultValue}
+      defaultValue={searchParams.layout || "list"}
       label='Collection layout'
       className={className}
     >

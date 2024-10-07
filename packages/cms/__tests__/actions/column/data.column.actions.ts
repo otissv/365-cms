@@ -4,22 +4,22 @@ import {
   type CmsCollectionColumnData,
 } from "../../__helpers___/data.helpers"
 
-export const onDeleteColumnActionData: CmsCollectionColumnData[] =
+export const deleteColumnActionData: CmsCollectionColumnData[] =
   faker.helpers.multiple(fakeColumnData as any, {
     count: 1,
   })
 
-export const onInsertColumnActionData: CmsCollectionColumnData[] =
+export const insertColumnActionData: CmsCollectionColumnData[] =
   faker.helpers.multiple(fakeColumnData as any, {
     count: 1,
   })
 
-export const onSortColumnActionData: CmsCollectionColumnData[] =
+export const sortColumnActionData: CmsCollectionColumnData[] =
   faker.helpers.multiple(fakeColumnData as any, {
     count: 1,
   })
 
-export const onUpdateColumnActionData: CmsCollectionColumnData[] =
+export const updateColumnActionData: CmsCollectionColumnData[] =
   faker.helpers.multiple(fakeColumnData as any, {
     count: 1,
   })

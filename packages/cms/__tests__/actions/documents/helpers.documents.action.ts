@@ -8,8 +8,8 @@ import {
 } from "../../__helpers___/data.helpers"
 import {
   getDocumentsActionData,
-  onUpdateDataActionData,
-  onDeleteRowActionData,
+  updateDataActionData,
+  deleteRowActionData,
 } from "./data.documents.actions"
 
 const db = getConnection()
@@ -61,7 +61,7 @@ export async function setUpCmsDocumentsActions() {
             .into("cms_collections")
           await trx
             .withSchema(ON_UPDATE_DATA_ACTION)
-            .insert(onUpdateDataActionData, ["id"])
+            .insert(updateDataActionData, ["id"])
             .into("cms_documents")
         })
       }
@@ -74,7 +74,7 @@ export async function setUpCmsDocumentsActions() {
             .into("cms_collections")
           await trx
             .withSchema(ON_UPDATE_INSERT_DATA_ACTION)
-            .insert(onUpdateDataActionData, ["id"])
+            .insert(updateDataActionData, ["id"])
             .into("cms_documents")
         })
       }
@@ -87,7 +87,7 @@ export async function setUpCmsDocumentsActions() {
             .into("cms_collections")
           await trx
             .withSchema(ON_DELETE_ROW_ACTION_DATA)
-            .insert(onDeleteRowActionData, ["id"])
+            .insert(deleteRowActionData, ["id"])
             .into("cms_documents")
         })
       }

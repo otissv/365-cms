@@ -25,7 +25,7 @@ afterAll(async () => {
   await cleanUpCmsCollectionsService()
 })
 
-describe("CMS Documents Service", () => {
+describe("CMS Collection Service", () => {
   test("cmsCollectionServices throws error id no schema", async () => {
     try {
       // @ts-expect-error - testing no schema
@@ -121,6 +121,7 @@ describe("CMS Documents Service", () => {
     ).remove({
       where: ["cms_collections.id", "=", 2],
       returning: ["name"],
+      omit: ["id"],
     })
 
     expect(result).toEqual({ data: [{ name: "collection_1" }], error: "" })
@@ -132,6 +133,7 @@ describe("CMS Documents Service", () => {
     ).remove({
       where: ["cms_collections.id", "=", 99],
       returning: ["id"],
+      omit: ["id"],
     })
 
     expect(result).toEqual({ data: [], error: "" })
@@ -163,18 +165,11 @@ describe("CMS Documents Service", () => {
       data,
       userId: COLLECTION_SERVICES_DATA_DEFAULTS.userId,
       returning: COLLECTION_SERVICE_COLUMNS,
+      omit: ["id"],
     })
 
     expect(result).toEqual({
-      data: [
-        {
-          ...data,
-
-          roles: null,
-          isPublished: false,
-          columnOrder: null,
-        },
-      ],
+      data: [data],
       error: "",
     })
   })
@@ -194,6 +189,7 @@ describe("CMS Documents Service", () => {
       data,
       userId: COLLECTION_SERVICES_DATA_DEFAULTS.userId,
       returning: COLLECTION_SERVICE_COLUMNS,
+      omit: ["id"],
     })
 
     expect(result).toEqual({

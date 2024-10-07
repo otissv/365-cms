@@ -1,10 +1,29 @@
 import "server-only"
 
-import type { AppResponse, CmsCollection } from "../types.cms"
+import type { AppResponse, CmsCollection, SearchParams } from "../types.cms"
 import cmsCollectionServices from "../services/collection.service"
 import { isEmpty } from "@repo/lib/isEmpty"
 
-export function onRenameCollectionAction({
+//TODO: Add text
+export function getCollectionsAction({
+  schema,
+}: {
+  schema: string
+}) {
+  return async ({
+    page,
+    limit,
+  }: { page: SearchParams["page"]; limit: SearchParams["limit"] }) => {
+    "use server"
+
+    return cmsCollectionServices(schema).get({
+      page,
+      limit,
+    })
+  }
+}
+
+export function renameCollectionAction({
   schema,
   userId,
 }: {
@@ -22,28 +41,28 @@ export function onRenameCollectionAction({
     if (isEmpty(schema)) {
       return {
         data: [],
-        error: "onRenameCollectionAction requires an 'schema' prop",
+        error: "renameCollectionAction requires an 'schema' prop",
       }
     }
 
     if (isEmpty(userId)) {
       return {
         data: [],
-        error: "onRenameCollectionAction requires an 'userId' prop",
+        error: "renameCollectionAction requires an 'userId' prop",
       }
     }
 
     if (isEmpty(id)) {
       return {
         data: [],
-        error: "onRenameCollectionAction requires an 'id' prop",
+        error: "renameCollectionAction requires an 'id' prop",
       }
     }
 
     if (isEmpty(name)) {
       return {
         data: [],
-        error: "onRenameCollectionAction requires an 'name' prop",
+        error: "renameCollectionAction requires an 'name' prop",
       }
     }
 
@@ -55,7 +74,7 @@ export function onRenameCollectionAction({
   }
 }
 
-export function onDeleteCollectionAction({ schema }: { schema: string }) {
+export function deleteCollectionAction({ schema }: { schema: string }) {
   return async ({
     id,
   }: { id: number }): Promise<AppResponse<Partial<CmsCollection>>> => {
@@ -64,14 +83,14 @@ export function onDeleteCollectionAction({ schema }: { schema: string }) {
     if (isEmpty(schema)) {
       return {
         data: [],
-        error: "onDeleteCollectionAction requires an 'schema' prop",
+        error: "deleteCollectionAction requires an 'schema' prop",
       }
     }
 
     if (isEmpty(id)) {
       return {
         data: [],
-        error: "onDeleteCollectionAction requires an 'id' prop",
+        error: "deleteCollectionAction requires an 'id' prop",
       }
     }
 
@@ -81,7 +100,7 @@ export function onDeleteCollectionAction({ schema }: { schema: string }) {
   }
 }
 
-export function onNewCollectionAction({
+export function addNewCollectionAction({
   schema,
   userId,
 }: {
@@ -97,14 +116,14 @@ export function onNewCollectionAction({
     if (isEmpty(schema)) {
       return {
         data: [],
-        error: "onNewCollectionAction requires an 'schema' prop",
+        error: "addNewCollectionAction requires an 'schema' prop",
       }
     }
 
     if (isEmpty(userId)) {
       return {
         data: [],
-        error: "onNewCollectionAction requires an 'userId' prop",
+        error: "addNewCollectionAction requires an 'userId' prop",
       }
     }
 
@@ -112,7 +131,7 @@ export function onNewCollectionAction({
       return {
         data: [],
         error:
-          "onNewCollectionAction requires an 'data' argument with a 'name' and a 'type'",
+          "addNewCollectionAction requires an 'data' argument with a 'name' and a 'type'",
       }
     }
 
@@ -135,7 +154,7 @@ export function onNewCollectionAction({
   }
 }
 
-export function onUpdateColumnOrderAction({
+export function updateColumnOrderAction({
   schema,
   userId,
 }: { schema: string; userId: number }) {
@@ -148,28 +167,28 @@ export function onUpdateColumnOrderAction({
     if (isEmpty(schema)) {
       return {
         data: [],
-        error: "onUpdateColumnOrderAction requires an 'schema' prop",
+        error: "updateColumnOrderAction requires an 'schema' prop",
       }
     }
 
     if (isEmpty(userId)) {
       return {
         data: [],
-        error: "onUpdateColumnOrderAction requires an 'userId' prop",
+        error: "updateColumnOrderAction requires an 'userId' prop",
       }
     }
 
     if (isEmpty(id)) {
       return {
         data: [],
-        error: "onUpdateColumnOrderAction requires an 'id' prop",
+        error: "updateColumnOrderAction requires an 'id' prop",
       }
     }
 
     if (isEmpty(columnOrder)) {
       return {
         data: [],
-        error: "onUpdateColumnOrderAction requires an 'columnOrder' prop",
+        error: "updateColumnOrderAction requires an 'columnOrder' prop",
       }
     }
 

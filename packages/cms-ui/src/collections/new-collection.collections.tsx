@@ -22,11 +22,11 @@ import {
   cmsCollectionUpdateValidate,
   formCmsCollectionInsertFormValidate,
 } from "@repo/cms/validators.cms"
-import type { CollectionState } from "@repo/cms/types.cms"
+import type { CollectionsState } from "@repo/cms/types.cms"
 import { CmsButton } from "../ui/cms-button"
-import { useCollectionContext } from "./provider.collections"
+import { useCmsStore } from "../store.cms"
 
-export function NewCollectionDialogProvider({
+export function AddNewCollectionDialogProvider({
   children,
 }: {
   children: React.ReactNode
@@ -53,11 +53,14 @@ export function NewCollectionDialogProvider({
   return <FormProvider value={formValue}>{children}</FormProvider>
 }
 
-export function NewCollectionDialog(): React.JSX.Element {
+export function AddNewCollectionDialog(): React.JSX.Element {
   const [isOpen, setIsOpen] = React.useState<boolean>(false)
   const [isSaving, setIsSaving] = React.useState<boolean>(false)
 
-  const collection = useCollectionContext()
+  const {
+    state: { collections },
+    addNewCollection,
+  } = useCmsStore()
 
   const form = useFormContext()
   const nameField = form.get("name")
@@ -67,10 +70,14 @@ export function NewCollectionDialog(): React.JSX.Element {
     form.clear()
   }
 
-  const handleOnSubmit = async (): Promise<void> => {
+  const handleOnSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ): Promise<void> => {
+    e.preventDefault()
+
     const data: {
       name: string
-      type: CollectionState["type"]
+      type: CollectionsState["type"]
     } = {
       name: nameField.value,
       type: typeField.value ? "single" : "multiple",
@@ -81,13 +88,17 @@ export function NewCollectionDialog(): React.JSX.Element {
       if (error.issues.name) {
         nameField.updateError(error.issues.name)
         console.error(error.issues)
+
+        setIsSaving(false)
+
+        //TODO: show error in UI
       }
 
       return
     }
 
     setIsSaving(true)
-    const result = await collection.onNew(data)
+    const result = await addNewCollection(data)
 
     setIsSaving(false)
 
@@ -99,7 +110,7 @@ export function NewCollectionDialog(): React.JSX.Element {
 
     if (!isEmpty(result.data)) {
       const id = result.data[0]?.id
-      id && collection.set(id, result.data[0] as any)
+      id && collections.set(id, result.data[0] as any)
 
       setIsOpen(false)
       reset()
@@ -123,7 +134,7 @@ export function NewCollectionDialog(): React.JSX.Element {
         onClose={() => {
           setIsOpen(false)
         }}
-        className='w-[440px] max-w-[80%] min-w-[300px]'
+        className='w-[440px] max-w-[100%]'
       >
         <SheetHeader className='mb-4'>
           <SheetTitle>Create New Collection</SheetTitle>
@@ -135,7 +146,10 @@ export function NewCollectionDialog(): React.JSX.Element {
           </p>
         ) : null}
 
-        <form className='space-y-4'>
+        <form
+          className='space-y-4'
+          onSubmit={(e: React.FormEvent<HTMLFormElement>) => e.preventDefault()}
+        >
           <div>
             <Label>Name</Label>
             <Input
@@ -161,6 +175,7 @@ export function NewCollectionDialog(): React.JSX.Element {
         </form>
 
         <LoadingButton
+          type='submit'
           onClick={handleOnSubmit}
           title='Delete collection'
           loadingText='Saving'

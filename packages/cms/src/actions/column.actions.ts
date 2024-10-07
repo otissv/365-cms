@@ -3,7 +3,6 @@ import "server-only"
 import cmsCollectionColumnServices from "../services/column.service"
 
 import type {
-  CmsCollectionColumn,
   CmsCollectionColumnInsert,
   CmsCollectionColumnUpdate,
   SearchParams,
@@ -11,7 +10,7 @@ import type {
 import { getDocumentsAction } from "./document.actions"
 import { isEmpty } from "@repo/lib/isEmpty"
 
-export function onDeleteColumnAction({ schema }: { schema: string }) {
+export function deleteColumnAction({ schema }: { schema: string }) {
   return async (props: {
     fieldId: string
   }) => {
@@ -20,7 +19,7 @@ export function onDeleteColumnAction({ schema }: { schema: string }) {
     if (isEmpty(schema)) {
       return {
         data: [],
-        error: "onDeleteColumnAction requires a 'schema' prop",
+        error: "deleteColumnAction requires a 'schema' prop",
       }
     }
 
@@ -28,7 +27,7 @@ export function onDeleteColumnAction({ schema }: { schema: string }) {
       return {
         data: [],
         error:
-          "onDeleteColumnAction requires a 'props' argument with fieldId and documentId props",
+          "deleteColumnAction requires a 'props' argument with fieldId and documentId props",
       }
     }
 
@@ -36,7 +35,7 @@ export function onDeleteColumnAction({ schema }: { schema: string }) {
   }
 }
 
-export function onInsertColumnAction({
+export function insertColumnAction({
   schema,
   userId,
 }: { schema: string; userId: number }) {
@@ -51,65 +50,56 @@ export function onInsertColumnAction({
     if (isEmpty(schema)) {
       return {
         data: [],
-        error: "onInsertColumnAction requires a 'schema' prop",
+        error: "insertColumnAction requires a 'schema' prop",
       }
     }
 
     if (isEmpty(userId)) {
       return {
         data: [],
-        error: "onInsertColumnAction requires a 'userId' prop",
+        error: "insertColumnAction requires a 'userId' prop",
       }
     }
 
     if (isEmpty(data)) {
       return {
         data: [],
-        error: "onInsertColumnAction requires a 'data' prop",
+        error: "insertColumnAction requires a 'data' prop",
       }
     }
     return cmsCollectionColumnServices(schema).insert({
       data,
-      returning: [
-        "id",
-        "fieldId",
-        "collectionId",
-        "createdAt",
-        "createdBy",
-        "updatedAt",
-        "updatedBy",
-      ],
+      returning: ["*"],
+      omit: ["createdAt", "createdBy", "updatedAt", "updatedBy"],
       userId,
     })
   }
 }
 
-export function onSortColumnAction({
+export function sortColumnAction({
   schema,
-  collectionName,
-  searchParams,
   userId,
 }: {
   schema: string
-  collectionName: string
-  searchParams?: SearchParams
   userId: number
 }) {
   return async ({
     id,
     collectionId,
-    sortBy,
+    collectionName,
+    searchParams,
   }: {
     id: number
     collectionId: number
-    sortBy: CmsCollectionColumn["sortBy"]
+    collectionName: string
+    searchParams: Required<SearchParams>
   }) => {
     "use server"
 
     if (isEmpty(schema)) {
       return {
         data: {},
-        error: "onSortColumnAction requires a 'schema' prop",
+        error: "sortColumnAction requires a 'schema' prop",
         totalPages: 0,
       }
     }
@@ -117,7 +107,7 @@ export function onSortColumnAction({
     if (isEmpty(collectionName)) {
       return {
         data: {},
-        error: "onSortColumnAction requires a 'collectionName' prop",
+        error: "sortColumnAction requires a 'collectionName' prop",
         totalPages: 0,
       }
     }
@@ -125,7 +115,7 @@ export function onSortColumnAction({
     if (isEmpty(userId)) {
       return {
         data: {},
-        error: "onSortColumnAction requires a 'userId' prop",
+        error: "sortColumnAction requires a 'userId' prop",
         totalPages: 0,
       }
     }
@@ -133,7 +123,7 @@ export function onSortColumnAction({
     if (isEmpty(id)) {
       return {
         data: {},
-        error: "onSortColumnAction requires an 'id' prop",
+        error: "sortColumnAction requires an 'id' prop",
         totalPages: 0,
       }
     }
@@ -141,15 +131,16 @@ export function onSortColumnAction({
     if (isEmpty(collectionId)) {
       return {
         data: {},
-        error: "onSortColumnAction requires an 'collectionId' prop",
+        error: "sortColumnAction requires an 'collectionId' prop",
         totalPages: 0,
       }
     }
 
-    if (isEmpty(sortBy)) {
+    if (isEmpty(searchParams?.direction) || isEmpty(searchParams?.sortBy)) {
       return {
         data: {},
-        error: "onSortColumnAction requires an 'sortBy' prop",
+        error:
+          "sortColumnAction requires searchParams with a direction and sortBy props",
         totalPages: 0,
       }
     }
@@ -157,7 +148,7 @@ export function onSortColumnAction({
     const { error } = await cmsCollectionColumnServices(schema).update({
       collectionId,
       id,
-      data: { sortBy },
+      data: { sortBy: searchParams?.direction },
       userId,
     })
 
@@ -176,7 +167,7 @@ export function onSortColumnAction({
   }
 }
 
-export function onUpdateColumnAction({
+export function updateColumnAction({
   schema,
   userId,
 }: { schema: string; userId: number }) {
@@ -190,21 +181,21 @@ export function onUpdateColumnAction({
     if (isEmpty(schema)) {
       return {
         data: [],
-        error: "onUpdateColumnAction requires a 'schema' prop",
+        error: "updateColumnAction requires a 'schema' prop",
       }
     }
 
     if (isEmpty(userId)) {
       return {
         data: [],
-        error: "onUpdateColumnAction requires a 'userId' prop",
+        error: "updateColumnAction requires a 'userId' prop",
       }
     }
 
     if (isEmpty(props)) {
       return {
         data: [],
-        error: "onUpdateColumnAction requires a 'props' prop",
+        error: "updateColumnAction requires a 'props' prop",
       }
     }
 

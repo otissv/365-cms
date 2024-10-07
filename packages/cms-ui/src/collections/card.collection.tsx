@@ -1,11 +1,12 @@
 "use client"
 
+import * as React from "react"
 import { FileText, MoreVertical, Table } from "lucide-react"
 import Link from "next/link"
-import * as React from "react"
+import { usePathname } from "next/navigation"
 
 import { cmsCollectionUpdateValidate } from "@repo/cms/validators.cms"
-import type { CmsCollectionUpdate, CollectionState } from "@repo/cms/types.cms"
+import type { CmsCollectionUpdate, CollectionsState } from "@repo/cms/types.cms"
 import type { CustomError } from "@repo/lib/customError"
 import { Button } from "@repo/ui/button"
 import {
@@ -35,7 +36,7 @@ import {
 } from "@repo/ui/sheet"
 import { TypographyParagraph } from "@repo/ui/typography/paragraph.typography"
 
-import { useCollectionContext } from "./provider.collections"
+import { useCmsStore } from "../store.cms"
 
 export function CollectionCardRenameFormProvider({
   name,
@@ -63,7 +64,7 @@ export interface CollectionCardProps
   name: string
   id: number
   isGridLayout: boolean
-  type: CollectionState["type"]
+  type: CollectionsState["type"]
   documentCount: number
 }
 
@@ -84,13 +85,13 @@ export function CollectionCard({
     itemCount = `${documentCount} item`
   }
 
-  const { cmsPath } = useCollectionContext()
+  const pathname = usePathname()
 
   return (
     <Link
       data-testid={`card-collection-${name}`}
       key={id}
-      href={`${cmsPath}/collections/${name}`}
+      href={`${pathname}/${name}`}
       className={cn(
         "h-28 w-full lg:max-w-[1440px] transition-all",
         isGridLayout && "lg:max-w-96"
@@ -155,7 +156,11 @@ export function CollectionActionMenu({
   const form = useFormContext()
   const nameField = form.get("name")
 
-  const collection = useCollectionContext()
+  const {
+    state: { collections },
+    renameCollection,
+    deleteCollection,
+  } = useCmsStore()
 
   const handleOnRenameSubmit = async (
     _e: React.MouseEvent<HTMLButtonElement>
@@ -169,7 +174,7 @@ export function CollectionActionMenu({
 
       if (name !== nameField.value) {
         setRenameIsSaving(true)
-        const response = await collection.onRename({
+        const response = await renameCollection({
           id,
           name: nameField.value,
         })
@@ -185,7 +190,7 @@ export function CollectionActionMenu({
       setRenameDialogIsOpen(false)
       setDropdownMenuIsOpen(false)
 
-      collection.update(id, { name: nameField.value })
+      collections.update(id, { name: nameField.value })
     }
   }
 
@@ -194,10 +199,10 @@ export function CollectionActionMenu({
   ): Promise<void> => {
     if (id) {
       setDeleteIsSaving(true)
-      await collection.onDelete({ id })
+      await deleteCollection(id)
       setDeleteIsSaving(false)
 
-      collection.delete(id)
+      collections.delete(id)
       setDeleteDialogIsOpen(false)
       setDropdownMenuIsOpen(false)
     }

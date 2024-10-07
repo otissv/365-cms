@@ -12,7 +12,10 @@ import type {
   CmsCollectionUpdate,
   CmsCollectionView,
 } from "../types.cms"
+import { omitColumnFromCollection } from "@repo/lib/utils/omitColumnFromCollection"
 
+//TODO: test returning '*'
+//TODO: test omit
 export type CmsCollectionsDao = {
   get(props?: {
     page?: number
@@ -29,17 +32,20 @@ export type CmsCollectionsDao = {
   }): Promise<AppResponse<CmsCollectionView>>
   remove(props: {
     where: [CmsCollectionTableColumn<keyof CmsCollection>, string, any]
-    returning?: (keyof CmsCollection)[]
+    omit?: (keyof CmsCollection)[]
+    returning?: (keyof CmsCollection | "*")[]
   }): Promise<AppResponse<Partial<CmsCollection>>>
   insert(props: {
     data: CmsCollectionInsert
-    returning?: (keyof CmsCollection)[]
+    omit?: (keyof CmsCollection)[]
+    returning?: (keyof CmsCollection | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollection>>>
   update(props: {
     where: [CmsCollectionTableColumn<keyof CmsCollection>, string, any]
     data: CmsCollectionUpdate
-    returning?: (keyof CmsCollection)[]
+    omit?: (keyof CmsCollection)[]
+    returning?: (keyof CmsCollection | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollection>>>
 }
@@ -179,6 +185,7 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
     },
 
     async remove({
+      omit,
       returning = ["id"],
       where,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
@@ -188,17 +195,43 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
             "cmsCollectionsDao.remove requires a 'where' tuple argument"
           )
         }
-        //TODO: delete columns and documents
-        const result = await db
-          .withSchema(schema)
-          .from("cms_collections")
-          .where(...where)
-          .del(returning)
 
-        return {
-          data: result,
-          error: "",
-        }
+        return db.transaction(async (trx) => {
+          try {
+            const result = await trx
+              .withSchema(schema)
+              .from("cms_collections")
+              .where(...where)
+              .del([...returning, "id"])
+
+            const collectionId = result[0]?.id
+
+            if (isEmpty(result)) {
+              return errorResponse("")
+            }
+
+            await trx
+              .withSchema(schema)
+              .from("cms_collection_columns")
+              .where("collectionId", "=", collectionId)
+              .del("id")
+
+            await trx
+              .withSchema(schema)
+              .from("cms_documents")
+              .where("collectionId", "=", collectionId)
+              .del("id")
+
+            return {
+              data: omit
+                ? omitColumnFromCollection<CmsCollection>()(omit)(result)
+                : result,
+              error: "",
+            }
+          } catch (error) {
+            return errorResponse(error)
+          }
+        })
       } catch (error) {
         return errorResponse(error)
       }
@@ -206,6 +239,7 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
 
     async insert({
       data,
+      omit,
       returning = ["id"],
       userId,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
@@ -222,32 +256,111 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
           )
         }
 
-        const collections = await db
-          .withSchema(schema)
-          .insert(
-            {
-              ...data,
-              updatedAt: new Date(),
-              updatedBy: userId,
-              createdAt: new Date(),
-              createdBy: userId,
-            },
-            returning
-          )
-          .into("cms_collections")
+        return db.transaction(async (trx) => {
+          try {
+            const collections = await trx
+              .withSchema(schema)
+              .insert(
+                [
+                  {
+                    ...data,
+                    updatedAt: new Date(),
+                    updatedBy: userId,
+                    createdAt: new Date(),
+                    createdBy: userId,
+                  },
+                ],
+                [...returning, "id"]
+              )
+              .into("cms_collections")
 
-        return {
-          data: collections,
-          error: "",
-        }
+            const collectionId = collections[0].id
+
+            const columnCount = await trx
+              .withSchema(schema)
+              .from("cms_collection_columns")
+              .where("collectionId", "=", collectionId)
+              .count()
+
+            if (columnCount[0].count === "0") {
+              const defaultColumnFields = [
+                {
+                  columnName: "Slug",
+                  fieldId: "slug",
+                  type: "text",
+                  visibility: true,
+                },
+                {
+                  columnName: "Created By",
+                  fieldId: "createdBy",
+                  type: "infoDate",
+                },
+                {
+                  columnName: "Created At",
+                  fieldId: "createdAt",
+                  type: "info",
+                },
+                {
+                  columnName: "Updated By",
+                  fieldId: "updatedBy",
+                  type: "infoDate",
+                },
+                {
+                  columnName: "Updated At",
+                  fieldId: "updatedAt",
+                  type: "info",
+                },
+              ].map((fields) => ({
+                collectionId,
+                updatedAt: new Date(),
+                updatedBy: userId,
+                createdAt: new Date(),
+                createdBy: userId,
+                visibility: false,
+                ...fields,
+              }))
+
+              // TODO: add text
+              await trx
+                .withSchema(schema)
+                .insert(defaultColumnFields)
+                .into("cms_collection_columns")
+
+              // TODO: add text
+              await trx
+                .withSchema(schema)
+                .insert({
+                  collectionId,
+                  data: {
+                    slug: "",
+                  },
+                  updatedAt: new Date(),
+                  updatedBy: userId,
+                  createdAt: new Date(),
+                  createdBy: userId,
+                })
+                .into("cms_documents")
+            }
+
+            return {
+              data: omit
+                ? omitColumnFromCollection<CmsCollection>()(omit)(collections)
+                : collections,
+              error: "",
+            }
+          } catch (error) {
+            return errorResponse(error)
+          }
+        })
       } catch (error) {
         return errorResponse(error)
       }
     },
 
     async update({
-      returning = ["id"],
       data,
+      omit,
+      returning = ["id"],
       userId,
       where,
     }): Promise<AppResponse<Partial<CmsCollection>>> {
@@ -283,7 +396,9 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
           )
 
         return {
-          data: result,
+          data: omit
+            ? omitColumnFromCollection<CmsCollection>()(omit)(result)
+            : result,
           error: "",
         }
       } catch (error) {

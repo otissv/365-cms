@@ -1,9 +1,9 @@
 import { z } from "zod"
 import {
-  onDeleteCollectionAction,
-  onNewCollectionAction,
-  onRenameCollectionAction,
-  onUpdateColumnOrderAction,
+  deleteCollectionAction,
+  addNewCollectionAction,
+  renameCollectionAction,
+  updateColumnOrderAction,
 } from "../../../src/actions/collection.actions"
 import {
   ON_RENAME_COLLECTION_ACTION,
@@ -25,8 +25,8 @@ afterAll(async () => {
 })
 
 describe("CMS Collections Actions", () => {
-  test("onRenameCollectionAction updates collection name", async () => {
-    const action = await onRenameCollectionAction({
+  test("renameCollectionAction updates collection name", async () => {
+    const action = await renameCollectionAction({
       schema: ON_RENAME_COLLECTION_ACTION,
       userId: 1,
     })
@@ -36,8 +36,8 @@ describe("CMS Collections Actions", () => {
     expect(result).toEqual({ data: [{ id: 1 }], error: "" })
   })
 
-  test("onRenameCollectionAction throws error without schema", async () => {
-    const action = await onRenameCollectionAction(
+  test("renameCollectionAction throws error without schema", async () => {
+    const action = await renameCollectionAction(
       // @ts-expect-error - testing no schema
       {
         userId: 1,
@@ -48,12 +48,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onRenameCollectionAction requires an 'schema' prop",
+      error: "renameCollectionAction requires an 'schema' prop",
     })
   })
 
-  test("onRenameCollectionAction returns error if no userId", async () => {
-    const action = await onRenameCollectionAction(
+  test("renameCollectionAction returns error if no userId", async () => {
+    const action = await renameCollectionAction(
       // @ts-expect-error - testing no userId
       {
         schema: ON_RENAME_COLLECTION_ACTION,
@@ -64,12 +64,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onRenameCollectionAction requires an 'userId' prop",
+      error: "renameCollectionAction requires an 'userId' prop",
     })
   })
 
-  test("onRenameCollectionAction returns error if no id", async () => {
-    const action = await onRenameCollectionAction({
+  test("renameCollectionAction returns error if no id", async () => {
+    const action = await renameCollectionAction({
       schema: ON_RENAME_COLLECTION_ACTION,
       userId: 1,
     })
@@ -79,12 +79,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onRenameCollectionAction requires an 'id' prop",
+      error: "renameCollectionAction requires an 'id' prop",
     })
   })
 
-  test("onRenameCollectionAction returns error if no name", async () => {
-    const action = await onRenameCollectionAction({
+  test("renameCollectionAction returns error if no name", async () => {
+    const action = await renameCollectionAction({
       schema: ON_RENAME_COLLECTION_ACTION,
       userId: 1,
     })
@@ -94,12 +94,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onRenameCollectionAction requires an 'name' prop",
+      error: "renameCollectionAction requires an 'name' prop",
     })
   })
 
-  test("onDeleteCollectionAction returns error if no schema", async () => {
-    const action = await onDeleteCollectionAction(
+  test("deleteCollectionAction returns error if no schema", async () => {
+    const action = await deleteCollectionAction(
       // @ts-expect-error - testing no schema
       {}
     )
@@ -108,12 +108,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onDeleteCollectionAction requires an 'schema' prop",
+      error: "deleteCollectionAction requires an 'schema' prop",
     })
   })
 
-  test("onDeleteCollectionAction returns error if no id", async () => {
-    const action = await onDeleteCollectionAction({
+  test("deleteCollectionAction returns error if no id", async () => {
+    const action = await deleteCollectionAction({
       schema: ON_DELETE_COLLECTION_ACTION,
     })
 
@@ -121,12 +121,12 @@ describe("CMS Collections Actions", () => {
     const result = await action({})
     expect(result).toEqual({
       data: [],
-      error: "onDeleteCollectionAction requires an 'id' prop",
+      error: "deleteCollectionAction requires an 'id' prop",
     })
   })
 
-  test("onDeleteCollectionAction deletes collection", async () => {
-    const action = await onDeleteCollectionAction({
+  test("deleteCollectionAction deletes collection", async () => {
+    const action = await deleteCollectionAction({
       schema: ON_DELETE_COLLECTION_ACTION,
     })
 
@@ -135,8 +135,8 @@ describe("CMS Collections Actions", () => {
     expect(result).toEqual({ data: [{ id: 1 }], error: "" })
   })
 
-  test("onNewCollectionAction returns error if no schema", async () => {
-    const action = await onNewCollectionAction(
+  test("addNewCollectionAction returns error if no schema", async () => {
+    const action = await addNewCollectionAction(
       // @ts-expect-error - testing no schema
       {
         userId: 1,
@@ -150,12 +150,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onNewCollectionAction requires an 'schema' prop",
+      error: "addNewCollectionAction requires an 'schema' prop",
     })
   })
 
-  test("onNewCollectionAction returns error if no userId", async () => {
-    const action = await onNewCollectionAction(
+  test("addNewCollectionAction returns error if no userId", async () => {
+    const action = await addNewCollectionAction(
       // @ts-expect-error - testing no userId
       {
         schema: ON_NEW_COLLECTION_ACTION,
@@ -169,12 +169,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onNewCollectionAction requires an 'userId' prop",
+      error: "addNewCollectionAction requires an 'userId' prop",
     })
   })
 
-  test("onNewCollectionAction returns error if no data", async () => {
-    const action = await onNewCollectionAction({
+  test("addNewCollectionAction returns error if no data", async () => {
+    const action = await addNewCollectionAction({
       schema: ON_NEW_COLLECTION_ACTION,
       userId: 1,
     })
@@ -187,12 +187,12 @@ describe("CMS Collections Actions", () => {
     expect(result).toEqual({
       data: [],
       error:
-        "onNewCollectionAction requires an 'data' argument with a 'name' and a 'type'",
+        "addNewCollectionAction requires an 'data' argument with a 'name' and a 'type'",
     })
   })
 
-  test("onNewCollectionAction inserts collection", async () => {
-    const action = await onNewCollectionAction({
+  test("addNewCollectionAction inserts collection", async () => {
+    const action = await addNewCollectionAction({
       schema: ON_NEW_COLLECTION_ACTION,
       userId: 1,
     })
@@ -219,8 +219,8 @@ describe("CMS Collections Actions", () => {
     expect(error).toBe("")
   })
 
-  test("onUpdateColumnOrderAction returns error if no schema", async () => {
-    const action = await onUpdateColumnOrderAction(
+  test("updateColumnOrderAction returns error if no schema", async () => {
+    const action = await updateColumnOrderAction(
       // @ts-expect-error  - testing no schema
       {
         userId: 1,
@@ -231,12 +231,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onUpdateColumnOrderAction requires an 'schema' prop",
+      error: "updateColumnOrderAction requires an 'schema' prop",
     })
   })
 
-  test("onUpdateColumnOrderAction returns error if no userId", async () => {
-    const action = await onUpdateColumnOrderAction(
+  test("updateColumnOrderAction returns error if no userId", async () => {
+    const action = await updateColumnOrderAction(
       // @ts-expect-error  - testing no schema
       {
         schema: ON_UPDATE_COLUMN_ORDER_ACTION,
@@ -247,12 +247,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onUpdateColumnOrderAction requires an 'userId' prop",
+      error: "updateColumnOrderAction requires an 'userId' prop",
     })
   })
 
-  test("onUpdateColumnOrderAction returns error if no id", async () => {
-    const action = await onUpdateColumnOrderAction({
+  test("updateColumnOrderAction returns error if no id", async () => {
+    const action = await updateColumnOrderAction({
       schema: ON_UPDATE_COLUMN_ORDER_ACTION,
       userId: 1,
     })
@@ -262,12 +262,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onUpdateColumnOrderAction requires an 'id' prop",
+      error: "updateColumnOrderAction requires an 'id' prop",
     })
   })
 
-  test("onUpdateColumnOrderAction returns error if no columnOrder", async () => {
-    const action = await onUpdateColumnOrderAction({
+  test("updateColumnOrderAction returns error if no columnOrder", async () => {
+    const action = await updateColumnOrderAction({
       schema: ON_UPDATE_COLUMN_ORDER_ACTION,
       userId: 1,
     })
@@ -277,12 +277,12 @@ describe("CMS Collections Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onUpdateColumnOrderAction requires an 'columnOrder' prop",
+      error: "updateColumnOrderAction requires an 'columnOrder' prop",
     })
   })
 
-  test("onUpdateColumnOrderAction updates columnOrder", async () => {
-    const action = await onUpdateColumnOrderAction({
+  test("updateColumnOrderAction updates columnOrder", async () => {
+    const action = await updateColumnOrderAction({
       schema: ON_UPDATE_COLUMN_ORDER_ACTION,
       userId: 1,
     })

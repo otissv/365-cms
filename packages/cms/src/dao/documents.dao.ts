@@ -13,6 +13,7 @@ import type {
   CmsCollectionDocumentUpdate,
   CmsDocumentsView,
 } from "../types.cms"
+import { omitColumnFromCollection } from "@repo/lib/utils/omitColumnFromCollection"
 
 type CmsDocumentsDaoGetReturnType =
   | {
@@ -42,6 +43,8 @@ export type CmsDocumentsDaoRemoveWhere =
   | CmsDocumentsDaoRemoveWhereEquals
   | CmsDocumentsDaoRemoveWhereAndOr
 
+//TODO: test returning '*'
+//TODO: test omit
 export type CmsDocumentsDao = {
   get(props: {
     page?: number
@@ -52,7 +55,8 @@ export type CmsDocumentsDao = {
   }): Promise<CmsDocumentsDaoGetReturnType>
   remove(props: {
     where: CmsDocumentsDaoRemoveWhere
-    returning?: (keyof CmsCollectionDocument)[]
+    omit?: (keyof CmsCollectionDocument)[]
+    returning?: (keyof CmsCollectionDocument | "*")[]
   }): Promise<
     AppResponse<
       Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
@@ -60,7 +64,8 @@ export type CmsDocumentsDao = {
   >
   insert(props: {
     data: CmsCollectionDocumentInsert
-    returning?: (keyof CmsCollectionDocument)[]
+    omit?: (keyof CmsCollectionDocument)[]
+    returning?: (keyof CmsCollectionDocument | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
   update(props: {
@@ -70,7 +75,8 @@ export type CmsDocumentsDao = {
       any,
     ]
     data: CmsCollectionDocumentUpdate["data"]
-    returning?: (keyof CmsCollectionDocument)[]
+    omit?: (keyof CmsCollectionDocument)[]
+    returning?: (keyof CmsCollectionDocument | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
 }
@@ -280,6 +286,7 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
 
     async remove({
       where,
+      omit,
       returning = ["id"],
     }): Promise<
       AppResponse<
@@ -304,7 +311,11 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
             .del(returning)) as Partial<CmsCollectionDocument>[]
 
           return {
-            data: result,
+            data: omit
+              ? omitColumnFromCollection<Partial<CmsCollectionDocument>>()(
+                  omit
+                )(result)
+              : result,
             error: "",
           }
         }
@@ -316,7 +327,11 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
           .del(returning)) as Partial<CmsCollectionDocument>[]
 
         return {
-          data: result,
+          data: omit
+            ? omitColumnFromCollection<Partial<CmsCollectionDocument>>()(omit)(
+                result
+              )
+            : result,
           error: "",
         }
       } catch (error) {
@@ -326,6 +341,7 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
 
     async insert({
       data: { collectionId, data },
+      omit,
       returning = ["id"],
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
@@ -367,7 +383,9 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
             returning
           )
         return {
-          data: result,
+          data: omit
+            ? omitColumnFromCollection<CmsCollectionDocument>()(omit)(result)
+            : result,
           error: "",
         }
       } catch (error) {
@@ -377,9 +395,10 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
 
     async update({
       data,
-      where,
+      omit,
       returning = ["id"],
       userId,
+      where,
     }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
       try {
         if (isEmpty(data)) {
@@ -421,7 +440,9 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
           )
 
         return {
-          data: result,
+          data: omit
+            ? omitColumnFromCollection<CmsCollectionDocument>()(omit)(result)
+            : result,
           error: "",
         }
       } catch (error) {

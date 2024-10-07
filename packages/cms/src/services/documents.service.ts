@@ -22,6 +22,8 @@ import { insertBetween } from "@repo/lib/utils/insertBetween"
 import { errorResponse } from "@repo/lib/utils/customError"
 import { isEmpty } from "@repo/lib/isEmpty"
 
+//TODO: test returning '*'
+//TODO: test omit
 export type CmsDocumentServiceGetReturnType =
   | {
       data: []
@@ -29,7 +31,7 @@ export type CmsDocumentServiceGetReturnType =
       totalPages: 0
     }
   | {
-      data: CmsDocumentsView[]
+      data: [] | CmsDocumentsView[]
       error: string
       totalPages: number
     }
@@ -44,7 +46,8 @@ export type CmsDocumentService = {
 
   remove(props: {
     ids: number[]
-    returning?: (keyof CmsCollectionDocument)[]
+    omit?: (keyof CmsCollectionDocument)[]
+    returning?: (keyof CmsCollectionDocument | "*")[]
   }): Promise<
     AppResponse<
       Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
@@ -52,13 +55,15 @@ export type CmsDocumentService = {
   >
   insert(props: {
     data: CmsCollectionDocumentInsert
-    returning?: (keyof CmsCollectionDocument)[]
+    omit?: (keyof CmsCollectionDocument)[]
+    returning?: (keyof CmsCollectionDocument | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
   update(props: {
     data: CmsCollectionDocumentUpdate["data"]
     id?: number
-    returning?: (keyof CmsCollectionDocument)[]
+    omit?: (keyof CmsCollectionDocument)[]
+    returning?: (keyof CmsCollectionDocument | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
 }
@@ -73,7 +78,7 @@ function cmsDocumentsService(schema: string): CmsDocumentService {
 
     async remove({
       ids,
-      returning,
+      ...props
     }): Promise<
       AppResponse<
         Partial<CmsCollectionDocument> | Partial<CmsCollectionDocument>[]
@@ -85,8 +90,8 @@ function cmsDocumentsService(schema: string): CmsDocumentService {
       // const combined
 
       return documentDao(schema).remove({
+        ...props,
         where,
-        returning,
       })
     },
 
@@ -119,8 +124,8 @@ function cmsDocumentsService(schema: string): CmsDocumentService {
     async update({
       data,
       id,
-      returning = ["id"],
       userId,
+      ...props
     }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
       try {
         if (isEmpty(userId)) {
@@ -135,9 +140,9 @@ function cmsDocumentsService(schema: string): CmsDocumentService {
         if (isError(error)) throw error
 
         return documentDao(schema).update({
+          ...props,
           where: ["cms_documents.id", "=", id],
           data,
-          returning,
           userId,
         })
       } catch (error) {

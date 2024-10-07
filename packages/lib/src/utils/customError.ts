@@ -46,14 +46,15 @@ export function errorResponse(
 } {
   if (isDev) logger(new Error(error as string))
 
-  let message = error instanceof Error ? error.message : (error as string)
-
   if ((error as any).code === "23505") {
-    message = "Duplicate, already exists"
+    return {
+      data: [],
+      error: "Duplicate, already exists",
+    }
   }
 
   return {
     data: [],
-    error: message,
+    error: error instanceof Error ? error.message : (error as string),
   }
 }

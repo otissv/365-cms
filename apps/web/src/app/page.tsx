@@ -1,15 +1,16 @@
-import { Button } from "@repo/ui/button"
-import Link from "next/link"
+import { Collections, Collection } from "@/routes"
 
 export default function Page(): JSX.Element {
   return (
     <main>
       <ul>
         <li>
-          <Link href={"/collections"}>Collections</Link>
+          <Collections.Link>Collections</Collections.Link>
         </li>
         <li>
-          <Link href={"/collections/testing"}>Testing collection</Link>
+          <Collection.Link collectionName='testing'>
+            Testing collection
+          </Collection.Link>
         </li>
       </ul>
     </main>

@@ -6,15 +6,15 @@ import {
 import { render, type RenderResult } from "@testing-library/react"
 import type { CmsDocumentsView } from "@repo/cms/types.cms"
 import {
-  onDeleteRowAction,
-  onUpdateDataAction,
+  deleteRowAction,
+  updateDataAction,
 } from "@repo/cms/actions/document.actions"
-import { onUpdateColumnOrderAction } from "@repo/cms/actions/collection.actions"
+import { updateColumnOrderAction } from "@repo/cms/actions/collection.actions"
 import {
-  onDeleteColumnAction,
-  onInsertColumnAction,
-  onSortColumnAction,
-  onUpdateColumnAction,
+  deleteColumnAction,
+  insertColumnAction,
+  sortColumnAction,
+  updateColumnAction,
 } from "@repo/cms/actions/column.actions"
 
 const schema = "t_1"
@@ -84,17 +84,17 @@ export const providerRender: (
 ) => RenderResult = (ui, providerProps) => {
   const props: Omit<DocumentProviderProps, "children"> = {
     ...providerProps,
-    onDeleteColumn: onDeleteColumnAction({ schema }),
-    onDeleteRow: onDeleteRowAction({ schema }),
-    onInsertColumn: onInsertColumnAction({ schema, userId }),
-    onSortColumn: onSortColumnAction({
+    onDeleteColumn: deleteColumnAction({ schema }),
+    onDeleteRow: deleteRowAction({ schema }),
+    onInsertColumn: insertColumnAction({ schema, userId }),
+    onSortColumn: sortColumnAction({
       schema,
       userId,
       collectionName: "onSortColumn",
     }),
-    onUpdateColumn: onUpdateColumnAction({ schema, userId }),
-    onUpdateColumnOrder: onUpdateColumnOrderAction({ schema, userId }),
-    onUpdateData: onUpdateDataAction({ schema, userId }),
+    onUpdateColumn: updateColumnAction({ schema, userId }),
+    onUpdateColumnOrder: updateColumnOrderAction({ schema, userId }),
+    onUpdateData: updateDataAction({ schema, userId }),
   }
 
   return render(<DocumentProvider {...props}>{ui}</DocumentProvider>)

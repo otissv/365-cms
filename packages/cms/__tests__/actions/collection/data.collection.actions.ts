@@ -4,22 +4,22 @@ import {
   type CmsCollectionData,
 } from "../../__helpers___/data.helpers"
 
-export const onRenameCollectionActionData: CmsCollectionData[] =
+export const renameCollectionActionData: CmsCollectionData[] =
   faker.helpers.multiple(fakeCollectionData as any, {
     count: 2,
   })
 
-export const onDeleteCollectionActionData: CmsCollectionData[] =
+export const deleteCollectionActionData: CmsCollectionData[] =
   faker.helpers.multiple(fakeCollectionData as any, {
     count: 1,
   })
 
-export const onNewCollectionActionData: CmsCollectionData[] =
+export const addNewCollectionActionData: CmsCollectionData[] =
   faker.helpers.multiple(fakeCollectionData as any, {
     count: 1,
   })
 
-export const onUpdateColumnOrderActionData: CmsCollectionData[] =
+export const updateColumnOrderActionData: CmsCollectionData[] =
   faker.helpers.multiple(fakeCollectionData as any, {
     count: 1,
   })

@@ -37,9 +37,9 @@ import { ToggleSwitch } from "@repo/ui/toggle-switch"
 
 import { cmsColumnDialogValidator } from "@repo/cms/validators.cms"
 import type { CmsColumnDialog } from "@repo/cms/types.cms"
-import { useDocument } from "./provider.documents"
+import { useCmsStore } from "../store.cms"
 
-type Step = 0 | 1
+export type Step = 0 | 1
 
 export function ColumnProvider({
   children,
@@ -162,17 +162,17 @@ export interface ColumnDialogProps {
 
 export function ColumnDialog({
   fieldId,
-  children,
-  isEdit,
-  isOpen,
   step: initialStep = 0,
-  setIsOpen,
+  ...props
 }: ColumnDialogProps) {
+  const { state } = useCmsStore()
   const [step, setStep] = React.useState<Step>(initialStep)
 
-  const { state } = useDocument()
-
   const column = state.columns.get<"fieldId">(fieldId as "fieldId")
+
+  React.useEffect(() => {
+    setStep(initialStep)
+  }, [initialStep])
 
   return (
     <ColumnProvider
@@ -180,43 +180,65 @@ export function ColumnDialog({
       fieldOptions={column?.fieldOptions || {}}
       validation={column?.validation || {}}
     >
-      <Sheet open={isOpen}>
-        <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent
-          className='w-[440px] w-40 max-w-[80%] min-w-[300px] px-0'
-          description='Edit column dialog'
-        >
-          <SheetHeader className='px-6'>
-            <SheetTitle className='h-10 flex items-center '>
-              {step ? <>Edit Column</> : <>Choose Column Type</>}
-            </SheetTitle>
-          </SheetHeader>
-
-          <div className='relative h-[calc(100vh-144px)] mb-6 overflow-y-auto px-6'>
-            {step ? (
-              <EditColumnContent
-                setStep={setStep}
-                step={step}
-                isEdit={isEdit}
-              />
-            ) : (
-              <AddColumnContent setStep={setStep} step={step} />
-            )}
-          </div>
-
-          <SubmitForm
-            isEdit={isEdit}
-            id={column?.id}
-            step={step}
-            onClose={() => {
-              setIsOpen(false)
-              setStep(0)
-            }}
-            setIsOpen={setIsOpen}
-          />
-        </SheetContent>
-      </Sheet>
+      <ColumnDialogSheet
+        {...props}
+        columnId={column?.id}
+        step={step}
+        setStep={setStep}
+      />
     </ColumnProvider>
+  )
+}
+
+export interface ColumnDialogSheetProps {
+  children?: React.ReactNode
+  isEdit?: boolean
+  isOpen: boolean
+  step?: Step
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setStep: React.Dispatch<React.SetStateAction<Step>>
+  columnId?: number
+}
+
+function ColumnDialogSheet({
+  children,
+  isEdit,
+  isOpen,
+  step = 0,
+  setStep,
+  setIsOpen,
+  columnId,
+}: ColumnDialogSheetProps) {
+  return (
+    <Sheet open={isOpen} onOpenChange={() => setStep(0)}>
+      <SheetTrigger asChild>{children}</SheetTrigger>
+      <SheetContent className='w-80%' description='Edit column dialog'>
+        <SheetHeader className='px-6'>
+          <SheetTitle className='h-10 flex items-center '>
+            {step ? <>Edit Column</> : <>Choose Column Type</>}
+          </SheetTitle>
+        </SheetHeader>
+
+        <div className='relative h-[calc(100vh-144px)] mb-6 overflow-y-auto px-6'>
+          {step ? (
+            <EditColumnContent setStep={setStep} step={step} isEdit={isEdit} />
+          ) : (
+            <AddColumnContent setStep={setStep} step={step} />
+          )}
+        </div>
+
+        <SubmitForm
+          isEdit={isEdit}
+          id={columnId}
+          step={step}
+          setStep={setStep}
+          onClose={() => {
+            setIsOpen(false)
+          }}
+          setIsOpen={setIsOpen}
+        />
+      </SheetContent>
+    </Sheet>
   )
 }
 
@@ -224,17 +246,20 @@ function SubmitForm({
   id,
   isEdit,
   step,
+  setStep,
   setIsOpen,
   onClose,
 }: {
   id?: number
   isEdit?: boolean
   step: Step
+  setStep: React.Dispatch<React.SetStateAction<Step>>
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   onClose: () => void
 }) {
-  const { state, updateColumn } = useDocument()
-  const columnOrder = state.collection.get<"columnOrder">("columnOrder")
+  const { state, updateColumn } = useCmsStore()
+  const columnOrder =
+    state.documentsCollection.get<"columnOrder">("columnOrder")
 
   const form = useFormContext()
   const typeField = form.get("type")
@@ -312,6 +337,8 @@ function SubmitForm({
 
     if (result) {
       setIsOpen(false)
+      setStep(0)
+      form.reset()
     }
   }
 
@@ -354,7 +381,7 @@ function AddColumnContent({
   step: Step
   setStep: React.Dispatch<React.SetStateAction<Step>>
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const { fieldConfig, fieldIcon } = useDocument()
+  const { field } = useCmsStore()
 
   const form = useFormContext()
   const { value, updateValue } = form.get("type")
@@ -372,11 +399,11 @@ function AddColumnContent({
       )}
       {...props}
     >
-      {Object.values(fieldConfig).map(({ type, title, description }) => {
+      {Object.values(field.config).map(({ type, title, description }) => {
         if (type === "title" || type === "info" || type === "infoDate")
           return null
 
-        const FieldIcon = fieldIcon[type]
+        const FieldIcon = field.icon[type]
 
         const isActive = value === type
 
@@ -430,17 +457,17 @@ function EditColumnContent({
 
   const type = typeField.value
 
-  const { fieldConfig, fieldValidation, fieldOptions } = useDocument()
+  const { field } = useCmsStore()
 
-  const config = fieldConfig[type]
-  const Validation = fieldValidation[type]
-  const Options = fieldOptions[type]
+  const config = field.config[type || "text"]
+  const Validation = field.validation[type]
+  const Options = field.options[type]
 
   if (!config) {
     throw new Error(`${type} is missing in config`)
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: load field options and validation configuration into form
   React.useEffect(() => {
     form.update("fieldOptions", {
       value: {
@@ -632,8 +659,9 @@ function SettingsTab({
   isEdit?: boolean
   setStep: React.Dispatch<React.SetStateAction<Step>>
 }) {
-  const { state, fieldIcon } = useDocument()
-  const columnOrder = state.collection.get<"columnOrder">("columnOrder") || []
+  const { state, field } = useCmsStore()
+  const columnOrder =
+    state.documentsCollection.get<"columnOrder">("columnOrder") || []
 
   const form = useFormContext()
   const columnNameField = form.get("columnName")
@@ -655,7 +683,6 @@ function SettingsTab({
         },
         onBlur: (e: React.MouseEvent<HTMLInputElement>) => {
           if (columnOrder.includes(e.currentTarget.value)) {
-            console.log(columnOrder)
             fieldIdField.updateError("Column already exists.")
           }
 
@@ -671,7 +698,7 @@ function SettingsTab({
         },
       }
 
-  const FieldIcon = fieldIcon[typeField.value]
+  const FieldIcon = field.icon[typeField.value]
 
   return (
     <div className='space-y-6'>

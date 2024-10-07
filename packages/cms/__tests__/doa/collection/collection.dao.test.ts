@@ -119,6 +119,7 @@ describe("CMS Collection DAO", () => {
       {
         where: ["cms_collections.id", "=", 2],
         returning: ["name"],
+        omit: ["id"],
       }
     )
 
@@ -130,6 +131,7 @@ describe("CMS Collection DAO", () => {
       {
         where: ["cms_collections.id", "=", 99],
         returning: ["id"],
+        omit: ["id"],
       }
     )
 
@@ -159,18 +161,12 @@ describe("CMS Collection DAO", () => {
         data,
         userId: COLLECTION_DAO_DATA_DEFAULTS.userId,
         returning: COLLECTION_DAO_COLUMNS,
+        omit: ["id"],
       }
     )
 
     expect(result).toEqual({
-      data: [
-        {
-          ...data,
-          roles: null,
-          isPublished: false,
-          columnOrder: null,
-        },
-      ],
+      data: [data],
       error: "",
     })
   })
@@ -189,6 +185,7 @@ describe("CMS Collection DAO", () => {
         data,
         userId: COLLECTION_DAO_DATA_DEFAULTS.userId,
         returning: COLLECTION_DAO_COLUMNS,
+        omit: ["id"],
       }
     )
 

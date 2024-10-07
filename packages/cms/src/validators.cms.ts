@@ -27,8 +27,9 @@ export const cmsCollectionValidator = z.object({
       required_error: "Name is required.",
       invalid_type_error: "Name must be a string.",
     })
-    .min(1, { message: "Name is required" })
-    .max(100, { message: "Name must be less than 100 characters." }),
+    .min(1, { message: "Name is required." })
+    .max(100, { message: "Name must be less than 100 characters." })
+    .refine((s) => !s.includes(" "), "A collection name cannot have spaces."),
   type: z.enum(["multiple", "single"]),
   roles: z.array(z.string()).default([]).optional(),
   columnOrder: columnOrderValidator.optional(),

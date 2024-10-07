@@ -1,9 +1,9 @@
 import { z } from "zod"
 import {
-  onDeleteColumnAction,
-  onInsertColumnAction,
-  onSortColumnAction,
-  onUpdateColumnAction,
+  deleteColumnAction,
+  insertColumnAction,
+  sortColumnAction,
+  updateColumnAction,
 } from "../../../src/actions/column.actions"
 
 import {
@@ -28,8 +28,8 @@ afterAll(async () => {
 })
 
 describe("CMS Column Actions", () => {
-  test("onDeleteColumnAction returns error if no schema", async () => {
-    const action = await onDeleteColumnAction(
+  test("deleteColumnAction returns error if no schema", async () => {
+    const action = await deleteColumnAction(
       // @ts-expect-error - testing no schema
       {}
     )
@@ -40,12 +40,12 @@ describe("CMS Column Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onDeleteColumnAction requires a 'schema' prop",
+      error: "deleteColumnAction requires a 'schema' prop",
     })
   })
 
-  test("onDeleteColumnAction returns error if no props", async () => {
-    const action = await onDeleteColumnAction({
+  test("deleteColumnAction returns error if no props", async () => {
+    const action = await deleteColumnAction({
       schema: ON_DELETE_COLUMN_ACTION_DATA,
     })
 
@@ -55,12 +55,12 @@ describe("CMS Column Actions", () => {
     expect(result).toEqual({
       data: [],
       error:
-        "onDeleteColumnAction requires a 'props' argument with fieldId and documentId props",
+        "deleteColumnAction requires a 'props' argument with fieldId and documentId props",
     })
   })
 
-  test("onDeleteColumnAction returns error if no fieldId", async () => {
-    const action = await onDeleteColumnAction({
+  test("deleteColumnAction returns error if no fieldId", async () => {
+    const action = await deleteColumnAction({
       schema: ON_DELETE_COLUMN_ACTION_DATA,
     })
 
@@ -72,12 +72,12 @@ describe("CMS Column Actions", () => {
     expect(result).toEqual({
       data: [],
       error:
-        "onDeleteColumnAction requires a 'props' argument with fieldId and documentId props",
+        "deleteColumnAction requires a 'props' argument with fieldId and documentId props",
     })
   })
 
-  test("onDeleteColumnAction deletes column", async () => {
-    const action = onDeleteColumnAction({
+  test("deleteColumnAction deletes column", async () => {
+    const action = deleteColumnAction({
       schema: ON_DELETE_COLUMN_ACTION_DATA,
     })
 
@@ -91,8 +91,8 @@ describe("CMS Column Actions", () => {
     })
   })
 
-  test("onInsertColumnAction returns error if no schema", async () => {
-    const action = await onInsertColumnAction(
+  test("insertColumnAction returns error if no schema", async () => {
+    const action = await insertColumnAction(
       // @ts-expect-error - testing no schema
       {
         userId: 1,
@@ -100,21 +100,21 @@ describe("CMS Column Actions", () => {
     )
 
     const result = await action({
-      columnName: "onInsertColumnAction",
+      columnName: "insertColumnAction",
       collectionId: 1,
-      fieldId: "onInsertColumnAction",
+      fieldId: "insertColumnAction",
       type: "text",
       columnOrder: [],
     })
 
     expect(result).toEqual({
       data: [],
-      error: "onInsertColumnAction requires a 'schema' prop",
+      error: "insertColumnAction requires a 'schema' prop",
     })
   })
 
-  test("onInsertColumnAction returns error if no userId", async () => {
-    const action = await onInsertColumnAction(
+  test("insertColumnAction returns error if no userId", async () => {
+    const action = await insertColumnAction(
       // @ts-expect-error - testing no userId
       {
         schema: ON_INSERT_COLUMN_ACTION_DATA,
@@ -122,21 +122,21 @@ describe("CMS Column Actions", () => {
     )
 
     const result = await action({
-      columnName: "onInsertColumnAction",
+      columnName: "insertColumnAction",
       collectionId: 1,
-      fieldId: "onInsertColumnAction",
+      fieldId: "insertColumnAction",
       type: "text",
       columnOrder: [],
     })
 
     expect(result).toEqual({
       data: [],
-      error: "onInsertColumnAction requires a 'userId' prop",
+      error: "insertColumnAction requires a 'userId' prop",
     })
   })
 
-  test("onInsertColumnAction returns error if no data", async () => {
-    const action = await onInsertColumnAction({
+  test("insertColumnAction returns error if no data", async () => {
+    const action = await insertColumnAction({
       schema: ON_INSERT_COLUMN_ACTION_DATA,
       userId: 1,
     })
@@ -146,18 +146,18 @@ describe("CMS Column Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onInsertColumnAction requires a 'data' prop",
+      error: "insertColumnAction requires a 'data' prop",
     })
   })
 
-  test("onInsertColumnAction inserts column", async () => {
-    const action = await onInsertColumnAction({
+  test("insertColumnAction inserts column", async () => {
+    const action = await insertColumnAction({
       schema: ON_INSERT_COLUMN_ACTION_DATA,
       userId: 1,
     })
 
     const { data, error } = await action({
-      columnName: "onInsertColumnAction",
+      columnName: "insertColumnAction",
       collectionId: 1,
       fieldId: "insert",
       type: "text",
@@ -167,162 +167,206 @@ describe("CMS Column Actions", () => {
     const expectedShape = z.array(
       z.object({
         id: z.number(),
-        fieldId: z.string(),
+        columnName: z.string(),
         collectionId: z.number(),
-        createdAt: z.date(),
-        createdBy: z.number(),
-        updatedAt: z.date(),
-        updatedBy: z.number(),
+        fieldId: z.string(),
+        type: z.string(),
+        enableDelete: z.boolean(),
+        enableSort: z.boolean(),
+        enableHide: z.boolean(),
+        enableFilter: z.boolean(),
+        sortBy: z.string(),
+        visibility: z.boolean(),
       })
     )
+
+    console.log(data)
 
     expect(expectedShape.parse(data)).toEqual(data)
     expect(error).toEqual("")
   })
 
-  test("onSortColumnAction returns error if no schema", async () => {
-    const action = await onSortColumnAction(
+  test("sortColumnAction returns error if no schema", async () => {
+    const action = await sortColumnAction(
       // @ts-expect-error - testing no userId
       {
-        collectionName: "collection_1",
         userId: 1,
       }
     )
 
     const result = await action({
-      sortBy: "desc",
+      searchParams: {
+        sortBy: "collection_1",
+        direction: "asc",
+        page: 1,
+        limit: 10,
+        layout: "grid",
+        nulls: "last",
+      },
       collectionId: 1,
+      collectionName: "testing",
       id: 1,
     })
 
     expect(result).toEqual({
       data: {},
-      error: "onSortColumnAction requires a 'schema' prop",
+      error: "sortColumnAction requires a 'schema' prop",
       totalPages: 0,
     })
   })
 
-  test("onSortColumnAction returns error if no collectionName", async () => {
-    const action = await onSortColumnAction(
+  test("sortColumnAction returns error if no userId", async () => {
+    const action = await sortColumnAction(
       // @ts-expect-error - testing no userId
       {
         schema: ON_SORT_COLUMN_ACTION_DATA,
-        userId: 1,
       }
     )
 
     const result = await action({
-      sortBy: "desc",
+      searchParams: {
+        sortBy: "collection_1",
+        direction: "asc",
+        page: 1,
+        limit: 10,
+        layout: "grid",
+        nulls: "last",
+      },
       collectionId: 1,
+      collectionName: "testing",
       id: 1,
     })
 
     expect(result).toEqual({
       data: {},
-      error: "onSortColumnAction requires a 'collectionName' prop",
+      error: "sortColumnAction requires a 'userId' prop",
       totalPages: 0,
     })
   })
 
-  test("onSortColumnAction returns error if no userId", async () => {
-    const action = await onSortColumnAction(
-      // @ts-expect-error - testing no userId
-      {
-        schema: ON_SORT_COLUMN_ACTION_DATA,
-        collectionName: "collection_1",
-      }
-    )
-
-    const result = await action({
-      sortBy: "desc",
-      collectionId: 1,
-      id: 1,
-    })
-
-    expect(result).toEqual({
-      data: {},
-      error: "onSortColumnAction requires a 'userId' prop",
-      totalPages: 0,
-    })
-  })
-
-  test("onSortColumnAction returns error if no id", async () => {
-    const action = await onSortColumnAction({
+  test("sortColumnAction returns error if no id", async () => {
+    const action = await sortColumnAction({
       schema: ON_SORT_COLUMN_ACTION_DATA,
-      collectionName: "collection_1",
       userId: 1,
     })
 
     const result = await action(
       // @ts-expect-error - testing no collectionId
       {
-        sortBy: "desc",
+        searchParams: {
+          sortBy: "collection_1",
+          direction: "asc",
+          page: 1,
+          limit: 10,
+          layout: "grid",
+          nulls: "last",
+        },
         collectionId: 1,
       }
     )
 
     expect(result).toEqual({
       data: {},
-      error: "onSortColumnAction requires an 'id' prop",
+      error: "sortColumnAction requires an 'id' prop",
       totalPages: 0,
     })
   })
 
-  test("onSortColumnAction returns error if no collectionId", async () => {
-    const action = await onSortColumnAction({
+  test("sortColumnAction returns error if no sortBy", async () => {
+    const action = await sortColumnAction({
       schema: ON_SORT_COLUMN_ACTION_DATA,
-      collectionName: "collection_1",
       userId: 1,
     })
 
-    const result = await action(
+    const result = await action({
+      id: 1,
       // @ts-expect-error - testing no collectionId
-      {
-        id: 1,
-        sortBy: "desc",
-      }
-    )
+      searchParams: {
+        direction: "asc",
+        page: 1,
+        limit: 10,
+        layout: "grid",
+        nulls: "last",
+      },
+    })
 
     expect(result).toEqual({
       data: {},
-      error: "onSortColumnAction requires an 'collectionId' prop",
+      error: "sortColumnAction requires an 'collectionId' prop",
       totalPages: 0,
     })
   })
 
-  test("onSortColumnAction returns error if no sortBy", async () => {
-    const action = await onSortColumnAction({
+  test("sortColumnAction returns error if no searchParams", async () => {
+    const action = await sortColumnAction({
       schema: ON_SORT_COLUMN_ACTION_DATA,
-      collectionName: "collection_1",
       userId: 1,
     })
 
     const result = await action(
-      // @ts-expect-error - testing no sortBy
+      // @ts-expect-error - testing no searchParams
       {
         id: 1,
         collectionId: 1,
+        collectionName: "testing",
       }
     )
 
     expect(result).toEqual({
       data: {},
-      error: "onSortColumnAction requires an 'sortBy' prop",
+      error:
+        "sortColumnAction requires searchParams with a direction and sortBy props",
       totalPages: 0,
     })
   })
 
-  test("onSortColumnAction updates sortBy", async () => {
-    const action = await onSortColumnAction({
+  test("sortColumnAction returns error if no collectionName", async () => {
+    const action = await sortColumnAction({
       schema: ON_SORT_COLUMN_ACTION_DATA,
-      collectionName: "collection_1",
+      userId: 1,
+    })
+
+    const result = await action(
+      // @ts-expect-error - testing no searchParams
+      {
+        id: 1,
+        collectionId: 1,
+        searchParams: {
+          sortBy: "collection_1",
+          direction: "asc",
+          page: 1,
+          limit: 10,
+          layout: "grid",
+          nulls: "last",
+        },
+      }
+    )
+
+    expect(result).toEqual({
+      data: {},
+      error: "sortColumnAction requires a 'collectionName' prop",
+      totalPages: 0,
+    })
+  })
+
+  test("sortColumnAction updates sortBy", async () => {
+    const action = await sortColumnAction({
+      schema: ON_SORT_COLUMN_ACTION_DATA,
       userId: 1,
     })
 
     const result = await action({
       id: 1,
       collectionId: 1,
-      sortBy: "desc",
+      collectionName: "testing",
+      searchParams: {
+        sortBy: "collection_1",
+        direction: "desc",
+        page: 1,
+        limit: 10,
+        layout: "grid",
+        nulls: "last",
+      },
     })
 
     expect(result).toEqual({
@@ -364,8 +408,8 @@ describe("CMS Column Actions", () => {
     })
   })
 
-  test("onUpdateColumnAction returns error if no schema", async () => {
-    const action = await onUpdateColumnAction(
+  test("updateColumnAction returns error if no schema", async () => {
+    const action = await updateColumnAction(
       // @ts-expect-error - testing no schema
       {
         userId: 1,
@@ -380,12 +424,12 @@ describe("CMS Column Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onUpdateColumnAction requires a 'schema' prop",
+      error: "updateColumnAction requires a 'schema' prop",
     })
   })
 
-  test("onUpdateColumnAction returns error if no userId", async () => {
-    const action = await onUpdateColumnAction(
+  test("updateColumnAction returns error if no userId", async () => {
+    const action = await updateColumnAction(
       // @ts-expect-error - testing no userId
       {
         schema: ON_UPDATE_COLUMN_ACTION_DATA,
@@ -400,12 +444,12 @@ describe("CMS Column Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onUpdateColumnAction requires a 'userId' prop",
+      error: "updateColumnAction requires a 'userId' prop",
     })
   })
 
-  test("onUpdateColumnAction returns error if no props", async () => {
-    const action = await onUpdateColumnAction({
+  test("updateColumnAction returns error if no props", async () => {
+    const action = await updateColumnAction({
       schema: ON_UPDATE_COLUMN_ACTION_DATA,
       userId: 1,
     })
@@ -415,12 +459,12 @@ describe("CMS Column Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onUpdateColumnAction requires a 'props' prop",
+      error: "updateColumnAction requires a 'props' prop",
     })
   })
 
-  test("onUpdateColumnAction updates column", async () => {
-    const action = await onUpdateColumnAction({
+  test("updateColumnAction updates column", async () => {
+    const action = await updateColumnAction({
       schema: ON_UPDATE_COLUMN_ACTION_DATA,
       userId: 1,
     })

@@ -4,29 +4,18 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+
     {
-      "name": "Next.js: debug full stack",
+      "name": "Next Dev",
       "type": "node-terminal",
       "request": "launch",
-      "command": "cd projects/nextjs &&  npm run dev",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}/apps/web",
       "serverReadyAction": {
         "pattern": "started server on .+, url: (https?://.+)",
         "uriFormat": "%s",
         "action": "debugWithChrome"
       }
-    },
-    {
-      "name": "Next Dev",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "cd projects/nextjs && NODE_OPTIONS='--inspect' npm run dev"
-    },
-    {
-      "name": "Edge localhost:3010",
-      "type": "msedge",
-      "request": "launch",
-      "url": "http://localhost:3010",
-      "webRoot": "${workspaceFolder}/projects/chat-ai"
     },
     {
       "name": "Typescript",

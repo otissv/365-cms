@@ -19,6 +19,8 @@ import type {
 import collectionDao from "../dao/collection.dao"
 import { isEmpty } from "@repo/lib/isEmpty"
 
+//TODO: test returning '*'
+//TODO: test omit
 export type CmsCollectionService = {
   get(props?: {
     page?: number
@@ -36,17 +38,20 @@ export type CmsCollectionService = {
 
   remove(props: {
     where: [CmsCollectionTableColumn<keyof CmsCollection>, string, any]
-    returning?: (keyof CmsCollection)[]
+    omit?: (keyof CmsCollection)[]
+    returning?: (keyof CmsCollection | "*")[]
   }): Promise<AppResponse<Partial<CmsCollection>>>
   insert(props: {
     data: CmsCollectionInsert
-    returning?: (keyof CmsCollection)[]
+    omit?: (keyof CmsCollection)[]
+    returning?: (keyof CmsCollection | "*")[]
     userId: CmsCollection["userId"]
   }): Promise<AppResponse<Partial<CmsCollection>>>
   update(props: {
     where: [CmsCollectionTableColumn<keyof CmsCollection>, string, any]
     data: CmsCollectionUpdate
-    returning?: (keyof CmsCollection)[]
+    omit?: (keyof CmsCollection)[]
+    returning?: (keyof CmsCollection | "*")[]
     userId: CmsCollection["userId"]
   }): Promise<AppResponse<Partial<CmsCollection>>>
 }
@@ -73,8 +78,9 @@ function cmsCollectionService(schema: string): CmsCollectionService {
 
     async insert({
       data,
-      returning,
+
       userId,
+      ...props
     }): Promise<AppResponse<Partial<CmsCollection>>> {
       try {
         if (isEmpty(userId)) {
@@ -95,8 +101,8 @@ function cmsCollectionService(schema: string): CmsCollectionService {
         if (error instanceof Error) throw error
 
         const result = await collectionDao(schema).insert({
+          ...props,
           data,
-          returning,
           userId,
         })
 
@@ -109,8 +115,8 @@ function cmsCollectionService(schema: string): CmsCollectionService {
     async update({
       where,
       data,
-      returning = ["id"],
       userId,
+      ...props
     }): Promise<AppResponse<Partial<CmsCollectionUpdate>>> {
       try {
         if (isEmpty(userId)) {
@@ -127,9 +133,9 @@ function cmsCollectionService(schema: string): CmsCollectionService {
         if (error instanceof Error) throw error
 
         const result = await collectionDao(schema).update({
+          ...props,
           where,
           data,
-          returning,
           userId,
         })
 

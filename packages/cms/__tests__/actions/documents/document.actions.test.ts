@@ -1,7 +1,7 @@
 import {
   getDocumentsAction,
-  onDeleteRowAction,
-  onUpdateDataAction,
+  deleteRowAction,
+  updateDataAction,
 } from "../../../src/actions/document.actions"
 import type {
   CmsCollectionDocumentUpdate,
@@ -108,7 +108,7 @@ describe("CMS Document Actions", () => {
       searchParams: {
         page: 1,
         limit,
-        orderBy: "id",
+        sortBy: "id",
         direction: "desc",
         nulls: "last",
       },
@@ -176,8 +176,8 @@ describe("CMS Document Actions", () => {
     })
   })
 
-  test("onDeleteRowAction returns error if no schema", async () => {
-    const action = onDeleteRowAction(
+  test("deleteRowAction returns error if no schema", async () => {
+    const action = deleteRowAction(
       // @ts-expect-error - testing no schema
       {}
     )
@@ -186,12 +186,12 @@ describe("CMS Document Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onDeleteRowAction requires a 'schema' prop",
+      error: "deleteRowAction requires a 'schema' prop",
     })
   })
 
-  test("onDeleteRowAction returns error if no ids", async () => {
-    const action = onDeleteRowAction({
+  test("deleteRowAction returns error if no ids", async () => {
+    const action = deleteRowAction({
       schema: ON_DELETE_ROW_ACTION_DATA,
     })
 
@@ -202,12 +202,12 @@ describe("CMS Document Actions", () => {
 
     expect(result).toEqual({
       data: [],
-      error: "onDeleteRowAction requires a 'ids' prop",
+      error: "deleteRowAction requires a 'ids' prop",
     })
   })
 
-  test("onDeleteRowAction deletes rows", async () => {
-    const action = onDeleteRowAction({
+  test("deleteRowAction deletes rows", async () => {
+    const action = deleteRowAction({
       schema: ON_DELETE_ROW_ACTION_DATA,
     })
 
@@ -216,9 +216,9 @@ describe("CMS Document Actions", () => {
     expect(result).toEqual({ data: [{ id: 1 }, { id: 2 }], error: "" })
   })
 
-  test("onUpdateDataAction throws error if no schema", async () => {
+  test("updateDataAction throws error if no schema", async () => {
     try {
-      await onUpdateDataAction(
+      await updateDataAction(
         // @ts-expect-error - testing no collectionName
         {}
       )
@@ -229,9 +229,9 @@ describe("CMS Document Actions", () => {
     }
   })
 
-  test("onUpdateDataAction throws error if userId schema", async () => {
+  test("updateDataAction throws error if userId schema", async () => {
     try {
-      await onUpdateDataAction(
+      await updateDataAction(
         // @ts-expect-error - testing no collectionName
         {
           schema: ON_UPDATE_INSERT_DATA_ACTION,
@@ -244,9 +244,9 @@ describe("CMS Document Actions", () => {
     }
   })
 
-  test("onUpdateDataAction throws error if userId schema", async () => {
+  test("updateDataAction throws error if userId schema", async () => {
     try {
-      const action = await onUpdateDataAction({
+      const action = await updateDataAction({
         schema: ON_UPDATE_INSERT_DATA_ACTION,
         userId: 1,
       })
@@ -256,14 +256,14 @@ describe("CMS Document Actions", () => {
     } catch (error) {
       expect(error).toEqual(
         new Error(
-          "onUpdateDataAction requires a props object argument with 'id' and 'data'"
+          "updateDataAction requires a props object argument with 'id' and 'data'"
         )
       )
     }
   })
 
-  test("onUpdateDataAction insert with defaults", async () => {
-    const action = await onUpdateDataAction({
+  test("updateDataAction insert with defaults", async () => {
+    const action = await updateDataAction({
       schema: ON_UPDATE_INSERT_DATA_ACTION,
       userId: 1,
     })
@@ -276,8 +276,8 @@ describe("CMS Document Actions", () => {
     expect(result).toEqual({ data: [{ id: 5 }], error: "" })
   })
 
-  test("onUpdateDataAction insert with defaults returning all fields", async () => {
-    const action = await onUpdateDataAction({
+  test("updateDataAction insert with defaults returning all fields", async () => {
+    const action = await updateDataAction({
       schema: ON_UPDATE_INSERT_DATA_ACTION,
       userId: 1,
     })
@@ -303,8 +303,8 @@ describe("CMS Document Actions", () => {
     })
   })
 
-  test("onUpdateDataAction update with id", async () => {
-    const action = await onUpdateDataAction({
+  test("updateDataAction update with id", async () => {
+    const action = await updateDataAction({
       schema: ON_UPDATE_DATA_ACTION,
       userId: 1,
     })
@@ -317,8 +317,8 @@ describe("CMS Document Actions", () => {
     expect(result).toEqual({ data: [{ id: 1 }], error: "" })
   })
 
-  test("onUpdateDataAction update with id returning all fields", async () => {
-    const action = await onUpdateDataAction({
+  test("updateDataAction update with id returning all fields", async () => {
+    const action = await updateDataAction({
       schema: ON_UPDATE_DATA_ACTION,
       userId: 1,
     })

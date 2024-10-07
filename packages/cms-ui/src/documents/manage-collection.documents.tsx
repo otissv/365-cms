@@ -52,8 +52,8 @@ import { cmsCollectionUpdateValidate } from "@repo/cms/validators.cms"
 import { CmsButton } from "../ui/cms-button"
 import { notBuiltInColumns } from "./builtin-columns.documents"
 import { ColumnHeader } from "./columns.documents"
-import { useDocument } from "./provider.documents"
-import type { CmsDocumentsView } from "@repo/cms/types.cms"
+import { useCmsStore } from "../store.cms"
+import type { CmsDocumentsView, SearchParams } from "@repo/cms/types.cms"
 
 export function ManageCollectionDialogProvider({
   children,
@@ -84,22 +84,23 @@ export function ManageCollectionDialogProvider({
 
 export interface ManageCollectionDialogProps {
   table: Table<Record<string, any>>
+  searchParams: Required<SearchParams>
 }
 
-export function ManageCollection({ table }: ManageCollectionDialogProps) {
+export function ManageCollection({
+  table,
+  searchParams,
+}: ManageCollectionDialogProps) {
   const [isOpen, setIsOpen] = React.useState<boolean>(false)
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false)
 
-  const { state, columnVisibility, deleteColumn, sortColumn, fieldConfig } =
-    useDocument()
+  const { state, columnVisibility, deleteColumn, sortColumn, field } =
+    useCmsStore()
 
-  const columnOrder = state.collection.get<"columnOrder">("columnOrder") || []
+  const columnOrder =
+    state.documentsCollection.get<"columnOrder">("columnOrder") || []
 
   const form = useFormContext()
-
-  const reset = () => {
-    form.clear()
-  }
 
   const columns = columnOrder.map((fieldId) => {
     const column = table.getColumn(fieldId) as unknown as TanstackColumn<
@@ -114,7 +115,23 @@ export function ManageCollection({ table }: ManageCollectionDialogProps) {
     if (!values) return
 
     const { columnName, type } = values
-    const Icon = fieldConfig[type as keyof typeof fieldConfig].Icon
+    const Icon = field.config[type as keyof typeof field.config].Icon
+
+    const handleSortColumn = ({
+      column,
+      direction,
+    }: {
+      column: TanstackColumn<CmsDocumentsView>
+      direction: "asc" | "desc"
+    }) => {
+      return sortColumn({
+        column,
+        searchParams: {
+          ...searchParams,
+          direction,
+        },
+      })
+    }
 
     return (
       <ColumnHeader key={fieldId} column={column as any} table={table as any}>
@@ -158,9 +175,9 @@ export function ManageCollection({ table }: ManageCollectionDialogProps) {
               <DropdownMenuItem
                 className='h-10'
                 onClick={() =>
-                  sortColumn({
+                  handleSortColumn({
                     column,
-                    sortBy: "asc",
+                    direction: "asc",
                   })
                 }
               >
@@ -171,9 +188,9 @@ export function ManageCollection({ table }: ManageCollectionDialogProps) {
               <DropdownMenuItem
                 className='h-10'
                 onClick={() =>
-                  sortColumn({
+                  handleSortColumn({
                     column,
-                    sortBy: "desc",
+                    direction: "desc",
                   })
                 }
               >
@@ -239,7 +256,7 @@ export function ManageCollection({ table }: ManageCollectionDialogProps) {
   })
 
   return (
-    <Sheet open={isOpen} onOpenChange={reset}>
+    <Sheet open={isOpen} onOpenChange={() => form.clear()}>
       <SheetTrigger asChild>
         <CmsButton
           title='Manage collection'

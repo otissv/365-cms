@@ -1,8 +1,12 @@
 {
   "name": "@repo/ui",
   "version": "0.0.0",
-  "sideEffects": ["**/*.css"],
-  "files": ["dist"],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./styles.css": "./dist/index.css",
     "./*": [
@@ -11,10 +15,10 @@
       "./src/components/*.ts",
       "./src/components/*.tsx",
       "./src/hooks/*.ts",
-      "./src/hooks/*.tsx"
+      "./src/hooks/*.tsx",
+      "./src/lib/*.ts"
     ],
-    "./cn": "./src/lib/utils.ts",
-    "./authorize": "./src/lib/authorize.ts"
+    "./cn": "./src/lib/utils.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -67,10 +71,12 @@
     "@tsparticles/engine": "^3.5.0",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.5.0",
+    "@types/file-saver": "^2.0.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "embla-carousel-react": "^8.1.6",
+    "file-saver": "^2.0.5",
     "framer-motion": "^11.3.2",
     "lucide-react": "^0.408.0",
     "next": "^14.2.3",
@@ -79,6 +85,7 @@
     "react-scroll": "^1.9.0",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.4.0",
-    "vaul": "^0.9.1"
+    "vaul": "^0.9.1",
+    "xlsx": "^0.18.5"
   }
 }

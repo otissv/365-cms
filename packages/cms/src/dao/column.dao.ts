@@ -3,6 +3,7 @@ import "server-only"
 import { getConnection } from "@repo/config/database"
 import { isEmpty } from "@repo/lib/isEmpty"
 import { errorResponse } from "@repo/lib/utils/customError"
+import { omitColumnFromCollection } from "@repo/lib/utils/omitColumnFromCollection"
 
 import type {
   AppResponse,
@@ -13,6 +14,8 @@ import type {
   CmsCollectionColumnUpdate,
 } from "../types.cms"
 
+//TODO: test returning '*'
+//TODO: test omit
 export type CmsCollectionColumnsDao = {
   getByFieldId(props?: {
     collectionId: number
@@ -25,14 +28,16 @@ export type CmsCollectionColumnsDao = {
   >
   remove(props: {
     fieldId: string
-    returning?: (keyof CmsCollectionColumn)[]
+    omit?: (keyof CmsCollectionColumn)[]
+    returning?: (keyof CmsCollectionColumn | "*")[]
   }): Promise<AppResponse<Partial<CmsCollectionColumn>>>
   insert(props: {
     data: Omit<
       CmsCollectionColumnInsert,
       "createdAt" | "createdBy" | "updatedAt" | "updatedBy"
     >
-    returning?: (keyof CmsCollectionColumn | "columnOrder")[]
+    omit?: (keyof CmsCollectionColumn)[]
+    returning?: (keyof CmsCollectionColumn | "columnOrder" | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionColumn>>>
   update(props: {
@@ -43,7 +48,8 @@ export type CmsCollectionColumnsDao = {
       any,
     ]
     data: CmsCollectionColumnUpdate
-    returning?: (keyof CmsCollectionColumn)[]
+    omit?: (keyof CmsCollectionColumn)[]
+    returning?: (keyof CmsCollectionColumn | "*")[]
     userId: number
   }): Promise<AppResponse<Partial<CmsCollectionColumn>>>
 }
@@ -127,6 +133,7 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
 
     async remove({
       fieldId,
+      omit,
       returning = ["id"],
     }): Promise<AppResponse<Partial<CmsCollectionColumn>>> {
       try {
@@ -179,12 +186,13 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
               })
 
             return {
-              data: result,
+              data: omit
+                ? omitColumnFromCollection<CmsCollectionColumn>()(omit)(result)
+                : result,
               error: "",
             }
           } catch (error) {
-            // biome-ignore lint/complexity/noUselessCatch: <explanation>
-            throw error
+            return errorResponse(error)
           }
         })
       } catch (error) {
@@ -194,6 +202,7 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
 
     async insert({
       data: doc,
+      omit,
       returning = ["id"],
       userId,
     }): Promise<
@@ -220,7 +229,8 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
           }
         }
 
-        const result = await db.transaction(async (trx) => {
+        // TODO: test defaultFields are added
+        return db.transaction(async (trx) => {
           try {
             const collectionColumns = await trx
               .withSchema(schema)
@@ -233,6 +243,7 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
                   updatedAt: new Date(),
                   updatedBy: userId,
                 },
+
                 returning
               )
 
@@ -248,17 +259,19 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
                 },
                 ["id"]
               )
-            return collectionColumns
+
+            return {
+              data: omit
+                ? omitColumnFromCollection<CmsCollectionColumn>()(omit)(
+                    collectionColumns
+                  )
+                : collectionColumns,
+              error: "",
+            }
           } catch (error) {
-            // biome-ignore lint/complexity/noUselessCatch: <explanation>
-            throw error
+            return errorResponse(error)
           }
         })
-
-        return {
-          data: result,
-          error: "",
-        }
       } catch (error) {
         return errorResponse(error)
       }
@@ -268,6 +281,7 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
       collectionId,
       where,
       data,
+      omit,
       returning = ["id"],
       userId,
     }): Promise<AppResponse<Partial<CmsCollectionColumn>>> {
@@ -315,7 +329,9 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
           )
 
         return {
-          data: result,
+          data: omit
+            ? omitColumnFromCollection<CmsCollectionColumn>()(omit)(result)
+            : result,
           error: "",
         }
       } catch (error) {

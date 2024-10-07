@@ -9,12 +9,12 @@ export const getDocumentsActionData: CmsCollectionDocumentData[] =
     count: 12,
   })
 
-export const onUpdateDataActionData: CmsCollectionDocumentData[] =
+export const updateDataActionData: CmsCollectionDocumentData[] =
   faker.helpers.multiple(fakeDocumentData as any, {
     count: 4,
   })
 
-export const onDeleteRowActionData: CmsCollectionDocumentData[] =
+export const deleteRowActionData: CmsCollectionDocumentData[] =
   faker.helpers.multiple(fakeDocumentData as any, {
     count: 2,
   })

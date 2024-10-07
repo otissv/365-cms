@@ -1,10 +1,10 @@
 import { getConnection } from "@repo/config/database"
 import { createCmsDatabase } from "../../../src/schema/collections.schema"
 import {
-  onDeleteColumnActionData,
-  onInsertColumnActionData,
-  onSortColumnActionData,
-  onUpdateColumnActionData,
+  deleteColumnActionData,
+  insertColumnActionData,
+  sortColumnActionData,
+  updateColumnActionData,
 } from "./data.column.actions"
 import { cleanUpSchemas } from "../../__helpers___/cleanup-schemas.helpers"
 import { fakeCollectionData } from "../../__helpers___/data.helpers"
@@ -42,7 +42,7 @@ export async function setUpCmsColumnAction() {
             .into("cms_collections")
           await trx
             .withSchema(ON_DELETE_COLUMN_ACTION_DATA)
-            .insert(onDeleteColumnActionData, ["id"])
+            .insert(deleteColumnActionData, ["id"])
             .into("cms_collection_columns")
         })
       }
@@ -55,7 +55,7 @@ export async function setUpCmsColumnAction() {
             .into("cms_collections")
           await trx
             .withSchema(ON_INSERT_COLUMN_ACTION_DATA)
-            .insert(onInsertColumnActionData, ["id"])
+            .insert(insertColumnActionData, ["id"])
             .into("cms_collection_columns")
         })
       }
@@ -69,7 +69,7 @@ export async function setUpCmsColumnAction() {
 
           await trx
             .withSchema(ON_SORT_COLUMN_ACTION_DATA)
-            .insert(onSortColumnActionData, ["id"])
+            .insert(sortColumnActionData, ["id"])
             .into("cms_collection_columns")
         })
       }
@@ -82,7 +82,7 @@ export async function setUpCmsColumnAction() {
             .into("cms_collections")
           await trx
             .withSchema(ON_UPDATE_COLUMN_ACTION_DATA)
-            .insert(onUpdateColumnActionData, ["id"])
+            .insert(updateColumnActionData, ["id"])
             .into("cms_collection_columns")
         })
       }

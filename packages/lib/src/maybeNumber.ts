@@ -19,5 +19,8 @@ import { maybeType } from "./maybeType"
  * */
 export const maybeNumber =
   (none = 0) =>
-  (value: unknown): number =>
-    maybeType(none)("number")(value)
+  (value: unknown): number => {
+    const result = maybeType(none)("number")(value)
+
+    return !Number.isNaN(result) ? result : none
+  }

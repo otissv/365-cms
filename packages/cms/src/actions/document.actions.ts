@@ -14,7 +14,6 @@ export function getDocumentsAction({
   schema,
 }: {
   schema: string
-  revalidatePath?: string
 }) {
   return async ({
     searchParams,
@@ -46,7 +45,7 @@ export function getDocumentsAction({
       limit: searchParams?.limit,
       collectionName,
       orderBy: [
-        searchParams?.orderBy || "id",
+        searchParams?.sortBy || "id",
         searchParams?.direction || "asc",
         searchParams?.nulls || "last",
       ],
@@ -59,21 +58,21 @@ export function getDocumentsAction({
   }
 }
 
-export function onDeleteRowAction({ schema }: { schema: string }) {
+export function deleteRowAction({ schema }: { schema: string }) {
   return async ({ ids }: { ids: number[] }) => {
     "use server"
 
     if (isEmpty(schema)) {
       return {
         data: [],
-        error: "onDeleteRowAction requires a 'schema' prop",
+        error: "deleteRowAction requires a 'schema' prop",
       }
     }
 
     if (isEmpty(ids)) {
       return {
         data: [],
-        error: "onDeleteRowAction requires a 'ids' prop",
+        error: "deleteRowAction requires a 'ids' prop",
       }
     }
 
@@ -81,7 +80,7 @@ export function onDeleteRowAction({ schema }: { schema: string }) {
   }
 }
 
-export function onUpdateDataAction({
+export function updateDataAction({
   schema,
   userId,
 }: { schema: string; userId: number }) {
@@ -95,14 +94,14 @@ export function onUpdateDataAction({
     if (isEmpty(schema)) {
       return {
         data: [],
-        error: "onUpdateDataAction requires an 'schema' prop",
+        error: "updateDataAction requires an 'schema' prop",
       }
     }
 
     if (isEmpty(userId)) {
       return {
         data: [],
-        error: "onUpdateDataAction requires an 'userId' prop",
+        error: "updateDataAction requires an 'userId' prop",
       }
     }
 
@@ -110,7 +109,7 @@ export function onUpdateDataAction({
       return {
         data: [],
         error:
-          "onUpdateDataAction requires a props object argument with 'id' and 'data'",
+          "updateDataAction requires a props object argument with 'id' and 'data'",
       }
     }
 

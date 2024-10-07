@@ -56,7 +56,6 @@ import {
 } from "@repo/ui/alert-dialog"
 
 import type {
-  CmsCollection,
   CmsCollectionColumn,
   CmsConfigField,
   CmsDocumentsView,
@@ -67,12 +66,11 @@ import { notBuiltInColumns } from "./builtin-columns.documents"
 import { DataTableCell } from "./data-table-cell.documents"
 import { CmsButton } from "../ui/cms-button"
 import { ColumnDialog } from "./column-dialog.documents"
-import type { DocumentContextState } from "./provider.documents"
+import type { CmsContextState } from "../store.cms"
 
 export function getTableColumns<TData, TValue>({
   collectionId,
   collectionName,
-  collectionType,
   columns,
   errors,
   fieldComponent,
@@ -102,9 +100,12 @@ export function getTableColumns<TData, TValue>({
       value: any
     }) => JSX.Element
   >
-  onDeleteColumn: DocumentContextState["deleteColumn"]
-  onSortColumn: DocumentContextState["sortColumn"]
-  onColumnVisibility: DocumentContextState["columnVisibility"]
+  onDeleteColumn: CmsContextState["deleteColumn"]
+  onSortColumn: (props: {
+    column: TanstackColumn<CmsDocumentsView>
+    direction: "asc" | "desc"
+  }) => Promise<void>
+  onColumnVisibility: CmsContextState["columnVisibility"]
 }): ColumnDef<TData, TValue>[] {
   return [
     {
@@ -165,7 +166,6 @@ export function getTableColumns<TData, TValue>({
       }) => {
         return dynamicColumn({
           collectionId,
-          collectionType,
           columnName,
           fieldId,
           type,
@@ -187,7 +187,6 @@ export function getTableColumns<TData, TValue>({
 
 export function dynamicColumn({
   collectionId,
-  collectionType,
   columnName,
   errors,
   fieldComponent,
@@ -203,7 +202,6 @@ export function dynamicColumn({
   onColumnVisibility,
 }: {
   collectionId: number
-  collectionType: CmsCollection["type"]
   columnName: string
   errors: CmsErrorState
   fieldId: string
@@ -219,14 +217,17 @@ export function dynamicColumn({
   type: CmsCollectionColumn["type"]
   validation: Record<string, any>
   values: Partial<CmsCollectionColumn>
-  onDeleteColumn: DocumentContextState["deleteColumn"]
-  onSortColumn: DocumentContextState["sortColumn"]
-  onColumnVisibility: DocumentContextState["columnVisibility"]
+  onDeleteColumn: CmsContextState["deleteColumn"]
+  onSortColumn: (props: {
+    column: TanstackColumn<CmsDocumentsView>
+    direction: "asc" | "desc"
+  }) => Promise<void>
+  onColumnVisibility: CmsContextState["columnVisibility"]
 }) {
   const field = (fieldConfig as any)[type]
 
   if (!field) {
-    throw new Error(`DocumentProvider is missing ${type} field`)
+    throw new Error(`Documents is missing ${type} field`)
   }
 
   return {
@@ -377,9 +378,12 @@ function ColumnHeaderDropdown({
   className: string
   column: TanstackColumn<any>
   type: string
-  onDeleteColumn: DocumentContextState["deleteColumn"]
-  onSortColumn: DocumentContextState["sortColumn"]
-  onColumnVisibility: DocumentContextState["columnVisibility"]
+  onDeleteColumn: CmsContextState["deleteColumn"]
+  onSortColumn: (props: {
+    column: TanstackColumn<CmsDocumentsView>
+    direction: "asc" | "desc"
+  }) => Promise<void>
+  onColumnVisibility: CmsContextState["columnVisibility"]
 }) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false)
@@ -427,19 +431,19 @@ function ColumnHeaderDropdown({
         </DropdownMenuItem>
         <DropdownMenuItem
           className='h-10'
-          onClick={() => onSortColumn({ column, sortBy: "asc" })}
+          onClick={() => onSortColumn({ column, direction: "asc" })}
         >
           <ArrowDownAZ className='h-4 w-4 mr-4' /> Sort A
           <MoveRight className='h-4 w-4 mx-2' /> Z
         </DropdownMenuItem>
         <DropdownMenuItem
           className='h-10'
-          onClick={() => onSortColumn({ column, sortBy: "desc" })}
+          onClick={() => onSortColumn({ column, direction: "desc" })}
         >
           <ArrowDownZA className='h-4 w-4 mr-4' /> Sort Z
           <MoveLeft className='h-4 w-4 mx-2 p-0' />A
         </DropdownMenuItem>
-        {notBuiltInColumns(type) && (
+        {notBuiltInColumns(fieldId) && (
           <>
             <DropdownMenuItem>
               <ArrowDownSquare className='h-4 w-4 mr-4' /> Index
@@ -476,7 +480,7 @@ function ColumnHeaderDropdown({
                   <AlertDialogAction asChild>
                     <Button
                       variant='destructive'
-                      onClick={onDeleteColumn}
+                      onClick={() => onDeleteColumn(fieldId)}
                       className='rounded-md'
                     >
                       Delete
