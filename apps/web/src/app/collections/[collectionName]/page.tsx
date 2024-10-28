@@ -21,13 +21,14 @@ import PrivateTextField from "@repo/cms-ui/fields/private-text"
 import UrlField from "@repo/cms-ui/fields/url"
 import DateTimeField from "@repo/cms-ui/fields/dateTime"
 
-export default async function CollectionPage({
-  params,
-  searchParams,
-}: {
-  params: { collectionName: string }
-  searchParams: SearchParams
-}) {
+export default async function CollectionPage(
+  props: {
+    params: Promise<{ collectionName: string }>
+    searchParams: Promise<SearchParams>
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const schema = "t_1"
 
   const { collectionName } = params

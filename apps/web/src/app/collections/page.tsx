@@ -6,11 +6,12 @@ import Collections from "@repo/cms-ui/collections/collections"
 import { Collections as CollectionsRoute } from "@/routes"
 import { getCollectionsAction } from "@repo/cms/actions/collection.actions"
 
-export default async function CollectionsPage({
-  searchParams,
-}: {
-  searchParams: SearchParams
-}) {
+export default async function CollectionsPage(
+  props: {
+    searchParams: Promise<SearchParams>
+  }
+) {
+  const searchParams = await props.searchParams;
   const schema = "t_1"
 
   const { data, totalPages } = await getCollectionsAction({ schema })({

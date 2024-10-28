@@ -1,12 +1,8 @@
 {
   "name": "@repo/ui",
   "version": "0.0.0",
-  "sideEffects": [
-    "**/*.css"
-  ],
-  "files": [
-    "dist"
-  ],
+  "sideEffects": ["**/*.css"],
+  "files": ["dist"],
   "exports": {
     "./styles.css": "./dist/index.css",
     "./*": [
@@ -26,7 +22,7 @@
     "dev": "tailwindcss -i ./src/css/styles.css -o ./dist/index.css --watch"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "19.0.0-rc-69d4b800-20241021"
   },
   "devDependencies": {
     "@repo/lib": "workspace:*",

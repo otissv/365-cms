@@ -16,6 +16,9 @@
     "build": "tailwindcss -i ./src/css/styles.css -o ./dist/index.css",
     "dev": "tailwindcss -i ./src/css/styles.css -o ./dist/index.css --watch"
   },
+  "peerDependencies": {
+    "react": "19.0.0-rc-69d4b800-20241021"
+  },
   "devDependencies": {
     "@repo/config": "workspace:*",
     "@repo/jest-config": "workspace:*",
@@ -24,7 +27,7 @@
     "@repo/typescript-config": "workspace:*",
     "@repo/ui": "workspace:*",
     "@testing-library/react": "^16.0.1",
-    "@types/react": "^18.2.61",
+    "@types/react": "npm:types-react@19.0.0-rc.1",
     "autoprefixer": "^10.4.18",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
@@ -38,7 +41,6 @@
     "date-fns": "^3.6.0",
     "lucide-react": "^0.408.0",
     "next": "^14.2.3",
-    "react": "^18.2.0",
     "react-day-picker": "^8.10.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
