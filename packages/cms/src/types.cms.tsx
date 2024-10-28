@@ -79,13 +79,17 @@ export type CmsCollectionDocumentUpdate = z.infer<
   typeof cmsCollectionDocumentUpdateValidator
 >
 
-export type CmsDocumentsView = Omit<CmsCollectionDocument, "data"> & {
+export type CmsDocumentsView = Omit<
+  CmsCollectionDocument,
+  "data" | "errors"
+> & {
   collectionName: CmsCollection["name"]
   columnOrder: string[]
   type: CmsCollection["type"]
   roles: CmsCollection["roles"]
   columns: CmsCollectionColumn[]
   data: Record<string, any>[]
+  errors: Record<string, any>[]
 }
 
 /* CMS UI */
@@ -100,12 +104,12 @@ export type CmsFieldBase<Value> = {
   fieldId: string
   id: string
   isInline?: boolean
-  options?: Record<string, string>
-  validate?: (
-    value: Value,
-    validation?: Record<string, any>,
+  options?: Record<string, any>
+  validate?: (props: {
+    value: Value
+    validation?: Record<string, any>
     columnName?: string
-  ) => {
+  }) => {
     value: Value
     error: string
   }
@@ -120,7 +124,11 @@ export type CmsField<TElement, Value> = Omit<
 > &
   CmsFieldBase<Value>
 
-export type CmsConfigField<Value, Validation, Options> = {
+export type CmsConfigField<
+  Value,
+  Validation,
+  Options extends { value: any },
+> = {
   description: string
   title: string
   type: CmsCollectionColumn["type"]
@@ -128,11 +136,12 @@ export type CmsConfigField<Value, Validation, Options> = {
   validationDefaults?: Validation
   initialState: any
   Icon?: (props: Record<string, any>) => React.JSX.Element
-  validate?: (
-    value: Value,
-    validation: Validation,
+  validate?: (props: {
+    value: Value
+    validation: Validation
     columnName: string
-  ) => {
+    options?: Options["value"]
+  }) => {
     value: Value
     error: string
   }
@@ -146,6 +155,13 @@ export type DocumentInsert = {
 }
 
 export type DocumentUpdate = {
-  id?: CmsCollectionDocument["id"]
+  id: CmsCollectionDocument["id"]
   data: CmsCollectionDocumentUpdate["data"]
+  errors?: CmsCollectionDocumentUpdate["errors"]
+}
+
+export type DocumentSlugUpdate = {
+  id: CmsCollectionDocument["id"]
+  slug: CmsCollectionDocumentUpdate["slug"]
+  errors?: CmsCollectionDocumentUpdate["errors"]
 }

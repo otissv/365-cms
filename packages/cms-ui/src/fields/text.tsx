@@ -30,7 +30,6 @@ type Option = {
 }
 
 export type FieldOptionsProps = {
-  type?: "text" | "title"
   fieldId: string
   onUpdate: (
     newValue: NonNullable<CmsCollectionColumn["fieldOptions"]>,
@@ -69,7 +68,7 @@ const fieldConfig: CmsConfigField<string, TextFieldValidation, Option> = {
     maxLength: 0,
     disallowCharacters: "",
   },
-  validate: (value, validation, columnName) => {
+  validate: ({ value, validation, columnName }) => {
     const { required, minLength, maxLength, disallowCharacters } =
       validation || {}
 
@@ -106,9 +105,9 @@ const fieldConfig: CmsConfigField<string, TextFieldValidation, Option> = {
 }
 
 function Field({
+  id,
   value,
   className,
-  fieldId,
   isInline,
   onUpdate,
   errorMessage,
@@ -119,11 +118,15 @@ function Field({
   const [state, setState] = React.useState(value || "")
 
   const handleOnUpdate = () => {
-    const { error } = validate?.(state.trim(), validation, columnName) || {
+    const { error } = validate?.({
+      value: state.trim(),
+      validation,
+      columnName,
+    }) || {
       error: "",
     }
 
-    if (state !== value && onUpdate) {
+    if ((state !== value && onUpdate) || error) {
       onUpdate(state, error)
     }
   }
@@ -149,12 +152,12 @@ function Field({
     >
       <Input
         type='text'
-        id={fieldId}
+        id={id}
         className={cn(
           "min-w-48 p-2 border-0 bg-transparent rounded-none focus:bg-accent",
           !isInline && "rounded-md"
         )}
-        aria-describedby='helper-text-explanation'
+        aria-describedby={id}
         value={state}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setState(e.target.value)
@@ -181,7 +184,6 @@ function Field({
 function FieldOptions({
   value = {},
   onUpdate,
-  type = "text",
   fieldId,
 }: FieldOptionsProps): JSX.Element {
   const defaultValue = value.defaultValue || ""
@@ -199,7 +201,6 @@ function FieldOptions({
       <Field
         id='defaultValue'
         fieldId={fieldId}
-        type={type}
         value={defaultValue}
         onUpdate={handleOnUpdate}
       />

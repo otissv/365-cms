@@ -47,7 +47,9 @@ CREATE INDEX IF NOT EXISTS idx_collection  ON ${schema}.cms_collection_columns (
 CREATE TABLE IF NOT EXISTS ${schema}.cms_documents (
     id SERIAL PRIMARY KEY,
     "collectionId" integer REFERENCES ${schema}.cms_collections(id),
+    slug character varying(256),
     data jsonb,
+    errors jsonb,
     "createdBy" integer,
     "createdAt" timestamp with time zone DEFAULT now(),
     "updatedBy" integer,

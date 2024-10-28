@@ -6,11 +6,20 @@ import { getDocumentsAction } from "@repo/cms/actions/document.actions"
 
 import { isEmpty } from "@repo/lib/isEmpty"
 import { PageHeader } from "@repo/ui/page/page-header"
-import TextField from "@repo/cms-ui/fields/text"
 import Documents from "@repo/cms-ui/documents/documents"
-
 import type { FieldConfig } from "@repo/cms-ui/store.cms"
+
 import { Collections } from "@/routes"
+
+import TextField from "@repo/cms-ui/fields/text"
+import BooleanField from "@repo/cms-ui/fields/boolean"
+import NumberField from "@repo/cms-ui/fields/number"
+import EmailField from "@repo/cms-ui/fields/email"
+import ParagraphField from "@repo/cms-ui/fields/paragraph"
+import PrivateNumberField from "@repo/cms-ui/fields/private-number"
+import PrivateTextField from "@repo/cms-ui/fields/private-text"
+import UrlField from "@repo/cms-ui/fields/url"
+import DateTimeField from "@repo/cms-ui/fields/dateTime"
 
 export default async function CollectionPage({
   params,
@@ -50,7 +59,19 @@ export default async function CollectionPage({
         collectionName={collectionName}
         searchParams={searchParams}
         totalPages={totalPages}
-        fields={[TextField] as FieldConfig[]}
+        fields={
+          [
+            DateTimeField,
+            TextField,
+            BooleanField,
+            NumberField,
+            EmailField,
+            ParagraphField,
+            PrivateNumberField,
+            PrivateTextField,
+            UrlField,
+          ] as FieldConfig[]
+        }
       />
     </>
   )

@@ -37,11 +37,13 @@ import type {
   CmsField,
   CollectionsReturnType,
   DocumentInsert,
+  DocumentSlugUpdate,
   DocumentUpdate,
   SearchParams,
 } from "@repo/cms/types.cms"
 
 import { removeObjectKeys } from "@repo/lib/removeObjectKeys"
+import SlugField from "./fields/slug"
 import InfoField from "./fields/info"
 import InfoDateField from "./fields/info-date"
 
@@ -208,7 +210,7 @@ export function useCmsStore() {
 
 export function getFieldConfig(fields: FieldConfig[] = []) {
   const field = fields
-    .concat([InfoField, InfoDateField] as FieldConfig[])
+    .concat([SlugField, InfoField, InfoDateField] as FieldConfig[])
     .reduce(
       (acc, field) => {
         const FieldIcon = field.fieldConfig.Icon
@@ -254,7 +256,7 @@ export function prepareDocuments({
   columns = [],
 }: {
   collection:
-    | (Omit<CmsDocumentsView, "data" | "columns" | "columnOrder"> & {
+    | (Omit<CmsDocumentsView, "data" | "errors" | "columns" | "columnOrder"> & {
         columnOrder: string[]
       })
     | { [key: string]: never }
@@ -346,6 +348,9 @@ export interface CmsProviderProps {
   updateData: (
     props: DocumentInsert | DocumentUpdate
   ) => Promise<AppResponse<Partial<CmsCollectionDocument>>>
+  updateSlug: (
+    props: DocumentSlugUpdate
+  ) => Promise<AppResponse<Partial<CmsCollectionDocument>>>
 }
 
 export function CmsProvider({
@@ -363,6 +368,7 @@ export function CmsProvider({
   updateColumn,
   updateColumnOrder,
   updateData,
+  updateSlug,
   toast = notify,
 }: CmsProviderProps) {
   const [_isPending, startTransition] = React.useTransition()
@@ -398,33 +404,33 @@ export function CmsProvider({
         }
   )
 
+  const collectionsMemo = React.useMemo(() => [], [])
+  const collectionsState: ArrayStoreState<CollectionStoreState> =
+    useArrayStore<CollectionStoreState>(collectionsMemo as any, "id")
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const prepareCollectionMemo = React.useMemo(
     () => prepareDocuments({ collection: col, columns }),
     [JSON.stringify(col), JSON.stringify(columns)]
   )
-
-  const collectionsMemo = React.useMemo(() => [], [])
-
-  const collectionsState: ArrayStoreState<CollectionStoreState> =
-    useArrayStore<CollectionStoreState>(collectionsMemo as any, "id")
-
   const collectionState: ObjectStoreState<
     Omit<CmsDocumentsView, "data" | "columns">
   > = useObjectStore<Omit<CmsDocumentsView, "data" | "columns">>(
     prepareCollectionMemo as any
   )
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const columnsMemo = React.useMemo(() => columns, [JSON.stringify(columns)])
   const columnsState: ArrayStoreState<CmsCollectionColumn> =
-    useArrayStore<CmsCollectionColumn>(columns, "fieldId")
+    useArrayStore<CmsCollectionColumn>(columnsMemo, "fieldId")
 
   const documentsState: ArrayStoreState<Record<string, any>> = useArrayStore<
     Record<string, any>
   >(data, "id")
 
-  const errorsState: ObjectStoreState<Record<string, string>> = useObjectStore<
-    Record<string, string>
-  >({})
+  const errorsMemo = React.useMemo(() => ({}), [])
+  const errorsState: ObjectStoreState<Record<string, string>> =
+    useObjectStore<Record<string, string>>(errorsMemo)
 
   const handleAddNewCollection = async (props: {
     name: string
@@ -580,12 +586,11 @@ export function CmsProvider({
     return response
   }
 
-  const handleDeleteColumn = async (fieldId: string): Promise<void> => {
+  const handleDeleteColumn = async (fieldId: string): Promise<string> => {
     const { error } = await deleteColumn({ fieldId })
 
     if (error) {
-      toast(error)
-      return
+      return error
     }
 
     const columnOrder = collectionState.get<"columnOrder">("columnOrder") || []
@@ -593,6 +598,17 @@ export function CmsProvider({
 
     collectionState.update("columnOrder", newColumnOrder)
     columnsState.delete(fieldId)
+
+    const newErrorState = errorsState.reduce((acc, [id, value]) => {
+      if ((id as string).startsWith(fieldId)) return acc
+      acc[id] = value
+
+      return acc
+    }, {})
+
+    errorsState.replace(newErrorState)
+
+    return ""
   }
 
   const handleDeleteRow = async (): Promise<void> => {
@@ -709,9 +725,25 @@ export function CmsProvider({
       id: data[0].id,
       ...values,
     }
-    columnsState.update(updateItem.fieldId as string, updateItem)
 
-    // TODO: add to columnOrder
+    if (id) {
+      columnsState.update(updateItem.fieldId as string, updateItem)
+    } else {
+      columnsState.add([updateItem as CmsCollectionColumn])
+      collectionState.update("columnOrder", updateColumnOrder)
+    }
+
+    if (!isEmpty(updateItem.fieldOptions?.defaultValue)) {
+      documentsState.edit((previousValue, [id, value]) => {
+        previousValue.push({
+          ...value,
+          id,
+          [updateItem.fieldId as string]: updateItem.fieldOptions?.defaultValue,
+        })
+        return previousValue
+      })
+    }
+
     return [updateItem]
   }
 
@@ -727,34 +759,45 @@ export function CmsProvider({
     row: Row<Record<string, any>>
     type: string
     value: unknown
-  }): Promise<void> => {
+  }): Promise<string> => {
     try {
       const data = documentsState.get(row.id)
       const id = data?.id
+      const celId = `${column.id}:${id}`
 
-      if (id) {
-        const celId = `${column.id}:${id}`
-        if (errorMessage.trim() !== "") {
-          errorsState.update(celId, errorMessage)
-        } else {
-          errorsState.delete(celId)
-        }
+      if (!id) {
+        return ""
+      }
 
-        const { error } = await updateData({
+      if (errorMessage.trim() !== "") {
+        errorsState.update(celId, errorMessage)
+      } else {
+        errorsState.delete(celId)
+      }
+
+      let response: AppResponse<Partial<CmsCollectionDocument>>
+      if (column.id === "slug") {
+        response = await updateSlug({
+          id,
+          slug: value as string,
+          errors: { [column.id]: errorMessage },
+        })
+      } else {
+        response = await updateData({
           id,
           data: { [column.id]: value },
+          errors: { [column.id]: errorMessage },
         })
-
-        if (error) {
-          console.error(error)
-          toast(error)
-          return
-        }
-
-        documentsState.update(id, { [column.id]: value })
       }
+
+      if (response.error) {
+        throw new Error(response.error)
+      }
+
+      documentsState.update(id, { [column.id]: value })
+      return ""
     } catch (error) {
-      toast(error as any)
+      return error as string
     }
   }
 

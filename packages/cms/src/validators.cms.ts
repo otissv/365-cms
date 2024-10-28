@@ -44,7 +44,9 @@ export const cmsCollectionValidator = z.object({
 export const cmsCollectionDocumentValidator = z.object({
   id: z.number().int().positive(),
   collectionId: z.number().int().positive(),
+  slug: z.string(),
   data: z.record(z.string(), z.any()).optional(),
+  errors: z.record(z.string(), z.any()).optional(),
   createdAt: z.coerce.date(),
   createdBy: z.number().int().positive(),
   updatedAt: z.coerce.date(),

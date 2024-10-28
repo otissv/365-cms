@@ -287,28 +287,31 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
                 {
                   columnName: "Slug",
                   fieldId: "slug",
-                  type: "text",
+                  type: "slug",
                   visibility: true,
+                  validation: {
+                    required: true,
+                  },
                 },
                 {
                   columnName: "Created By",
                   fieldId: "createdBy",
-                  type: "infoDate",
+                  type: "info",
                 },
                 {
                   columnName: "Created At",
                   fieldId: "createdAt",
-                  type: "info",
+                  type: "infoDate",
                 },
                 {
                   columnName: "Updated By",
                   fieldId: "updatedBy",
-                  type: "infoDate",
+                  type: "info",
                 },
                 {
                   columnName: "Updated At",
                   fieldId: "updatedAt",
-                  type: "info",
+                  type: "infoDate",
                 },
               ].map((fields) => ({
                 collectionId,
@@ -320,26 +323,31 @@ function cmsCollectionsDao(schema: string): CmsCollectionsDao {
                 ...fields,
               }))
 
-              // TODO: add text
               await trx
                 .withSchema(schema)
                 .insert(defaultColumnFields)
                 .into("cms_collection_columns")
 
-              // TODO: add text
-              await trx
+              const document = await trx
                 .withSchema(schema)
                 .insert({
                   collectionId,
-                  data: {
-                    slug: "",
-                  },
+                  slug: "",
                   updatedAt: new Date(),
                   updatedBy: userId,
                   createdAt: new Date(),
                   createdBy: userId,
                 })
+                .returning("id")
                 .into("cms_documents")
+
+              await trx
+                .withSchema(schema)
+                .into("cms_documents")
+                .where("id", "=", document[0].id)
+                .update({
+                  errors: { slug: "Slug field is required" },
+                })
             }
 
             return {

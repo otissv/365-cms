@@ -44,12 +44,7 @@ import {
   exportToJson,
 } from "@repo/ui/download-file"
 
-import {
-  CmsContextState,
-  prepareDocuments,
-  useCmsStore,
-  type FieldConfig,
-} from "../store.cms"
+import { prepareDocuments, useCmsStore, type FieldConfig } from "../store.cms"
 import { searchParamsWithDefaults } from "../searchParamsWithDefaults.cms"
 import { type CmsToolbarProps, CmsToolbar, CmsButton } from "../ui/cms-button"
 import { ToggleLayout } from "../ui/toggle-layout"
@@ -80,12 +75,13 @@ export default function Documents({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: run once
   React.useEffect(() => {
-    const { data, columns, ...col } = collection
+    const { data, columns, errors, ...col } = collection
     const documents = prepareDocuments({ collection: col, columns })
 
     state.documentsCollection.replace(documents as any)
     state.columns.replace(columns)
     state.documents.replace(data)
+    state.error.replace(errors)
 
     setIsLoaded(true)
   }, [searchParams.page, searchParams.limit, JSON.stringify(collection)])
@@ -347,18 +343,22 @@ export function DocumentsList({
 
   const { state, selectedRows, deleteRow, duplicateRow, addRow } = useCmsStore()
 
+  const hasErrors = !isEmpty(
+    state.error.values().filter((v) => v.trim() !== "")
+  )
+
   return (
     <>
       <div className='space-y-1'>
         <p
           className={cn(
             "w-full h-8 py-1 px-2",
-            state.error.size()
+            hasErrors
               ? "bg-destructive text-destructive-foreground rounded-md"
               : "not-sr-only"
           )}
         >
-          <span className={cn(!state.error.size() && "hidden")}>
+          <span className={cn(!hasErrors && "hidden")}>
             Data contains errors.
           </span>
         </p>

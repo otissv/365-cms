@@ -5,6 +5,7 @@ import cmsDocumentsServices from "../services/documents.service"
 import type {
   CmsCollectionDocument,
   DocumentInsert,
+  DocumentSlugUpdate,
   DocumentUpdate,
   SearchParams,
 } from "../types.cms"
@@ -125,6 +126,47 @@ export function updateDataAction({
 
     return cmsDocumentsServices(schema).insert({
       data: rest as DocumentInsert,
+      returning,
+      userId,
+    })
+  }
+}
+
+export function updateSlugAction({
+  schema,
+  userId,
+}: { schema: string; userId: number }) {
+  return async (
+    props: DocumentSlugUpdate,
+
+    returning: (keyof CmsCollectionDocument)[] = ["id"]
+  ) => {
+    "use server"
+
+    if (isEmpty(schema)) {
+      return {
+        data: [],
+        error: "updateDataAction requires an 'schema' prop",
+      }
+    }
+
+    if (isEmpty(userId)) {
+      return {
+        data: [],
+        error: "updateDataAction requires an 'userId' prop",
+      }
+    }
+
+    if (isEmpty(props)) {
+      return {
+        data: [],
+        error:
+          "updateDataAction requires a props object argument with 'id' and 'data'",
+      }
+    }
+
+    return cmsDocumentsServices(schema).updateSlug({
+      ...props,
       returning,
       userId,
     })

@@ -23,6 +23,7 @@ const fieldConfig: CmsConfigField<string, undefined, undefined> = {
 }
 
 function Field({
+  id,
   value,
   className,
   fieldId,
@@ -42,13 +43,13 @@ function Field({
     >
       <Input
         type='text'
-        id={fieldId}
+        id={id}
         className={cn(
           "min-w-48 p-2 border-0 bg-transparent rounded-none focus:bg-accent",
           "disabled:cursor-default disabled:opacity-100",
           !isInline && "rounded-md"
         )}
-        aria-describedby='helper-text-explanation'
+        aria-describedby={id}
         defaultValue={value && format(value, formatString)}
       />
     </div>

@@ -1,6 +1,3 @@
-import { notFound } from "next/navigation"
-
-import { isEmpty } from "@repo/lib/isEmpty"
 import type { SearchParams } from "@repo/cms/types.cms"
 import { PageHeader } from "@repo/ui/page/page-header"
 import { Toaster } from "@repo/ui/sonner"
@@ -20,10 +17,6 @@ export default async function CollectionsPage({
     page: searchParams.page,
     limit: searchParams.limit,
   })
-
-  if (isEmpty(data)) {
-    notFound()
-  }
 
   return (
     <>

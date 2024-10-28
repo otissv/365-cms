@@ -17,18 +17,23 @@ export type ArrayStoreState<Data extends Record<string | number, any>> = {
   clear: () => void
   delete: (id: string | number | (string | number)[]) => void
   entries: () => [string | number, Data][]
-  filter: <
-    Fn extends (
+  edit: (
+    callbackfn: (
+      previousValue: Record<string, any>[],
+      [id, value]: [string | number, Data],
+      prevState: Map<any, Data>,
+      index: number
+    ) => Data[]
+  ) => void
+  filter: (
+    callbackfn: (
       [id, value, prevState]: [
         id: string | number,
         value: Data,
         prevState: Map<any, Data>,
       ],
       index: number
-    ) => unknown,
-  >(
-    callbackfn: Fn,
-    thisArg?: any
+    ) => boolean
   ) => unknown[]
   forEach: (
     callbackfn: (
@@ -41,18 +46,15 @@ export type ArrayStoreState<Data extends Record<string | number, any>> = {
   get: <ID extends keyof Data>(id: ID) => Data | undefined
   has: (id: string | number) => boolean
   keys: () => (string | number)[]
-  map: <
-    Fn extends (
+  map: (
+    callbackfn: (
       [id, value, prevState]: [
         id: string | number,
         value: Data,
         prevState: Map<any, Data>,
       ],
       index: number
-    ) => unknown,
-  >(
-    callbackfn: Fn,
-    thisArg?: any
+    ) => unknown
   ) => unknown[]
   reduce: <
     Fn extends (
@@ -76,6 +78,7 @@ export const initialArrayStoreState: ArrayStoreState<any> = {
   add: () => undefined,
   clear: () => undefined,
   delete: (_id) => undefined,
+  edit: (() => {}) as any,
   entries: () => [],
   filter: () => [] as any,
   forEach: () => {},
@@ -134,6 +137,16 @@ export function useArrayStore<Data extends Record<string, any>>(
         return newMap
       })
     },
+    edit: (callbackfn) => {
+      const data = Array.from(state.entries()).reduce(
+        (previousValue, currentValue, index) => {
+          return callbackfn(previousValue, currentValue, state, index)
+        },
+        [] as Data[]
+      )
+
+      setState(() => new Map(prepareData(data, key)))
+    },
     entries: () => {
       return Array.from(state.entries())
     },
@@ -178,13 +191,11 @@ export function useArrayStore<Data extends Record<string, any>>(
     replace: (data) => {
       setState(() => new Map(prepareData(data, key)))
     },
+
     update: (id, data): ReturnType<ArrayStoreState<Data>["update"]> => {
       setState((prevMap) => {
-        console.log(id, state, prevMap)
         const item = prevMap.get(id)
         if (!item) return prevMap
-
-        console.log("update")
 
         const newItem = {
           ...item,
@@ -205,19 +216,16 @@ export type ObjectStoreState<Data extends Record<string, any>> = {
   clear: () => void
   delete: (id: keyof Data) => void
   entries: () => [string | number, Data][]
-  filter: <
-    Fn extends (
+  filter: (
+    callbackfn: (
       [id, value, prevState]: [
         id: string | number,
         value: Data,
         prevState: Map<any, Data>,
       ],
       index: number
-    ) => unknown,
-  >(
-    callbackfn: Fn,
-    thisArg?: any
-  ) => unknown[]
+    ) => boolean
+  ) => Partial<Data>[]
   forEach: (
     callbackfn: (
       value: Data,
@@ -229,18 +237,15 @@ export type ObjectStoreState<Data extends Record<string, any>> = {
   get: <ID extends keyof Data>(id: string) => Data[ID] | undefined
   has: (id: string | number) => boolean
   keys: () => (string | number)[]
-  map: <
-    Fn extends (
+  map: (
+    callbackfn: (
       [id, value, prevState]: [
         id: string | number,
         value: Data,
         prevState: Map<any, Data>,
       ],
       index: number
-    ) => unknown,
-  >(
-    callbackfn: Fn,
-    thisArg?: any
+    ) => unknown
   ) => unknown[]
   reduce: <
     Fn extends (
@@ -251,14 +256,14 @@ export type ObjectStoreState<Data extends Record<string, any>> = {
     ) => unknown,
   >(
     callbackfn: Fn,
-    thisArg?: any
+    initialValue?: any
   ) => ReturnType<Fn>
   replace: (data: Data[]) => void
   set: (id: keyof Data, value: Data) => void
   size: () => number
   toObject: () => Data
   update: (id: keyof Data, props: Data[keyof Data]) => void
-  values: () => Data[]
+  values: () => any[]
 }
 export const initialObjectStoreState: ObjectStoreState<any> = {
   data: () => new Map(),
@@ -356,9 +361,6 @@ export function useObjectStore<Data extends Record<string, any>>(
     },
     update: (id, data): ReturnType<ObjectStoreState<Data>["update"]> => {
       setState((prevMap) => {
-        const item = prevMap.get(id as any)
-        if (!item) return prevMap
-
         return new Map(prevMap.set(id as any, data))
       })
     },

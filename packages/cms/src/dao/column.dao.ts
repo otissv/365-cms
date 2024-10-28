@@ -12,6 +12,7 @@ import type {
   CmsCollectionColumnInsert,
   CmsCollectionColumnTableColumn,
   CmsCollectionColumnUpdate,
+  CmsCollectionDocument,
 } from "../types.cms"
 
 //TODO: test returning '*'
@@ -183,6 +184,7 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
               .where(trx.raw(`data->>'${fieldId}' IS NOT NULL`))
               .update({
                 data: trx.raw(`data - '${fieldId}'`),
+                errors: trx.raw(`errors - '${fieldId}%'`),
               })
 
             return {
@@ -260,6 +262,15 @@ function cmsColumnsDao(schema: string): CmsCollectionColumnsDao {
                 ["id"]
               )
 
+            if (data.fieldOptions?.defaultValue) {
+              await trx
+                .withSchema(schema)
+                .into("cms_documents")
+                .where("collectionId", "=", data.collectionId)
+                .update({
+                  data: { [data.fieldId]: data.fieldOptions?.defaultValue },
+                })
+            }
             return {
               data: omit
                 ? omitColumnFromCollection<CmsCollectionColumn>()(omit)(

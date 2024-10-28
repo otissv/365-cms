@@ -219,24 +219,30 @@ function ColumnDialogSheet({
           </SheetTitle>
         </SheetHeader>
 
-        <div className='relative h-[calc(100vh-144px)] mb-6 overflow-y-auto px-6'>
-          {step ? (
-            <EditColumnContent setStep={setStep} step={step} isEdit={isEdit} />
-          ) : (
-            <AddColumnContent setStep={setStep} step={step} />
-          )}
-        </div>
+        <div className='h-screen overflow-y-auto'>
+          <div className='relative mb-6 px-6'>
+            {step ? (
+              <EditColumnContent
+                setStep={setStep}
+                step={step}
+                isEdit={isEdit}
+              />
+            ) : (
+              <AddColumnContent setStep={setStep} step={step} />
+            )}
+          </div>
 
-        <SubmitForm
-          isEdit={isEdit}
-          id={columnId}
-          step={step}
-          setStep={setStep}
-          onClose={() => {
-            setIsOpen(false)
-          }}
-          setIsOpen={setIsOpen}
-        />
+          <SubmitForm
+            isEdit={isEdit}
+            id={columnId}
+            step={step}
+            setStep={setStep}
+            onClose={() => {
+              setIsOpen(false)
+            }}
+            setIsOpen={setIsOpen}
+          />
+        </div>
       </SheetContent>
     </Sheet>
   )
@@ -363,7 +369,10 @@ function SubmitForm({
         <Button
           variant='outline'
           className='rounded-md'
-          onClick={() => onClose?.()}
+          onClick={() => {
+            onClose?.()
+            form.reset()
+          }}
         >
           Cancel
         </Button>
@@ -560,90 +569,92 @@ function EditColumnContent({
                 onUpdate={fieldOptionsField.updateValue}
               />
 
-              <Accordion type='single' collapsible>
-                <AccordionItem value='advanced-options'>
-                  <AccordionTrigger>Advanced Options</AccordionTrigger>
-                  <AccordionContent className='space-y-6'>
-                    <div>
-                      <Label htmlFor='sort-by' className='mb-1 flex'>
-                        Sort Direction
-                      </Label>
-                      <ToggleSwitch
-                        title='sort-by'
-                        id='indexing'
-                        onOff='ASC,DESC'
-                        checked={sortByField.value}
-                        onCheckedChange={() =>
-                          sortByField.updateValue(!sortByField.value)
-                        }
-                        className='w-[11rem]'
-                      />
-                    </div>
-
-                    <fieldset className='space-y-6'>
+              {type !== "slug" ? (
+                <Accordion type='single' collapsible>
+                  <AccordionItem value='advanced-options'>
+                    <AccordionTrigger>Advanced Options</AccordionTrigger>
+                    <AccordionContent className='space-y-6'>
                       <div>
-                        <Label htmlFor='indexing' className='mb-1 flex'>
-                          Indexing
+                        <Label htmlFor='sort-by' className='mb-1 flex'>
+                          Sort Direction
                         </Label>
                         <ToggleSwitch
-                          title='Indexing'
+                          title='sort-by'
                           id='indexing'
-                          checked={indexingField.value}
+                          onOff='ASC,DESC'
+                          checked={sortByField.value}
                           onCheckedChange={() =>
-                            indexingField.updateValue(!indexingField.value)
+                            sortByField.updateValue(!sortByField.value)
                           }
                           className='w-[11rem]'
                         />
                       </div>
 
-                      <div className='grid grid-cols-2 gap-2'>
+                      <fieldset className='space-y-6'>
                         <div>
-                          <Label
-                            htmlFor='index-direction'
-                            className='mb-1 flex'
-                          >
-                            Index Sorting
+                          <Label htmlFor='indexing' className='mb-1 flex'>
+                            Indexing
                           </Label>
+                          <ToggleSwitch
+                            title='Indexing'
+                            id='indexing'
+                            checked={indexingField.value}
+                            onCheckedChange={() =>
+                              indexingField.updateValue(!indexingField.value)
+                            }
+                            className='w-[11rem]'
+                          />
+                        </div>
 
-                          <ToggleSwitch
-                            title='Index Sorting'
-                            id='index-direction'
-                            onOff='ASC,DESC'
-                            className='w-[11rem]'
-                            checked={indexField.value?.direction}
-                            onCheckedChange={() =>
-                              indexField.updateValue({
-                                ...indexField.value,
-                                direction: !indexField.value.direction,
-                              })
-                            }
-                            disabled={!indexingField.value}
-                          />
+                        <div className='grid grid-cols-2 gap-2'>
+                          <div>
+                            <Label
+                              htmlFor='index-direction'
+                              className='mb-1 flex'
+                            >
+                              Index Sorting
+                            </Label>
+
+                            <ToggleSwitch
+                              title='Index Sorting'
+                              id='index-direction'
+                              onOff='ASC,DESC'
+                              className='w-[11rem]'
+                              checked={indexField.value?.direction}
+                              onCheckedChange={() =>
+                                indexField.updateValue({
+                                  ...indexField.value,
+                                  direction: !indexField.value.direction,
+                                })
+                              }
+                              disabled={!indexingField.value}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor='index-nulls' className='mb-1 flex'>
+                              Empty cells
+                            </Label>
+                            <ToggleSwitch
+                              title='Empty cells'
+                              id='index-nulls'
+                              onOff='First,Last'
+                              className='w-[11rem]'
+                              checked={indexField.value?.nulls}
+                              onCheckedChange={() =>
+                                indexField.updateValue({
+                                  ...indexField.value,
+                                  nulls: !indexField.value.nulls,
+                                })
+                              }
+                              disabled={!indexingField.value}
+                            />
+                          </div>
                         </div>
-                        <div>
-                          <Label htmlFor='index-nulls' className='mb-1 flex'>
-                            Empty cells
-                          </Label>
-                          <ToggleSwitch
-                            title='Empty cells'
-                            id='index-nulls'
-                            onOff='First,Last'
-                            className='w-[11rem]'
-                            checked={indexField.value?.nulls}
-                            onCheckedChange={() =>
-                              indexField.updateValue({
-                                ...indexField.value,
-                                nulls: !indexField.value.nulls,
-                              })
-                            }
-                            disabled={!indexingField.value}
-                          />
-                        </div>
-                      </div>
-                    </fieldset>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+                      </fieldset>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              ) : null}
             </TabsContent>
           </Maybe>
         </Tabs>

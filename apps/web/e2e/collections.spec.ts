@@ -1,90 +1,39 @@
-import { type Page, expect, test } from "@playwright/test"
+import { expect, test } from "@playwright/test"
 
-test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:3000/collections")
-})
+import { createCollection } from "./helpers.e2e"
 
-async function removeCollection(page: Page, collectionName: string) {
-  await page.locator("html").click()
-
-  await page
-    .getByTestId(`card-collection-${collectionName}`)
-    .getByRole("button", { name: "Actions" })
-    .click()
-  await page.getByRole("button", { name: "Delete" }).click()
-  await page.getByRole("button", { name: `Delete ${collectionName}` }).click()
-  await page.locator("html").click()
-
-  page.getByTestId(`card-collection-${collectionName}`)
-
-  await expect(
-    page.getByTestId(`card-collection-${collectionName}`).isHidden()
-  ).toBeTruthy()
-}
-
-test("Add & remove new collection with single item", async ({ page }) => {
+test("Add single document collection", async ({ page }) => {
   const collectionName = "Single"
   const testId = `card-collection-${collectionName}`
+  await createCollection(page, collectionName, "single")
 
-  await page.getByRole("button", { name: "New Collection" }).click()
-
-  await page.getByRole("textbox").fill(`${collectionName}`)
-  await page.getByLabel("Type").click()
-  await expect(page.getByLabel("Type")).toBeChecked()
-
-  await page.getByRole("button", { name: "Add Collection" }).click()
-  await page.locator("html").click()
-
-  await expect(
+  expect(
     page
       .getByTestId(testId)
       .getByTestId(`collection-card-title-${collectionName}`)
   ).toContainText(collectionName)
-
-  await removeCollection(page, collectionName)
 })
 
-test("Add & remove new collection with multiple items", async ({ page }) => {
+test("Add multiple documents collection", async ({ page }) => {
   const collectionName = "Multiple"
   const testId = `card-collection-${collectionName}`
+  await createCollection(page, collectionName)
 
-  await page.getByRole("button", { name: "New Collection" }).click()
-
-  await page.getByRole("textbox").fill(`${collectionName}`)
-  await page.getByLabel("Type").click()
-  await page.getByLabel("Type").click()
-  await expect(page.getByLabel("Type")).not.toBeChecked()
-
-  await page.getByRole("button", { name: "Add Collection" }).click()
-  await page.locator("html").click()
-
-  await expect(
+  expect(
     page
       .getByTestId(testId)
       .getByTestId(`collection-card-title-${collectionName}`)
   ).toContainText(collectionName)
-
-  await removeCollection(page, collectionName)
 })
 
 test("Collection already exists", async ({ page }) => {
   const collectionName = "Exits"
+  await createCollection(page, collectionName)
 
   await page.getByRole("button", { name: "New Collection" }).click()
+  await page.getByRole("textbox").fill(collectionName)
 
-  await page.getByRole("textbox").fill(`${collectionName}`)
-  await page.getByLabel("Type").click()
-  await page.getByRole("button", { name: "Add Collection" }).click()
-  await page.locator("html").click()
-
-  await page.getByRole("button", { name: "New Collection" }).click()
-  await page.getByRole("textbox").fill(`${collectionName}`)
-  await page.getByRole("button", { name: "Add Collection" }).click()
-
-  await expect(page.getByText("Duplicate, already exists")).toBeTruthy()
-
-  // remove collection
-  await removeCollection(page, collectionName)
+  expect(page.getByText("Duplicate, already exists")).toBeTruthy()
 })
 
 test("Rename collection", async ({ page }) => {
@@ -92,16 +41,14 @@ test("Rename collection", async ({ page }) => {
   const collectionNewName = "Rename2"
   const testId = `card-collection-${collectionName}`
   const testRenameId = `card-collection-${collectionNewName}`
+  await createCollection(page, collectionName)
 
-  await page.getByRole("button", { name: "New Collection" }).click()
+  await page.goto("http://localhost:3000/collections")
 
-  await page.getByRole("textbox").fill(`${collectionName}`)
-  await page.getByLabel("Type").click()
-  await page.getByRole("button", { name: "Add Collection" }).click()
   await page.locator("html").click()
 
   await page
-    .getByTestId(testId)
+    .getByTestId(`card-collection-${collectionName}`)
     .getByRole("button", { name: "Actions" })
     .click()
   await page.getByRole("button", { name: "Rename" }).click()
@@ -109,12 +56,9 @@ test("Rename collection", async ({ page }) => {
   await page.getByRole("button", { name: "Save" }).click()
   await page.locator("html").click()
 
-  await expect(
+  expect(
     page
       .getByTestId(testRenameId)
       .getByTestId(`collection-card-title-${collectionNewName}`)
   ).toBeTruthy()
-
-  // remove collection
-  await removeCollection(page, collectionNewName)
 })

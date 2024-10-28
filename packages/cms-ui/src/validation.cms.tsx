@@ -5,6 +5,12 @@ import { Input } from "@repo/ui/input"
 import { Label } from "@repo/ui/label"
 import { TagInput, TagItem, TagList, TagsInput } from "@repo/ui/tags"
 import { ToggleSwitch } from "@repo/ui/toggle-switch"
+import { Calendar } from "@repo/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/popover"
+import { CalendarIcon } from "lucide-react"
+import { cn } from "@repo/ui/utils"
+import { isInline } from "@udecode/plate-common"
+import type { DateRange } from "react-day-picker"
 
 export type SelectItem = {
   id: string
@@ -63,6 +69,49 @@ export function RequiredValidation({
   return (
     <div className='mt-6'>
       <Required onChange={handleOnRequiredChange} checked={value.required} />
+    </div>
+  )
+}
+
+export type DateTimeValidationValue = {
+  required?: boolean
+  betweenDates?: DateRange
+}
+export function DateTimeValidation({
+  value = {},
+  onUpdate,
+}: {
+  value: DateTimeValidationValue
+  onUpdate: (value: DateTimeValidationValue) => void
+}) {
+  const required = value?.required || false
+  const betweenDates = value?.betweenDates || ({ from: "", to: "" } as any)
+
+  const handleOnChange =
+    (key: "required" | "betweenDates") => (newValue: unknown) => {
+      onUpdate?.({
+        required,
+        betweenDates,
+        [key]: newValue,
+      })
+    }
+
+  return (
+    <div className='space-y-6  mt-6'>
+      <Required
+        checked={value.required}
+        onChange={handleOnChange("required")}
+      />
+
+      <div className='space-y-6 mt-6'>
+        <Label>Between Dates</Label>
+        <Calendar
+          mode='range'
+          selected={betweenDates}
+          onSelect={handleOnChange("betweenDates")}
+          initialFocus
+        />
+      </div>
     </div>
   )
 }
@@ -397,6 +446,85 @@ export function TextValidation({
   )
 }
 
+export type SlugValidationValue = {
+  required?: boolean
+  disallowCharacters?: string
+  minLength?: number
+  maxLength?: number
+}
+export function SlugValidation({
+  value = {},
+  onUpdate,
+}: {
+  value: SlugValidationValue
+  onUpdate: (value: SlugValidationValue) => void
+}) {
+  const handleOnChange =
+    (field: "minLength" | "maxLength" | "disallowCharacters") =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const update = { ...value } || {}
+
+      if (field === "disallowCharacters") {
+        update.disallowCharacters = e.target.value
+      } else if (field === "minLength") {
+        update.minLength = getNumber(e.target.value)
+      } else if (field === "maxLength") {
+        update.maxLength = getNumber(e.target.value)
+      }
+      onUpdate?.(update)
+    }
+
+  return (
+    <div className='space-y-6  mt-6'>
+      <div className='space-y-6'>
+        <div className='space-y-2'>
+          <div className='grid grid-cols-2 gap-6'>
+            <div>
+              <Label htmlFor='minLength' className='text-sm'>
+                <span className='whitespace-nowrap'>Min Length</span>
+              </Label>
+              <Input
+                type='number'
+                id='minLength'
+                value={value.minLength || 0}
+                onChange={handleOnChange("minLength")}
+                min={0}
+              />
+            </div>
+            <div>
+              <Label htmlFor='maxLength' className='text-sm'>
+                <span className='whitespace-nowrap'>Max Length</span>
+              </Label>
+              <Input
+                type='number'
+                id='maxLength'
+                value={value.maxLength || 0}
+                onChange={handleOnChange("maxLength")}
+                min={0}
+              />
+            </div>
+          </div>
+
+          <p className='text-sm text-muted-foreground'>
+            Number of characters. Set max length to 0 for any length.
+          </p>
+        </div>
+        <div>
+          <Label htmlFor='disallowCharacters' className='text-sm'>
+            <span className='whitespace-nowrap'>Disallow characters</span>
+          </Label>
+          <Input
+            id='disallowCharacters'
+            value={value.disallowCharacters || ""}
+            onChange={handleOnChange("disallowCharacters")}
+          />
+          <p className='text-sm text-muted-foreground'>E.g. %?&*</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export type InternetValidationValue = {
   required?: boolean
   disallowCharacters: string
@@ -477,6 +605,7 @@ export function InternetValidation({
         </Label>
         <TagsInput>
           <TagInput
+            data-testid='blacklist'
             id='blacklist'
             // placeholder="Items..."
             selectedItems={blacklist}

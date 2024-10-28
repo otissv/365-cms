@@ -245,7 +245,13 @@ export function dynamicColumn({
         <ColumnHeader column={column as any} table={table}>
           <GripVertical className='h-5 p-0' />
           <Icon className='h-4 text-muted-foreground' />
-          {columnName}
+
+          <span>
+            {columnName}
+            <span className='!ml-none text-destructive'>
+              {validation?.required ? "*" : ""}
+            </span>
+          </span>
 
           <div className='!ml-auto flex gap-2 justify-center'>
             <TooltipProvider>

@@ -1,4 +1,4 @@
-export function toInt<None>(none: None | number = 0) {
+export function toInt<None extends number>(none: None | number = 0) {
   return (value: unknown): number | None => {
     switch (typeof value) {
       case "boolean":

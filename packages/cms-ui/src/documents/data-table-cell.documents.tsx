@@ -67,6 +67,12 @@ export function DataTableCell<TData, TValue>({
 
   const Field = type ? fieldComponent[type] : null
 
+  console.log(
+    "DataTableCell: ",
+    type,
+    (column.columnDef as any).values.fieldOptions
+  )
+
   return Field ? (
     <Field
       collectionId={collectionId}

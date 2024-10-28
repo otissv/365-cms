@@ -61,6 +61,15 @@ export type CmsDocumentService = {
   }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
   update(props: {
     data: CmsCollectionDocumentUpdate["data"]
+    errors?: CmsCollectionDocumentUpdate["errors"]
+    id?: number
+    omit?: (keyof CmsCollectionDocument)[]
+    returning?: (keyof CmsCollectionDocument | "*")[]
+    userId: number
+  }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
+  updateSlug(props: {
+    slug: CmsCollectionDocumentUpdate["slug"]
+    errors?: CmsCollectionDocumentUpdate["errors"]
     id?: number
     omit?: (keyof CmsCollectionDocument)[]
     returning?: (keyof CmsCollectionDocument | "*")[]
@@ -143,6 +152,39 @@ function cmsDocumentsService(schema: string): CmsDocumentService {
           ...props,
           where: ["cms_documents.id", "=", id],
           data,
+          userId,
+        })
+      } catch (error) {
+        return errorResponse(error)
+      }
+    },
+
+    async updateSlug({
+      slug,
+      id,
+      userId,
+      ...props
+    }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
+      try {
+        if (isEmpty(id)) {
+          throw new Error("cmsDocumentsService.update requires a 'id' prop")
+        }
+
+        if (isEmpty(userId)) {
+          throw new Error("cmsDocumentsService.update requires a 'userId' prop")
+        }
+
+        const error = await cmsCollectionDocumentUpdateValidate(
+          { slug },
+          "cmsDocumentsService.update has invalid 'slug' object prop"
+        )
+
+        if (isError(error)) throw error
+
+        return documentDao(schema).updateSlug({
+          ...props,
+          where: ["cms_documents.id", "=", id],
+          slug,
           userId,
         })
       } catch (error) {

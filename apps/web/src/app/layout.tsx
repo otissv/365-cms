@@ -1,5 +1,6 @@
 import "./globals.css"
 import "@repo/ui/styles.css"
+import "@repo/cms-ui/styles.css"
 import type { Metadata } from "next"
 import { cn } from "@repo/ui/cn"
 
@@ -10,6 +11,7 @@ import {
   getDocumentsAction,
   deleteRowAction,
   updateDataAction,
+  updateSlugAction,
 } from "@repo/cms/actions/document.actions"
 import {
   deleteColumnAction,
@@ -46,11 +48,11 @@ export default function RootLayout({
       className='scroll-smooth antialiased relative'
       suppressHydrationWarning
     >
-      <body className={cn(fonts.text.className, "flex min-h-screen flex-col")}>
+      <body className={cn(fonts.text.className, "flex flex-col")}>
         <ThemeProvider
           enableSystem
           attribute='class'
-          defaultTheme='system'
+          defaultTheme='light'
           disableTransitionOnChange
         >
           <CmsProvider
@@ -69,6 +71,7 @@ export default function RootLayout({
               userId,
             })}
             updateData={updateDataAction({ schema, userId })}
+            updateSlug={updateSlugAction({ schema, userId })}
             addNewCollection={addNewCollectionAction({ schema, userId })}
             deleteCollection={deleteCollectionAction({ schema })}
             renameCollection={renameCollectionAction({ schema, userId })}

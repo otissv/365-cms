@@ -14,6 +14,7 @@ import type {
   CmsDocumentsView,
 } from "../types.cms"
 import { omitColumnFromCollection } from "@repo/lib/utils/omitColumnFromCollection"
+import { isNullOrUndefined } from "@repo/lib/isNullOrUndefined"
 
 type CmsDocumentsDaoGetReturnType =
   | {
@@ -75,6 +76,19 @@ export type CmsDocumentsDao = {
       any,
     ]
     data: CmsCollectionDocumentUpdate["data"]
+    errors?: CmsCollectionDocumentUpdate["errors"]
+    omit?: (keyof CmsCollectionDocument)[]
+    returning?: (keyof CmsCollectionDocument | "*")[]
+    userId: number
+  }): Promise<AppResponse<Partial<CmsCollectionDocument>>>
+  updateSlug(props: {
+    where: [
+      CmsCollectionDocumentTableColumn<keyof CmsCollectionDocument>,
+      string,
+      any,
+    ]
+    slug: CmsCollectionDocumentUpdate["slug"]
+    errors?: CmsCollectionDocumentUpdate["errors"]
     omit?: (keyof CmsCollectionDocument)[]
     returning?: (keyof CmsCollectionDocument | "*")[]
     userId: number
@@ -145,7 +159,9 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
                     json_build_object(
                         'id', cms_documents.id,
                         'collectionId', cms_documents."collectionId",
+                        'slug', cms_documents.slug,
                         'data', cms_documents.data,
+                        'errors', cms_documents.errors,
                         'createdBy', cms_documents."createdBy",
                         'createdAt', cms_documents."createdAt",
                         'updatedBy', cms_documents."updatedBy",
@@ -263,6 +279,21 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
                 const { data, ...rest } = doc
                 return { ...data, ...rest }
               }
+            ),
+            errors: documents.reduce(
+              (
+                acc: Record<string, string>,
+                { id, errors }: { id: string; errors: Record<string, string> }
+              ) => {
+                if (!errors) return acc
+
+                Object.entries(errors).forEach(([key, value]) => {
+                  acc[`${key}:${id}`] = value
+                })
+
+                return acc
+              },
+              {}
             ),
           },
         ]
@@ -395,6 +426,7 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
 
     async update({
       data,
+      errors,
       omit,
       returning = ["id"],
       userId,
@@ -420,10 +452,11 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
             "cmsCollectionDocumentsDao.update collection requires a 'userId'"
           )
         }
+
         const documents = await db
           .withSchema(schema)
-          .from("cms_documents")
-          .select("data")
+          .from<CmsCollectionDocument>("cms_documents")
+          .select(["data", "errors"])
           .where(...where)
 
         const result = await db
@@ -433,6 +466,71 @@ function cmsCollectionDocumentsDao(schema: string): CmsDocumentsDao {
           .update(
             {
               data: { ...documents[0]?.data, ...data },
+              ...(!isEmpty(errors)
+                ? { errors: { ...documents[0]?.errors, ...errors } }
+                : {}),
+              updatedAt: new Date(),
+              updatedBy: userId,
+            },
+            returning
+          )
+
+        return {
+          data: omit
+            ? omitColumnFromCollection<CmsCollectionDocument>()(omit)(result)
+            : result,
+          error: "",
+        }
+      } catch (error) {
+        return errorResponse(error)
+      }
+    },
+
+    async updateSlug({
+      slug,
+      errors,
+      omit,
+      returning = ["id"],
+      userId,
+      where,
+    }): Promise<AppResponse<Partial<CmsCollectionDocument>>> {
+      try {
+        if (isNullOrUndefined(slug)) {
+          return {
+            data: [],
+            error:
+              "cmsCollectionDocumentsDao.update collection requires a 'slug' object prop",
+          }
+        }
+
+        if (isEmpty(where)) {
+          throw new Error(
+            "cmsCollectionDocumentsDao.update collection requires a 'where' tuple prop"
+          )
+        }
+
+        if (isEmpty(userId)) {
+          throw new Error(
+            "cmsCollectionDocumentsDao.update collection requires a 'userId'"
+          )
+        }
+
+        const documents = await db
+          .withSchema(schema)
+          .from<CmsCollectionDocument>("cms_documents")
+          .select(["data", "errors"])
+          .where(...where)
+
+        const result = await db
+          .withSchema(schema)
+          .from("cms_documents")
+          .where(...where)
+          .update(
+            {
+              slug,
+              ...(errors
+                ? { errors: { ...documents[0]?.errors, ...errors } }
+                : {}),
               updatedAt: new Date(),
               updatedBy: userId,
             },

@@ -3,6 +3,8 @@ import type { Config } from "tailwindcss"
 import svgToDataUri from "mini-svg-data-uri"
 import { fontFamily } from "tailwindcss/defaultTheme"
 
+console.log("=============================tailwind: config")
+
 import type { PluginAPI } from "tailwindcss/types/config"
 
 function addVariablesForColors({
@@ -25,14 +27,16 @@ const {
   default: flattenColorPalette,
 } = require("tailwindcss/lib/util/flattenColorPalette")
 
+console.log(process.cwd())
+
 // We want each package to be responsible for its own content.
 const config: Omit<Config, "content"> = {
-  content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./**/*.{ts,tsx}",
-  ],
+  // content: [
+  //   "../components/**/*.{ts,tsx}",
+  //   "../../apps/**/*.{ts,tsx}",
+  //   "../../../apps/**/*.{ts,tsx}",
+  //   "./**/*.{ts,tsx}",
+  // ],
   theme: {
     container: {
       center: true,

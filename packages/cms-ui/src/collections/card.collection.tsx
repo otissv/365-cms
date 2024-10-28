@@ -230,6 +230,7 @@ export function CollectionActionMenu({
               className='justify-start w-full font-normal'
               title='Rename collection'
               onClick={() => setRenameDialogIsOpen(!renameDialogIsOpen)}
+              data-testid={`collection-card-title-${name}-rename`}
             >
               Rename
             </Button>
@@ -284,6 +285,7 @@ export function CollectionActionMenu({
               className='justify-start w-full font-normal text-destructive hover:text-destructive-foreground hover:bg-destructive'
               title='Rename collection'
               onClick={() => setDeleteDialogIsOpen(!deleteDialogIsOpen)}
+              data-testid={`collection-card-title-${name}-delete`}
             >
               Delete
             </Button>
